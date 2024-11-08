@@ -19,7 +19,12 @@ namespace ASM_GS.Controllers
             _configuration = configuration;
             _context = context;
         }
-
+        public class GoogleUserModel
+        {
+            public string Name { get; set; }
+            public string Email { get; set; }
+            public string Picture { get; set; }
+        }
         private readonly IConfiguration _configuration;
         private string GenerateNewAccountId()
         {
@@ -40,8 +45,8 @@ namespace ASM_GS.Controllers
                 }
             }
 
-            
-            return "TK" + newIdNumber.ToString("D3"); 
+
+            return "TK" + newIdNumber.ToString("D3");
         }
         public IActionResult Index()
         {
@@ -76,7 +81,7 @@ namespace ASM_GS.Controllers
 
             var user = _context.TaiKhoans
                 .FirstOrDefault(u => (u.Email.Trim() == model.EmailOrUsername.Trim() || u.TenTaiKhoan.Trim() == model.EmailOrUsername.Trim())
-                                     && u.MatKhau.Trim() == model.Password.Trim() && (u.TinhTrang==1 || u.TinhTrang==2));
+                                     && u.MatKhau.Trim() == model.Password.Trim() && (u.TinhTrang == 1 || u.TinhTrang == 2));
 
             if (user == null)
             {
@@ -91,6 +96,7 @@ namespace ASM_GS.Controllers
         public IActionResult SignUp(RegisterModelView model)
         {
             if (!ModelState.IsValid)
+
             {
                 var errors = new Dictionary<string, string>();
 
@@ -131,7 +137,7 @@ namespace ASM_GS.Controllers
                 return Json(new { success = false, message = "Tên tài khoản hoặc email đã tồn tại" });
             }
 
-            MaTaiKhoanDuocTao=GenerateNewAccountId();
+            MaTaiKhoanDuocTao = GenerateNewAccountId();
             var newUser = new TaiKhoan
             {
                 MaTaiKhoan = MaTaiKhoanDuocTao,
@@ -232,7 +238,6 @@ namespace ASM_GS.Controllers
 
             if (!string.IsNullOrEmpty(maTaiKhoan))
             {
-          
                 var taiKhoan = await _context.TaiKhoans.FindAsync(maTaiKhoan);
                 if (taiKhoan != null)
                 {
@@ -276,6 +281,90 @@ namespace ASM_GS.Controllers
                 }
             }
             return Json(new { success = true, message = "Tài Khoản của bạn đã được đăng ký thành công" });
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateCustomerFromGoogleLogin([FromBody] GoogleUserModel user)
+        {
+            // Check if an account with the given email already exists
+            var existingAccount = _context.TaiKhoans.FirstOrDefault(u => u.Email == user.Email);
+
+            if (existingAccount == null)
+            {
+                // Generate new IDs for MaKhachHang and MaTaiKhoan
+                var lastCustomer = _context.KhachHangs.OrderByDescending(k => k.MaKhachHang).FirstOrDefault();
+                int newCustomerId = lastCustomer != null ? int.Parse(lastCustomer.MaKhachHang.Substring(2)) + 1 : 1;
+                string maKhachHang = $"KH{newCustomerId:D3}";
+
+                var lastAccount = _context.TaiKhoans.OrderByDescending(t => t.MaTaiKhoan).FirstOrDefault();
+                int newAccountId = lastAccount != null ? int.Parse(lastAccount.MaTaiKhoan.Substring(2)) + 1 : 1;
+                string maTaiKhoan = $"TK{newAccountId:D3}";
+
+                // Create and save the new customer
+                var newCustomer = new KhachHang
+                {
+                    MaKhachHang = maKhachHang,
+                    TenKhachHang = user.Name,
+                    HinhAnh = user.Picture,
+                    NgayDangKy = DateOnly.FromDateTime(DateTime.Today),
+                    TrangThai = 2
+                };
+                _context.KhachHangs.Add(newCustomer);
+                await _context.SaveChangesAsync();
+
+                // Create and save the new account linked to the new customer
+                var newAccount = new TaiKhoan
+                {
+                    MaTaiKhoan = maTaiKhoan,
+                    TenTaiKhoan = user.Email,
+                    MatKhau = "123456",
+                    VaiTro = "User",
+                    Email = user.Email,
+                    MaKhachHang = maKhachHang,
+                    TinhTrang = 1
+                };
+                _context.TaiKhoans.Add(newAccount);
+                await _context.SaveChangesAsync();
+
+                return Ok("Đã tạo tài khoản và khách hàng mới thành công.");
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(existingAccount.MaKhachHang))
+                {
+                    // Generate a new MaKhachHang for the existing account
+                    var lastCustomer = _context.KhachHangs.OrderByDescending(k => k.MaKhachHang).FirstOrDefault();
+                    int newCustomerId = lastCustomer != null ? int.Parse(lastCustomer.MaKhachHang.Substring(2)) + 1 : 1;
+                    string maKhachHang = $"KH{newCustomerId:D3}";
+
+                    // Create a new customer and link it to the existing account
+                    var newCustomer = new KhachHang
+                    {
+                        MaKhachHang = maKhachHang,
+                        TenKhachHang = user.Name,
+                        HinhAnh = user.Picture,
+                        NgayDangKy = DateOnly.FromDateTime(DateTime.Today),
+                        TrangThai = 2
+                    };
+                    _context.KhachHangs.Add(newCustomer);
+
+                    existingAccount.MaKhachHang = maKhachHang;
+                    await _context.SaveChangesAsync();
+
+                    return Ok("Đã tạo khách hàng mới và liên kết với tài khoản hiện có.");
+                }
+                else
+                {
+                    // Update the existing customer's picture
+                    var existingCustomer = _context.KhachHangs.FirstOrDefault(k => k.MaKhachHang == existingAccount.MaKhachHang);
+                    if (existingCustomer != null)
+                    {
+                        existingCustomer.TenKhachHang = user.Name;
+                        existingCustomer.HinhAnh = user.Picture;
+                        await _context.SaveChangesAsync();
+                    }
+                    return Ok("Cập nhật hình ảnh cho khách hàng hiện có.");
+                }
+            }
         }
 
     }

@@ -7,6 +7,10 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using X.PagedList.Extensions;
+using X.PagedList;
+using X.PagedList.Mvc.Core;
+using ASM_GS.Migrations;
 
 namespace ASM_GS.Areas.Admin.Controllers
 {
@@ -23,11 +27,32 @@ namespace ASM_GS.Areas.Admin.Controllers
         }
 
         // GET: Admin/KhachHang
-        public async Task<IActionResult> Index()
+        public IActionResult Index(string searchTerm, int? pageSize, int page = 1)
         {
-            var khachHangs = await _context.KhachHangs.ToListAsync();
-            return View(khachHangs);
+            int pageSizeValue = pageSize ?? 5; // Giá trị mặc định cho pageSize
+
+            // Lấy tất cả khách hàng từ cơ sở dữ liệu
+            var khachHangs = _context.KhachHangs.AsQueryable();
+
+            // Tìm kiếm theo từ khóa
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                khachHangs = khachHangs.Where(kh => kh.TenKhachHang.Contains(searchTerm) ||
+                                                     kh.SoDienThoai.Contains(searchTerm) ||
+                                                     kh.Cccd.Contains(searchTerm));
+            }
+
+            // Phân trang sử dụng ToPagedList
+            var pagedKhachHangs = khachHangs.ToPagedList(page, pageSizeValue);
+
+            ViewBag.SearchTerm = searchTerm;
+            ViewBag.PageSize = pageSizeValue;
+            ViewBag.Page = page;
+
+            return View(pagedKhachHangs); // Trả về đối tượng IPagedList
         }
+
+
 
         // GET: Admin/KhachHang/Create
         [HttpGet]
@@ -36,45 +61,48 @@ namespace ASM_GS.Areas.Admin.Controllers
             return PartialView("_UserCreatePartial");
         }
 
-        // POST: Admin/KhachHang/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(KhachHang khachHang)
         {
-            if (string.IsNullOrWhiteSpace(khachHang.MaKhachHang))
+            // Tạo mã khách hàng ngẫu nhiên
+            Random random = new Random();
+            string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            string maKhachHang = "KH" + string.Concat(Enumerable.Range(0, 6).Select(_ => characters[random.Next(characters.Length)]));
+            khachHang.MaKhachHang = maKhachHang;
+
+
+            // Xử lý lưu ảnh nếu có
+            if (khachHang.Anh != null)
             {
-                ModelState.AddModelError("MaKhachHang", "Mã khách hàng không được để trống.");
+                var fileName = $"{Guid.NewGuid()}_{khachHang.Anh.FileName}";
+                var folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "img/AnhKhachHang");
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+                var filePath = Path.Combine(folderPath, fileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await khachHang.Anh.CopyToAsync(stream);
+                }
+                khachHang.HinhAnh = $"img/AnhKhachHang/{fileName}";
             }
 
+            // Nếu ModelState không hợp lệ, trả về PartialView với các lỗi
             if (ModelState.IsValid)
             {
-                if (khachHang.Anh != null)
-                {
-                    var fileName = $"{Guid.NewGuid()}_{khachHang.Anh.FileName}";
-                    var folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "img/AnhKhachHang");
-                    if (!Directory.Exists(folderPath))
-                    {
-                        Directory.CreateDirectory(folderPath);
-                    }
-                    var filePath = Path.Combine(folderPath, fileName);
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await khachHang.Anh.CopyToAsync(stream);
-                    }
-                    khachHang.HinhAnh = $"img/AnhKhachHang/{fileName}";
-                }
-
-                khachHang.NgayDangKy = DateOnly.FromDateTime(DateTime.Now);
-                _context.Add(khachHang);
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Thêm khách hàng thành công!";
-                return RedirectToAction(nameof(Index));
+                return PartialView("_UserCreatePartial", khachHang); // Trả về modal `_UserCreatePartial`
             }
-            return PartialView("_UserCreatePartial", khachHang);
+
+            // Nếu ModelState hợp lệ, tiếp tục xử lý
+            khachHang.NgayDangKy = DateOnly.FromDateTime(DateTime.Now);
+            _context.Add(khachHang);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Thêm khách hàng thành công!";
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: Admin/KhachHang/Edit/5
-        // GET: Admin/KhachHang/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -160,7 +188,6 @@ namespace ASM_GS.Areas.Admin.Controllers
             return PartialView("_UserEditPartial", khachHang);
         }
 
-        [HttpPost]
         public IActionResult Delete(string id)
         {
             var khachHang = _context.KhachHangs.Find(id); 
@@ -172,7 +199,7 @@ namespace ASM_GS.Areas.Admin.Controllers
             _context.KhachHangs.Remove(khachHang);
             _context.SaveChanges();
             TempData["SuccessMessage"] = "Xoá khách hàng thành công!";
-            return Json(new { success = true, message = "Xóa thành công." });
+            return RedirectToAction("Index");
         }
 
         private bool KhachHangExists(string id)

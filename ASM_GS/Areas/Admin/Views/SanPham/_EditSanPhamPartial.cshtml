@@ -1,0 +1,171 @@
+﻿@model ASM_GS.Models.SanPham
+
+<div class="modal-header">
+    <h5 class="modal-title">Chỉnh Sửa Sản Phẩm</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form id="editForm" enctype="multipart/form-data">
+        <input type="hidden" id="MaSanPham" name="MaSanPham" value="@Model.MaSanPham" />
+
+        <div class="mb-3">
+            <label for="TenSanPham" class="form-label">Tên Sản Phẩm</label>
+            <input type="text" id="TenSanPham" name="TenSanPham" class="form-control" value="@Model.TenSanPham"  />
+        </div>
+        <div class="mb-3">
+            <label for="UploadImages" class="form-label">Ảnh Sản Phẩm (có thể chọn nhiều ảnh)</label>
+            <input type="file" id="UploadImages" name="UploadImages" class="form-control" multiple />
+
+            <!-- Hiển thị tất cả ảnh sản phẩm hiện có -->
+            @if (Model.AnhSanPhams != null && Model.AnhSanPhams.Any())
+            {
+                <div class="image-stack">
+                    @foreach (var image in Model.AnhSanPhams)
+                    {
+                        <img src="@image.UrlAnh" alt="Ảnh sản phẩm" class="stacked-image" />
+                    }
+                </div>
+
+            }
+        </div>
+        <div class="mb-3">
+            <label for="Gia" class="form-label">Giá</label>
+            <input type="number" id="Gia" name="Gia" class="form-control" value="@Model.Gia" required />
+        </div>
+        <div class="mb-3">
+            <label for="MoTa" class="form-label">Mô Tả</label>
+            <textarea id="MoTa" name="MoTa" class="form-control" >@Model.MoTa</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="MaDanhMuc" class="form-label">Danh mục</label>
+            <select id="MaDanhMuc" name="MaDanhMuc" class="form-select d-inline-block w-auto" required style="width: 150px; margin-left: 10px;">
+                <option value="">-- Chọn danh mục --</option>
+                @foreach (var item in (SelectList)ViewBag.DanhMucList)
+                {
+                    @if (item.Value == Model.MaDanhMuc.ToString())
+                    {
+                        <option value="@item.Value" selected>@item.Text</option>
+                    }
+                    else
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                }
+            </select>
+
+        </div>
+        <div class="mb-3">
+            <label for="SoLuong" class="form-label">Số Lượng</label>
+            <input type="number" id="SoLuong" name="SoLuong" class="form-control" value="@Model.SoLuong"  />
+        </div>
+        <div class="mb-3">
+            <label for="NgayThem" class="form-label">Ngày Thêm</label>
+            <input type="date" id="NgayThem" name="NgayThem" class="form-control" value="@Model.NgayThem?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="mb-3">
+            <label for="DonVi" class="form-label">Đơn Vị</label>
+            <input type="text" id="DonVi" name="DonVi" class="form-control" value="@Model.DonVi" />
+        </div>
+        <div class="mb-3">
+            <label for="Nsx" class="form-label">NSX</label>
+            <input type="date" id="Nsx" name="Nsx" class="form-control" value="@Model.Nsx?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="mb-3">
+            <label for="Hsd" class="form-label">HSD</label>
+            <input type="date" id="Hsd" name="Hsd" class="form-control" value="@Model.Hsd?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="mb-3">
+            <label for="TrangThai" class="form-label">Trạng Thái</label>
+            <select id="TrangThai" name="TrangThai" class="form-select d-inline-block w-auto" style="width: 120px; margin-left: 10px;">
+                @if (Model.TrangThai == 1)
+                {
+                    <option value="1" selected>Hoạt Động</option>
+                    <option value="0">Không Hoạt Động</option>
+                }
+                else
+                {
+                    <option value="1">Hoạt Động</option>
+                    <option value="0" selected>Không Hoạt Động</option>
+                }
+            </select>
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="submit" class="btn btn-primary">Cập Nhật Sản Phẩm</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Submit Edit Form
+        $('#editForm').on('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+
+            // Thêm cờ để xác định rằng tất cả ảnh cũ sẽ bị xóa khi có ảnh mới được chọn
+            if ($('#UploadImages')[0].files.length > 0) {
+                formData.append('ReplaceAllImages', true);
+            }
+
+            $.ajax({
+                url: '/Admin/SanPham/Edit', // URL to your Edit action
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Cập nhật thành công!',
+                            text: response.message,
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            location.reload(); 
+                            $('#modalEditProduct').modal('hide'); 
+                            
+                        });
+                        
+                    } else {
+                        // Display validation errors below each field
+                        $.each(response.errors, function(field, message) {
+                            $('#error' + field).text(message); // Display error message
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: 'Không thể cập nhật sản phẩm. Vui lòng thử lại!',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        });
+    });
+
+</script>
+<style>
+    .image-stack {
+        display: flex;
+        align-items: center;
+    }
+
+    .stacked-image {
+        width: 40px; /* Adjust the size as needed */
+        height: 40px;
+        border-radius: 50%; /* Make the image round */
+        border: 2px solid white; /* White border for separation */
+        margin-left: -10px; /* Overlap images */
+        object-fit: cover; /* Ensure the image covers the circle */
+    }
+
+    .image-stack .stacked-image:first-child {
+        margin-left: 0; /* No margin for the first image */
+    }
+
+</style>

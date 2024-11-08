@@ -27,7 +27,6 @@ public partial class TaiKhoan
     public virtual NhanVien? MaNhanVienNavigation { get; set; }
 }
 //TinhTrang:
-//0 : Đã Xóa
-//1 : Customer đủ thông Tin
-//2 : Customer chưa nhập thông tin
-//3 : Nhân Viên 
+//0 : Ngừng Hoạt Động
+//1 : Khách Hàng Đầy Đủ Thông Tin
+//2 : Khách Hàng chưa nhập thông tin, Đăng nhập bằng Gmail

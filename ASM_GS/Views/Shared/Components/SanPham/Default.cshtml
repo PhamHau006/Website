@@ -1,17 +1,43 @@
 ﻿@model IEnumerable<ASM_GS.Models.SanPham>
 
-<div class="row">
-    @foreach (var item in Model)
-    {
-        <div class="col-lg-6 mb-3">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">@item.TenSanPham</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">@item.Gia.ToString("N0") VND</h6>
-                    <p class="card-text">@item.MoTa</p>
-                    <h6>Số lượng: @item.SoLuong</h6>
+<!-- Product List with Swiper -->
+<div class="swiper product-swiper overflow-hidden">
+    <div class="swiper-wrapper d-flex">
+        @foreach (var item in Model)
+        {
+            <div class="swiper-slide" style="display: flex; align-items: stretch; justify-content: center;">
+                <div class="product-item image-zoom-effect link-effect position-relative" style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100%;">
+                    <div class="image-holder" style="width: 100%; height: 300px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                        @{
+                            var anhDauTien = item.AnhSanPhams.FirstOrDefault();
+                        }
+                        <a href="@Url.Action("Index", "Detail", new { id = item.MaSanPham })">
+                            @if (anhDauTien != null)
+                            {
+                                <img src="@Url.Content(anhDauTien.UrlAnh)" alt="categories" class="product-image img-fluid" style="max-width: 100%; max-height: 100%; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <img src="~/img/default-product.jpg" alt="default image" class="product-image img-fluid" style="max-width: 100%; max-height: 100%; object-fit: cover;" />
+                            }
+                        </a>
+                        <a href="wishlist.html" class="btn-icon btn-wishlist">
+                            <svg width="24" height="24" viewBox="0 0 24 24" class="svg-color">
+                                <use xlink:href="#heart"></use>
+                            </svg>
+                        </a>
+                    </div>
+                    <!-- Product content -->
+                    <div class="product-content text-center" style="padding: 10px; flex: 1; display: flex; flex-direction: column; justify-content: flex-end;">
+                        <h5 class="text-uppercase fs-5 mt-3" style="margin-bottom: 8px; font-size: 16px; line-height: 1.2;">
+                            <a href="@Url.Action("Index", "Detail", new { id = item.MaSanPham })" style="padding: 5px;">@item.TenSanPham</a>
+                        </h5>
+                        <a href="#" class="text-decoration-none" data-after="Thêm vào giỏ hàng">
+                            <span class="price" style="font-weight: bold; color: #333;">@item.Gia.ToString("N0") VND</span>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
+        }
+    </div>
 </div>

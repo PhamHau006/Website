@@ -2,11 +2,7 @@
 
 <div class="modal-body">
     <form id="createCustomerForm" asp-action="Create" method="post" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label asp-for="MaKhachHang" class="form-label">Mã Khách Hàng</label>
-            <input asp-for="MaKhachHang" class="form-control" />
-            <span asp-validation-for="MaKhachHang" class="text-danger"></span>
-        </div>
+        <input type="hidden" asp-for="MaKhachHang" />
         <div class="mb-3">
             <label asp-for="TenKhachHang" class="form-label">Tên Khách Hàng</label>
             <input asp-for="TenKhachHang" class="form-control" />
@@ -56,4 +52,6 @@
         <button type="submit" class="btn btn-primary">Thêm</button>
     </form>
 </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>

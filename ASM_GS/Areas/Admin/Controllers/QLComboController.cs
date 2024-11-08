@@ -70,7 +70,8 @@ namespace ASM_GS.Areas.Admin.Controllers
         public async Task<IActionResult> Create(Combo combo, List<string>? selectedSanPhams)
         {
             Random random = new Random();
-            string maCombo = "CB" + string.Concat(Enumerable.Range(0, 6).Select(_ => random.Next(0, 10)));
+            string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            string maCombo = "CB" + string.Concat(Enumerable.Range(0, 6).Select(_ => characters[random.Next(characters.Length)]));
             combo.MaCombo = maCombo;
 
 

@@ -49,241 +49,241 @@ namespace ASM_GS.Migrations
                         {
                             Id = 1,
                             MaSanPham = "SP001",
-                            UrlAnh = "wwwroot/img/AnhSanPham/kemduongam1.jpg"
+                            UrlAnh = "img/AnhSanPham/kemduongam1.jpg"
                         },
                         new
                         {
                             Id = 2,
                             MaSanPham = "SP001",
-                            UrlAnh = "wwwroot/img/AnhSanPham/kemduongam2.jpg"
+                            UrlAnh = "img/AnhSanPham/kemduongam2.jpg"
                         },
                         new
                         {
                             Id = 3,
                             MaSanPham = "SP001",
-                            UrlAnh = "wwwroot/img/AnhSanPham/kemduongam3.jpg"
+                            UrlAnh = "img/AnhSanPham/kemduongam3.jpg"
                         },
                         new
                         {
                             Id = 4,
                             MaSanPham = "SP001",
-                            UrlAnh = "wwwroot/img/AnhSanPham/kemduongam4.jpg"
+                            UrlAnh = "img/AnhSanPham/kemduongam4.jpg"
                         },
                         new
                         {
                             Id = 5,
                             MaSanPham = "SP002",
-                            UrlAnh = "wwwroot/img/AnhSanPham/suaruamat1.jpg"
+                            UrlAnh = "img/AnhSanPham/suaruamat1.jpg"
                         },
                         new
                         {
                             Id = 6,
                             MaSanPham = "SP002",
-                            UrlAnh = "wwwroot/img/AnhSanPham/suaruamat2.jpg"
+                            UrlAnh = "img/AnhSanPham/suaruamat2.jpg"
                         },
                         new
                         {
                             Id = 7,
                             MaSanPham = "SP002",
-                            UrlAnh = "wwwroot/img/AnhSanPham/suaruamat3.jpg"
+                            UrlAnh = "img/AnhSanPham/suaruamat3.jpg"
                         },
                         new
                         {
                             Id = 8,
                             MaSanPham = "SP002",
-                            UrlAnh = "wwwroot/img/AnhSanPham/suaruamat4.jpg"
+                            UrlAnh = "img/AnhSanPham/suaruamat4.jpg"
                         },
                         new
                         {
                             Id = 9,
                             MaSanPham = "SP003",
-                            UrlAnh = "wwwroot/img/AnhSanPham/toner1.png"
+                            UrlAnh = "img/AnhSanPham/toner1.png"
                         },
                         new
                         {
                             Id = 10,
                             MaSanPham = "SP003",
-                            UrlAnh = "wwwroot/img/AnhSanPham/toner2.png"
+                            UrlAnh = "img/AnhSanPham/toner2.png"
                         },
                         new
                         {
                             Id = 11,
                             MaSanPham = "SP003",
-                            UrlAnh = "wwwroot/img/AnhSanPham/toner3.png"
+                            UrlAnh = "img/AnhSanPham/toner3.png"
                         },
                         new
                         {
                             Id = 12,
                             MaSanPham = "SP003",
-                            UrlAnh = "wwwroot/img/AnhSanPham/toner4.png"
+                            UrlAnh = "img/AnhSanPham/toner4.png"
                         },
                         new
                         {
                             Id = 13,
                             MaSanPham = "SP004",
-                            UrlAnh = "wwwroot/img/AnhSanPham/serumtrang1.jpg"
+                            UrlAnh = "img/AnhSanPham/serumtrang1.jpg"
                         },
                         new
                         {
                             Id = 14,
                             MaSanPham = "SP004",
-                            UrlAnh = "wwwroot/img/AnhSanPham/serumtrang2.jpg"
+                            UrlAnh = "img/AnhSanPham/serumtrang2.jpg"
                         },
                         new
                         {
                             Id = 15,
                             MaSanPham = "SP004",
-                            UrlAnh = "wwwroot/img/AnhSanPham/serumtrang3.jpg"
+                            UrlAnh = "img/AnhSanPham/serumtrang3.jpg"
                         },
                         new
                         {
                             Id = 16,
                             MaSanPham = "SP004",
-                            UrlAnh = "wwwroot/img/AnhSanPham/serumtrang4.jpg"
+                            UrlAnh = "img/AnhSanPham/serumtrang4.jpg"
                         },
                         new
                         {
                             Id = 17,
                             MaSanPham = "SP005",
-                            UrlAnh = "wwwroot/img/AnhSanPham/mark1.jpg"
+                            UrlAnh = "img/AnhSanPham/mark1.jpg"
                         },
                         new
                         {
                             Id = 18,
                             MaSanPham = "SP005",
-                            UrlAnh = "wwwroot/img/AnhSanPham/mark2.jpg"
+                            UrlAnh = "img/AnhSanPham/mark2.jpg"
                         },
                         new
                         {
                             Id = 19,
                             MaSanPham = "SP005",
-                            UrlAnh = "wwwroot/img/AnhSanPham/mark3.jpg"
+                            UrlAnh = "img/AnhSanPham/mark3.jpg"
                         },
                         new
                         {
                             Id = 20,
                             MaSanPham = "SP005",
-                            UrlAnh = "wwwroot/img/AnhSanPham/mark4.jpg"
+                            UrlAnh = "img/AnhSanPham/mark4.jpg"
                         },
                         new
                         {
                             Id = 21,
                             MaSanPham = "SP006",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp006_1.jpg"
+                            UrlAnh = "img/AnhSanPham/sp006_1.jpg"
                         },
                         new
                         {
                             Id = 22,
                             MaSanPham = "SP006",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp006_2.jpg"
+                            UrlAnh = "img/AnhSanPham/sp006_2.jpg"
                         },
                         new
                         {
                             Id = 23,
                             MaSanPham = "SP006",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp006_3.jpg"
+                            UrlAnh = "img/AnhSanPham/sp006_3.jpg"
                         },
                         new
                         {
                             Id = 24,
                             MaSanPham = "SP006",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp006_4.jpg"
+                            UrlAnh = "img/AnhSanPham/sp006_4.jpg"
                         },
                         new
                         {
                             Id = 25,
                             MaSanPham = "SP007",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp007_1.jpg"
+                            UrlAnh = "img/AnhSanPham/sp007_1.jpg"
                         },
                         new
                         {
                             Id = 26,
                             MaSanPham = "SP007",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp007_2.jpg"
+                            UrlAnh = "img/AnhSanPham/sp007_2.jpg"
                         },
                         new
                         {
                             Id = 27,
                             MaSanPham = "SP007",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp007_3.jpg"
+                            UrlAnh = "img/AnhSanPham/sp007_3.jpg"
                         },
                         new
                         {
                             Id = 28,
                             MaSanPham = "SP007",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp007_4.jpg"
+                            UrlAnh = "img/AnhSanPham/sp007_4.jpg"
                         },
                         new
                         {
                             Id = 29,
                             MaSanPham = "SP008",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp008_1.jpg"
+                            UrlAnh = "img/AnhSanPham/sp008_1.jpg"
                         },
                         new
                         {
                             Id = 30,
                             MaSanPham = "SP008",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp008_2.jpg"
+                            UrlAnh = "img/AnhSanPham/sp008_2.jpg"
                         },
                         new
                         {
                             Id = 31,
                             MaSanPham = "SP008",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp008_3.jpg"
+                            UrlAnh = "img/AnhSanPham/sp008_3.jpg"
                         },
                         new
                         {
                             Id = 32,
                             MaSanPham = "SP008",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp008_4.jpg"
+                            UrlAnh = "img/AnhSanPham/sp008_4.jpg"
                         },
                         new
                         {
                             Id = 33,
                             MaSanPham = "SP009",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp009_1.jpg"
+                            UrlAnh = "img/AnhSanPham/sp009_1.jpg"
                         },
                         new
                         {
                             Id = 34,
                             MaSanPham = "SP009",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp009_2.jpg"
+                            UrlAnh = "img/AnhSanPham/sp009_2.jpg"
                         },
                         new
                         {
                             Id = 35,
                             MaSanPham = "SP009",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp009_3.jpg"
+                            UrlAnh = "img/AnhSanPham/sp009_3.jpg"
                         },
                         new
                         {
                             Id = 36,
                             MaSanPham = "SP009",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp009_4.jpg"
+                            UrlAnh = "img/AnhSanPham/sp009_4.jpg"
                         },
                         new
                         {
                             Id = 37,
                             MaSanPham = "SP010",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp010_1.jpg"
+                            UrlAnh = "img/AnhSanPham/sp010_1.jpg"
                         },
                         new
                         {
                             Id = 38,
                             MaSanPham = "SP010",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp010_2.jpg"
+                            UrlAnh = "img/AnhSanPham/sp010_2.jpg"
                         },
                         new
                         {
                             Id = 39,
                             MaSanPham = "SP010",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp010_3.jpg"
+                            UrlAnh = "img/AnhSanPham/sp010_3.jpg"
                         },
                         new
                         {
                             Id = 40,
                             MaSanPham = "SP010",
-                            UrlAnh = "wwwroot/img/AnhSanPham/sp010_4.jpg"
+                            UrlAnh = "img/AnhSanPham/sp010_4.jpg"
                         });
                 });
 
@@ -552,7 +552,7 @@ namespace ASM_GS.Migrations
                         new
                         {
                             MaCombo = "CB001",
-                            Anh = "wwwroot/img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg",
+                            Anh = "img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg",
                             Gia = 800000m,
                             MoTa = "Combo gồm các sản phẩm dưỡng ẩm",
                             TenCombo = "Combo Dưỡng Ẩm",
@@ -561,7 +561,7 @@ namespace ASM_GS.Migrations
                         new
                         {
                             MaCombo = "CB002",
-                            Anh = "wwwroot/img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg",
+                            Anh = "img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg",
                             Gia = 1200000m,
                             MoTa = "Combo chăm sóc da toàn diện",
                             TenCombo = "Combo Chăm Sóc Da",
@@ -570,7 +570,7 @@ namespace ASM_GS.Migrations
                         new
                         {
                             MaCombo = "CB003",
-                            Anh = "wwwroot/img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg",
+                            Anh = "img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg",
                             Gia = 950000m,
                             MoTa = "Combo sản phẩm ngừa mụn hiệu quả",
                             TenCombo = "Combo Ngừa Mụn",

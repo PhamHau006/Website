@@ -1,0 +1,38 @@
+﻿@model ASM_GS.Models.DanhMuc
+
+<div class="modal-header">
+    <h5 class="modal-title">Chỉnh Sửa Danh Mục</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+    <form id="editDanhMucForm">
+        <input type="hidden" id="MaDanhMuc" name="MaDanhMuc" value="@Model.MaDanhMuc" />
+        <div class="mb-3">
+            <label for="TenDanhMuc" class="form-label">Tên Danh Mục</label>
+            <input type="text" id="TenDanhMuc" name="TenDanhMuc" class="form-control" value="@Model.TenDanhMuc" />
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="submit" class="btn btn-primary">Cập Nhật</button>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function() {
+        $('#editDanhMucForm').submit(function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/Admin/DanhMuc/Edit',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire('Cập nhật thành công!', response.message, 'success').then(() => location.reload());
+                    } else {
+                        alert("Có lỗi xảy ra.");
+                    }
+                }
+            });
+        });
+    });
+</script>

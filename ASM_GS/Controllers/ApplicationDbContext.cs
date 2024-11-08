@@ -94,64 +94,64 @@ namespace ASM_GS.Controllers
 
             modelBuilder.Entity<AnhSanPham>().HasData(
                // 4 ảnh cho sản phẩm SP001
-               new AnhSanPham { Id = 1, MaSanPham = "SP001", UrlAnh = "wwwroot/img/AnhSanPham/kemduongam1.jpg" },
-               new AnhSanPham { Id = 2, MaSanPham = "SP001", UrlAnh = "wwwroot/img/AnhSanPham/kemduongam2.jpg" },
-               new AnhSanPham { Id = 3, MaSanPham = "SP001", UrlAnh = "wwwroot/img/AnhSanPham/kemduongam3.jpg" },
-               new AnhSanPham { Id = 4, MaSanPham = "SP001", UrlAnh = "wwwroot/img/AnhSanPham/kemduongam4.jpg" },
+               new AnhSanPham { Id = 1, MaSanPham = "SP001", UrlAnh = "img/AnhSanPham/kemduongam1.jpg" },
+               new AnhSanPham { Id = 2, MaSanPham = "SP001", UrlAnh = "img/AnhSanPham/kemduongam2.jpg" },
+               new AnhSanPham { Id = 3, MaSanPham = "SP001", UrlAnh = "img/AnhSanPham/kemduongam3.jpg" },
+               new AnhSanPham { Id = 4, MaSanPham = "SP001", UrlAnh = "img/AnhSanPham/kemduongam4.jpg" },
 
                // 4 ảnh cho sản phẩm SP002
-               new AnhSanPham { Id = 5, MaSanPham = "SP002", UrlAnh = "wwwroot/img/AnhSanPham/suaruamat1.jpg" },
-               new AnhSanPham { Id = 6, MaSanPham = "SP002", UrlAnh = "wwwroot/img/AnhSanPham/suaruamat2.jpg" },
-               new AnhSanPham { Id = 7, MaSanPham = "SP002", UrlAnh = "wwwroot/img/AnhSanPham/suaruamat3.jpg" },
-               new AnhSanPham { Id = 8, MaSanPham = "SP002", UrlAnh = "wwwroot/img/AnhSanPham/suaruamat4.jpg" },
+               new AnhSanPham { Id = 5, MaSanPham = "SP002", UrlAnh = "img/AnhSanPham/suaruamat1.jpg" },
+               new AnhSanPham { Id = 6, MaSanPham = "SP002", UrlAnh = "img/AnhSanPham/suaruamat2.jpg" },
+               new AnhSanPham { Id = 7, MaSanPham = "SP002", UrlAnh = "img/AnhSanPham/suaruamat3.jpg" },
+               new AnhSanPham { Id = 8, MaSanPham = "SP002", UrlAnh = "img/AnhSanPham/suaruamat4.jpg" },
 
                // 4 ảnh cho sản phẩm SP003
-               new AnhSanPham { Id = 9, MaSanPham = "SP003", UrlAnh = "wwwroot/img/AnhSanPham/toner1.png" },
-               new AnhSanPham { Id = 10, MaSanPham = "SP003", UrlAnh = "wwwroot/img/AnhSanPham/toner2.png" },
-               new AnhSanPham { Id = 11, MaSanPham = "SP003", UrlAnh = "wwwroot/img/AnhSanPham/toner3.png" },
-               new AnhSanPham { Id = 12, MaSanPham = "SP003", UrlAnh = "wwwroot/img/AnhSanPham/toner4.png" },
+               new AnhSanPham { Id = 9, MaSanPham = "SP003", UrlAnh = "img/AnhSanPham/toner1.png" },
+               new AnhSanPham { Id = 10, MaSanPham = "SP003", UrlAnh = "img/AnhSanPham/toner2.png" },
+               new AnhSanPham { Id = 11, MaSanPham = "SP003", UrlAnh = "img/AnhSanPham/toner3.png" },
+               new AnhSanPham { Id = 12, MaSanPham = "SP003", UrlAnh = "img/AnhSanPham/toner4.png" },
 
                // 4 ảnh cho sản phẩm SP004
-               new AnhSanPham { Id = 13, MaSanPham = "SP004", UrlAnh = "wwwroot/img/AnhSanPham/serumtrang1.jpg" },
-               new AnhSanPham { Id = 14, MaSanPham = "SP004", UrlAnh = "wwwroot/img/AnhSanPham/serumtrang2.jpg" },
-               new AnhSanPham { Id = 15, MaSanPham = "SP004", UrlAnh = "wwwroot/img/AnhSanPham/serumtrang3.jpg" },
-               new AnhSanPham { Id = 16, MaSanPham = "SP004", UrlAnh = "wwwroot/img/AnhSanPham/serumtrang4.jpg" },
+               new AnhSanPham { Id = 13, MaSanPham = "SP004", UrlAnh = "img/AnhSanPham/serumtrang1.jpg" },
+               new AnhSanPham { Id = 14, MaSanPham = "SP004", UrlAnh = "img/AnhSanPham/serumtrang2.jpg" },
+               new AnhSanPham { Id = 15, MaSanPham = "SP004", UrlAnh = "img/AnhSanPham/serumtrang3.jpg" },
+               new AnhSanPham { Id = 16, MaSanPham = "SP004", UrlAnh = "img/AnhSanPham/serumtrang4.jpg" },
 
                // 4 ảnh cho sản phẩm SP005
-               new AnhSanPham { Id = 17, MaSanPham = "SP005", UrlAnh = "wwwroot/img/AnhSanPham/mark1.jpg" },
-               new AnhSanPham { Id = 18, MaSanPham = "SP005", UrlAnh = "wwwroot/img/AnhSanPham/mark2.jpg" },
-               new AnhSanPham { Id = 19, MaSanPham = "SP005", UrlAnh = "wwwroot/img/AnhSanPham/mark3.jpg" },
-               new AnhSanPham { Id = 20, MaSanPham = "SP005", UrlAnh = "wwwroot/img/AnhSanPham/mark4.jpg" },
+               new AnhSanPham { Id = 17, MaSanPham = "SP005", UrlAnh = "img/AnhSanPham/mark1.jpg" },
+               new AnhSanPham { Id = 18, MaSanPham = "SP005", UrlAnh = "img/AnhSanPham/mark2.jpg" },
+               new AnhSanPham { Id = 19, MaSanPham = "SP005", UrlAnh = "img/AnhSanPham/mark3.jpg" },
+               new AnhSanPham { Id = 20, MaSanPham = "SP005", UrlAnh = "img/AnhSanPham/mark4.jpg" },
 
                // 4 ảnh cho sản phẩm SP006
-               new AnhSanPham { Id = 21, MaSanPham = "SP006", UrlAnh = "wwwroot/img/AnhSanPham/sp006_1.jpg" },
-               new AnhSanPham { Id = 22, MaSanPham = "SP006", UrlAnh = "wwwroot/img/AnhSanPham/sp006_2.jpg" },
-               new AnhSanPham { Id = 23, MaSanPham = "SP006", UrlAnh = "wwwroot/img/AnhSanPham/sp006_3.jpg" },
-               new AnhSanPham { Id = 24, MaSanPham = "SP006", UrlAnh = "wwwroot/img/AnhSanPham/sp006_4.jpg" },
+               new AnhSanPham { Id = 21, MaSanPham = "SP006", UrlAnh = "img/AnhSanPham/kcn1.jpg" },
+               new AnhSanPham { Id = 22, MaSanPham = "SP006", UrlAnh = "img/AnhSanPham/kcn2.jpg" },
+               new AnhSanPham { Id = 23, MaSanPham = "SP006", UrlAnh = "img/AnhSanPham/kcn3.jpg" },
+               new AnhSanPham { Id = 24, MaSanPham = "SP006", UrlAnh = "img/AnhSanPham/kcn4.jpg" },
 
                // 4 ảnh cho sản phẩm SP007
-               new AnhSanPham { Id = 25, MaSanPham = "SP007", UrlAnh = "wwwroot/img/AnhSanPham/sp007_1.jpg" },
-               new AnhSanPham { Id = 26, MaSanPham = "SP007", UrlAnh = "wwwroot/img/AnhSanPham/sp007_2.jpg" },
-               new AnhSanPham { Id = 27, MaSanPham = "SP007", UrlAnh = "wwwroot/img/AnhSanPham/sp007_3.jpg" },
-               new AnhSanPham { Id = 28, MaSanPham = "SP007", UrlAnh = "wwwroot/img/AnhSanPham/sp007_4.jpg" },
+               new AnhSanPham { Id = 25, MaSanPham = "SP007", UrlAnh = "img/AnhSanPham/taytrang1.jpg" },
+               new AnhSanPham { Id = 26, MaSanPham = "SP007", UrlAnh = "img/AnhSanPham/taytrang2.jpg" },
+               new AnhSanPham { Id = 27, MaSanPham = "SP007", UrlAnh = "img/AnhSanPham/taytrang3.jpg" },
+               new AnhSanPham { Id = 28, MaSanPham = "SP007", UrlAnh = "img/AnhSanPham/taytrang4.jpg" },
 
                // 4 ảnh cho sản phẩm SP008
-               new AnhSanPham { Id = 29, MaSanPham = "SP008", UrlAnh = "wwwroot/img/AnhSanPham/sp008_1.jpg" },
-               new AnhSanPham { Id = 30, MaSanPham = "SP008", UrlAnh = "wwwroot/img/AnhSanPham/sp008_2.jpg" },
-               new AnhSanPham { Id = 31, MaSanPham = "SP008", UrlAnh = "wwwroot/img/AnhSanPham/sp008_3.jpg" },
-               new AnhSanPham { Id = 32, MaSanPham = "SP008", UrlAnh = "wwwroot/img/AnhSanPham/sp008_4.jpg" },
+               new AnhSanPham { Id = 29, MaSanPham = "SP008", UrlAnh = "img/AnhSanPham/tinhchat1.jpg" },
+               new AnhSanPham { Id = 30, MaSanPham = "SP008", UrlAnh = "img/AnhSanPham/tinhchat2.jpg" },
+               new AnhSanPham { Id = 31, MaSanPham = "SP008", UrlAnh = "img/AnhSanPham/tinhchat3.jpg" },
+               new AnhSanPham { Id = 32, MaSanPham = "SP008", UrlAnh = "img/AnhSanPham/tinhchat4.jpg" },
 
                // 4 ảnh cho sản phẩm SP009
-               new AnhSanPham { Id = 33, MaSanPham = "SP009", UrlAnh = "wwwroot/img/AnhSanPham/sp009_1.jpg" },
-               new AnhSanPham { Id = 34, MaSanPham = "SP009", UrlAnh = "wwwroot/img/AnhSanPham/sp009_2.jpg" },
-               new AnhSanPham { Id = 35, MaSanPham = "SP009", UrlAnh = "wwwroot/img/AnhSanPham/sp009_3.jpg" },
-               new AnhSanPham { Id = 36, MaSanPham = "SP009", UrlAnh = "wwwroot/img/AnhSanPham/sp009_4.jpg" },
+               new AnhSanPham { Id = 33, MaSanPham = "SP009", UrlAnh = "img/AnhSanPham/xitkhoang1.jpg" },
+               new AnhSanPham { Id = 34, MaSanPham = "SP009", UrlAnh = "img/AnhSanPham/xitkhoang2.jpg" },
+               new AnhSanPham { Id = 35, MaSanPham = "SP009", UrlAnh = "img/AnhSanPham/xitkhoang3.jpg" },
+               new AnhSanPham { Id = 36, MaSanPham = "SP009", UrlAnh = "img/AnhSanPham/xitkhoang4.jpg" },
 
                // 4 ảnh cho sản phẩm SP010
-               new AnhSanPham { Id = 37, MaSanPham = "SP010", UrlAnh = "wwwroot/img/AnhSanPham/sp010_1.jpg" },
-               new AnhSanPham { Id = 38, MaSanPham = "SP010", UrlAnh = "wwwroot/img/AnhSanPham/sp010_2.jpg" },
-               new AnhSanPham { Id = 39, MaSanPham = "SP010", UrlAnh = "wwwroot/img/AnhSanPham/sp010_3.jpg" },
-               new AnhSanPham { Id = 40, MaSanPham = "SP010", UrlAnh = "wwwroot/img/AnhSanPham/sp010_4.jpg" }
+               new AnhSanPham { Id = 37, MaSanPham = "SP010", UrlAnh = "img/AnhSanPham/bandem1.jpg" },
+               new AnhSanPham { Id = 38, MaSanPham = "SP010", UrlAnh = "img/AnhSanPham/bandem2.jpg" },
+               new AnhSanPham { Id = 39, MaSanPham = "SP010", UrlAnh = "img/AnhSanPham/bandem3.jpg" },
+               new AnhSanPham { Id = 40, MaSanPham = "SP010", UrlAnh = "img/AnhSanPham/bandem4.jpg" }
            );
             modelBuilder.Entity<KhachHang>().HasData(
                 new KhachHang
@@ -206,9 +206,9 @@ namespace ASM_GS.Controllers
 
             // Seed Data cho bảng Combo
             modelBuilder.Entity<Combo>().HasData(
-                new Combo { MaCombo = "CB001", TenCombo = "Combo Dưỡng Ẩm", MoTa = "Combo gồm các sản phẩm dưỡng ẩm", Gia = 800000, TrangThai = 1, Anh = "wwwroot/img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg" },
-                new Combo { MaCombo = "CB002", TenCombo = "Combo Chăm Sóc Da", MoTa = "Combo chăm sóc da toàn diện", Gia = 1200000 , TrangThai = 1,  Anh = "wwwroot/img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg" },
-                new Combo { MaCombo = "CB003", TenCombo = "Combo Ngừa Mụn", MoTa = "Combo sản phẩm ngừa mụn hiệu quả", Gia = 950000 , TrangThai = 1 , Anh = "wwwroot/img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg" }
+                new Combo { MaCombo = "CB001", TenCombo = "Combo Dưỡng Ẩm", MoTa = "Combo gồm các sản phẩm dưỡng ẩm", Gia = 800000, TrangThai = 1, Anh = "img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg" },
+                new Combo { MaCombo = "CB002", TenCombo = "Combo Chăm Sóc Da", MoTa = "Combo chăm sóc da toàn diện", Gia = 1200000 , TrangThai = 1,  Anh = "img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg" },
+                new Combo { MaCombo = "CB003", TenCombo = "Combo Ngừa Mụn", MoTa = "Combo sản phẩm ngừa mụn hiệu quả", Gia = 950000 , TrangThai = 1 , Anh = "img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg" }
             );
 
             // Seed Data cho bảng ChiTietCombo
@@ -241,7 +241,7 @@ namespace ASM_GS.Controllers
                 {
                     MaGiamGia = "CP002",
                     TenGiamGia = "Giảm giá Noel",
-                    GiaTri = 0.15m, //Giảm giá 15%
+                    GiaTri = 0.15m, 
                     NgayBatDau = new DateOnly(2025, 12, 20),
                     NgayKetThuc = new DateOnly(2025, 12, 25),
                     TrangThai = 1,

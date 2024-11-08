@@ -1,0 +1,37 @@
+﻿@model ASM_GS.Models.DanhMuc
+
+<div class="modal-header">
+    <h5 class="modal-title">Thêm Danh Mục</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+    <form id="createDanhMucForm">
+        <div class="mb-3">
+            <label for="TenDanhMuc" class="form-label">Tên Danh Mục</label>
+            <input type="text" id="TenDanhMuc" name="TenDanhMuc" class="form-control" />
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="submit" class="btn btn-primary">Thêm</button>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function() {
+        $('#createDanhMucForm').submit(function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/Admin/DanhMuc/Create',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire('Thành công!', response.message, 'success').then(() => location.reload());
+                    } else {
+                        alert("Có lỗi xảy ra.");
+                    }
+                }
+            });
+        });
+    });
+</script>

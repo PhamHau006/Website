@@ -1,0 +1,80 @@
+﻿
+@model ASM_GS.Models.SanPham
+<main class="main-content mt-5" style="padding-top: 200px">
+    <section id="product-detail" class="single-product py-5 no-padding-top">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-md-7">
+                    <div class="row flex-column">
+                        <div class="col-md-12">
+                            <!-- product-large-slider -->
+                            <div class="swiper product-large-slider">
+                                <div class="swiper-wrapper">
+                                    @foreach (var anh in Model.AnhSanPhams)
+                                    {
+                                        <div class="swiper-slide">
+                                            <img src="~/@Url.Content(anh.UrlAnh)" alt="product-large" class="img-fluid">
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <!-- / product-large-slider -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="product-info mt-4">
+                        <div class="element-header">
+                            <h2 itemprop="name" class="product-title text-uppercase text-black">
+                                @Model.TenSanPham
+                            </h2>
+                            <div class="product-price my-3">
+                                <span class="fs-2 text-black">@Model.Gia.ToString("N0") VND</span>
+                            </div>
+                            <p>@Model.MoTa</p>
+                            <div class="product-action mt-4">
+                                <div class="item-title">@Model.SoLuong in stock</div>
+                                <div class="product-quantity d-flex flex-wrap">
+                                    <div class="input-group product-qty me-3" style="max-width: 150px;">
+                                        <button type="button" class="quantity-left-minus btn btn-light btn-number" data-type="minus">
+                                            <svg width="16" height="16"><use xlink:href="#minus"></use></svg>
+                                        </button>
+                                        <input type="text" id="quantity" name="quantity" class="form-control input-number text-center" value="1" min="1" max="100">
+                                        <button type="button" class="quantity-right-plus btn btn-light btn-number" data-type="plus">
+                                            <svg width="16" height="16"><use xlink:href="#plus"></use></svg>
+                                        </button>
+                                    </div>
+                                    <button type="submit" class="btn btn-dark product-cart-submit btn-lg text-uppercase me-3">
+                                        Add to cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+<!-- Swiper CSS -->
+<link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+
+<!-- Swiper JavaScript -->
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+<script>
+    // Initialize Swiper with autoplay
+    var swiper = new Swiper('.product-large-slider', {
+        slidesPerView: 1,
+        spaceBetween: 10,
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        loop: true, // Enable looping for a seamless slider experience
+        autoplay: {
+            delay: 2000, // Set autoplay delay to 1 second (1000 ms)
+            disableOnInteraction: false, // Keep autoplay running even after user interaction
+        }
+    });
+</script>

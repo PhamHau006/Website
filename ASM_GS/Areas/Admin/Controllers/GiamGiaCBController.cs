@@ -78,10 +78,11 @@ namespace ASM_GS.Areas.Admin.Controllers
                 return PartialView("_DiscountCreatePartial", giamGia); // Trả về partial view nếu có lỗi
             }
 
-            // Tạo mã giảm giá ngẫu nhiên (6 ký tự số)
             Random random = new Random();
-            string maGiamGia = "CP" + string.Concat(Enumerable.Range(0, 6).Select(_ => random.Next(0, 10)));
+            string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            string maGiamGia = "CP" + string.Concat(Enumerable.Range(0, 6).Select(_ => characters[random.Next(characters.Length)]));
             giamGia.MaGiamGia = maGiamGia;
+
 
             // Thêm giảm giá vào cơ sở dữ liệu
             _context.Add(giamGia);

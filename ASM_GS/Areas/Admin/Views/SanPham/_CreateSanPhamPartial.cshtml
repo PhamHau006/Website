@@ -1,0 +1,141 @@
+﻿@model ASM_GS.Models.SanPham
+
+<div class="modal-header">
+    <h5 class="modal-title" id="modalAddProductTitle">Thêm Sản Phẩm</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form id="createForm" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="TenSanPham" class="form-label">Tên Sản Phẩm</label>
+            <input type="text" id="TenSanPham" name="TenSanPham" class="form-control" placeholder="Nhập tên sản phẩm" />
+            <span class="text-danger" id="errorTenSanPham"></span> <!-- Error message for Tên Sản Phẩm -->
+        </div>
+
+        <div class="mb-3">
+            <label for="UploadImages" class="form-label">Ảnh Sản Phẩm (có thể chọn nhiều ảnh)</label>
+            <input type="file" id="UploadImages" name="UploadImages" class="form-control" multiple />
+            <span class="text-danger" id="errorUploadImages"></span> <!-- Error message for Ảnh Sản Phẩm -->
+        </div>
+
+        <div class="mb-3">
+            <label for="Gia" class="form-label">Giá</label>
+            <input type="number" id="Gia" name="Gia" class="form-control" placeholder="Nhập giá sản phẩm" />
+            <span class="text-danger" id="errorGia"></span> <!-- Error message for Giá -->
+        </div>
+
+        <div class="mb-3">
+            <label for="MoTa" class="form-label">Mô Tả</label>
+            <textarea id="MoTa" name="MoTa" class="form-control" placeholder="Nhập mô tả sản phẩm"></textarea>
+            <span class="text-danger" id="errorMoTa"></span> <!-- Error message for Mô Tả -->
+        </div>
+
+        <div class="mb-3">
+            <label for="MaDanhMuc" class="form-label">Danh mục</label>
+            <select id="MaDanhMuc" name="MaDanhMuc" class="form-control">
+                <option value="">-- Chọn danh mục --</option>
+                @foreach (var item in (SelectList)ViewBag.DanhMucList)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </select>
+            <span class="text-danger" id="errorMaDanhMuc"></span> <!-- Error message for Danh mục -->
+        </div>
+
+        <div class="mb-3">
+            <label for="SoLuong" class="form-label">Số Lượng</label>
+            <input type="number" id="SoLuong" name="SoLuong" class="form-control" placeholder="Nhập số lượng" />
+            <span class="text-danger" id="errorSoLuong"></span> <!-- Error message for Số Lượng -->
+        </div>
+
+        <div class="mb-3">
+            <label for="NgayThem" class="form-label">Ngày Thêm</label>
+            <input type="date" id="NgayThem" name="NgayThem" class="form-control" />
+            <span class="text-danger" id="errorNgayThem"></span> <!-- Error message for Ngày Thêm -->
+        </div>
+
+        <div class="mb-3">
+            <label for="DonVi" class="form-label">Đơn Vị</label>
+            <input type="text" id="DonVi" name="DonVi" class="form-control" placeholder="Nhập đơn vị" />
+            <span class="text-danger" id="errorDonVi"></span> <!-- Error message for Đơn Vị -->
+        </div>
+
+        <div class="mb-3">
+            <label for="Nsx" class="form-label">NSX</label>
+            <input type="date" id="Nsx" name="Nsx" class="form-control" />
+            <span class="text-danger" id="errorNsx"></span> <!-- Error message for NSX -->
+        </div>
+
+        <div class="mb-3">
+            <label for="Hsd" class="form-label">HSD</label>
+            <input type="date" id="Hsd" name="Hsd" class="form-control" />
+            <span class="text-danger" id="errorHsd"></span> <!-- Error message for HSD -->
+        </div>
+
+        <div class="mb-3">
+            <label for="TrangThai" class="form-label">Trạng Thái</label>
+            <select id="TrangThai" name="TrangThai" class="form-select">
+                <option value="1">Hoạt Động</option>
+                <option value="0">Không Hoạt Động</option>
+            </select>
+            <span class="text-danger" id="errorTrangThai"></span> <!-- Error message for Trạng Thái -->
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="submit" class="btn btn-primary">Thêm Sản Phẩm</button>
+        </div>
+    </form>
+
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#createForm').on('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+
+            var formData = new FormData(this);
+
+            // Clear previous error messages
+            $('.text-danger').text('');
+
+            $.ajax({
+                url: '/Admin/SanPham/Create', // URL to your Create action
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: response.message,
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            location.reload();
+                            $('#modalAddProduct').modal('hide'); 
+                            
+                        });
+                    } else {
+                        // Display validation errors below each field
+                        $.each(response.errors, function(field, message) {
+                            $('#error' + field).text(message); // Display error message
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: 'Đã xảy ra lỗi trong khi lưu sản phẩm. Vui lòng thử lại!',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+

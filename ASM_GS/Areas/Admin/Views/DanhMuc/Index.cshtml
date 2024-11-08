@@ -1,0 +1,175 @@
+﻿@using X.PagedList.Mvc.Core
+@using X.PagedList
+@model IPagedList<ASM_GS.Models.DanhMuc>
+
+@{
+    ViewData["Title"] = "Danh sách Sản Phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+}
+
+
+<h1 class="card-header">Danh sách Danh Mục</h1>
+
+<div class="d-flex justify-content-end mb-3">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAddDanhMuc">
+        Thêm Danh Mục
+    </button>
+</div>
+
+<!-- Modal Thêm Danh Mục -->
+<div class="modal fade" id="modalAddDanhMuc" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Nội dung modal sẽ được tải qua AJAX -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chỉnh Sửa Danh Mục -->
+<div class="modal fade" id="modalEditDanhMuc" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Nội dung được tải qua AJAX -->
+        </div>
+    </div>
+</div>
+
+<form id="filterForm" class="row mb-3">
+    <div class="col-md-4">
+        <input type="text" name="searchName" id="searchName" class="form-control" placeholder="Tìm theo tên danh mục" />
+    </div>
+    <div class="col-md-3">
+        <select name="sortOrder" id="sortOrder" class="form-control">
+            <option value="">Sắp xếp theo tên (A-Z)</option>
+            <option value="name_desc">Sắp xếp theo tên (Z-A)</option>
+            <option value="status">Trạng thái</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary">Lọc</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Mã Danh Mục</th>
+                <th>Tên Danh Mục</th>
+                <th>Trạng Thái</th>
+                <th>Hành Động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.MaDanhMuc</td>
+                    <td>@item.TenDanhMuc</td>
+                    <td>
+                        @if (item.TrangThai == 1)
+                        {
+                            <span class="badge bg-success">Hoạt Động</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Không Hoạt Động</span>
+                        }
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="editDanhMuc('@item.MaDanhMuc')">Sửa</button>
+                        <button class="btn btn-sm btn-danger" onclick="confirmDelete('@item.MaDanhMuc')">Xóa</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="d-flex justify-content-center mt-4">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchName = ViewBag.SearchName, sortOrder = ViewBag.SortOrder }),
+            new PagedListRenderOptions
+    {
+        MaximumPageNumbersToDisplay = 5,
+        DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+        DisplayLinkToLastPage = PagedListDisplayMode.Always,
+        DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+        DisplayLinkToNextPage = PagedListDisplayMode.Always,
+        LinkToFirstPageFormat = "Trang đầu",
+        LinkToLastPageFormat = "Trang cuối",
+        LinkToPreviousPageFormat = "«",
+        LinkToNextPageFormat = "»",
+        UlElementClasses = new[] { "pagination" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" }
+    })
+</div>
+
+
+<script>
+    $(document).ready(function() {
+        $('#filterForm').on('submit', function(e) {
+            e.preventDefault();
+            performSearch();
+        });
+
+        function performSearch() {
+            $.ajax({
+                url: '/Admin/DanhMuc/Index',
+                type: 'GET',
+                data: $('#filterForm').serialize(),
+                success: function(data) {
+                    var $data = $(data);
+                    $('.table-responsive').html($data.find('.table-responsive').html());
+                    $('.pagination').html($data.find('.pagination').html());
+                },
+                error: function(xhr, status, error) {
+                    console.error("Lỗi tìm kiếm:", error);
+                }
+            });
+        }
+
+        window.editDanhMuc = function(maDanhMuc) {
+            $.ajax({
+                url: '/Admin/DanhMuc/EditPartial',
+                type: 'GET',
+                data: { maDanhMuc: maDanhMuc },
+                success: function(data) {
+                    $('#modalEditDanhMuc .modal-content').html(data);
+                    $('#modalEditDanhMuc').modal('show');
+                },
+                error: function() {
+                    alert("Không thể tải thông tin danh mục.");
+                }
+            });
+        };
+
+        window.confirmDelete = function(maDanhMuc) {
+            Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Danh mục sẽ bị xóa và không thể khôi phục!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/Admin/DanhMuc/DeleteConfirmed',
+                        type: 'POST',
+                        data: { id: maDanhMuc },
+                        success: function(response) {
+                            Swal.fire('Đã xóa!', response.message, 'success').then(() => {
+                                location.reload();
+                            });
+                        },
+                        error: function() {
+                            Swal.fire('Lỗi!', 'Không thể xóa danh mục. Vui lòng thử lại.', 'error');
+                        }
+                    });
+                }
+            });
+        };
+    });
+</script>

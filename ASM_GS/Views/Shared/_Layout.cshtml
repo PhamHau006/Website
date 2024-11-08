@@ -13,10 +13,10 @@
 <meta name="description" content="Beauty Store Bootstrap 5 HTML CSS Template">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-<link rel="stylesheet" type="text/css" href="icomoon/icomoon.css">
-<link rel="stylesheet" type="text/css" href="css/vendor.css">
+<link rel="stylesheet" type="text/css" href="~/icomoon/icomoon.css">
+<link rel="stylesheet" type="text/css" href="~/css/vendor.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
-<link rel="stylesheet" type="text/css" href="style.css">
+<link rel="stylesheet" type="text/css" href="~/style.css">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,7 +29,7 @@
 </head>
 
 <body class="homepage">
-@RenderBody();
+
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
     <defs>
         <symbol xmlns="http://www.w3.org/2000/svg" id="instagram" viewBox="0 0 15 15">
@@ -144,53 +144,7 @@
 
 <div class="preloader text-white fs-6 text-uppercase overflow-hidden"></div>
 
-<div class="search-popup">
-    <div class="search-popup-container">
-        <form role="search" method="get" class="form-group position-relative" action="">
-            <input type="search" id="search-form" class="form-control border-0 border-bottom"
-                    placeholder="Nhập và nhấn enter" value="" name="s" />
-            <button type="submit" class="search-submit border-0 position-absolute bg-white"
-                    style="top: 15px; right: 15px;">
-                <svg class="search" width="24" height="24">
-                    <use xlink:href="#search"></use>
-                </svg>
-            </button>
-            <span id="record" style="top: 15px; right: 50px; cursor: pointer;">
-                <i class="bi bi-mic"></i>
-            </span>
-            <span id="clear-icon" style="display: none; cursor: pointer; position: absolute; top: 15px; right: 100px;">
-                ✖
-            </span>
-        </form>
 
-        <h5 class="cat-list-title">Duyệt theo danh mục</h5>
-
-        <ul class="cat-list">
-            <li class="cat-list-item mb-3">
-                <a href="#" title="Trang Điểm">Trang Điểm</a>
-            </li>
-            <li class="cat-list-item mb-3">
-                <a href="#" title="Chăm Sóc Da">Chăm Sóc Da</a>
-            </li>
-            <li class="cat-list-item mb-3">
-                <a href="#" title="Sản Phẩm Tắm">Sản Phẩm Tắm</a>
-            </li>
-            <li class="cat-list-item mb-3">
-                <a href="#" title="Chăm Sóc Tóc">Chăm Sóc Tóc</a>
-            </li>
-            <li class="cat-list-item mb-3">
-                <a href="#" title="Chăm Sóc Cơ Thể">Chăm Sóc Cơ Thể</a>
-            </li>
-            <li class="cat-list-item mb-3">
-                <a href="#" title="Làm Móng">Làm Móng</a>
-            </li>
-            <li class="cat-list-item mb-3">
-                <a href="#" title="Dụng Cụ & Cọ">Dụng Cụ & Cọ</a>
-            </li>
-        </ul>
-
-    </div>
-</div>
 
 
 
@@ -222,7 +176,7 @@
                                 <a class="nav-link dropdown-toggle" href="#" id="dropdownShop" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Cửa Hàng</a>
                                 <ul class="dropdown-menu list-unstyled" aria-labelledby="dropdownShop">
                                     <li>
-                                        <a href="shop-sidebar.html" class="dropdown-item item-anchor">Cửa Hàng</a>
+                                            <a href="@Url.Action("Index", "Shop")" class="dropdown-item item-anchor">Cửa Hàng</a>
                                     </li>
                                     <li>
                                         <a href="single-product.html" class="dropdown-item item-anchor">Chi tiết sản phẩm</a>
@@ -288,108 +242,14 @@
 </nav>
 
 
-<section class="text-white">
-    <div class="slideshow slide-in" style="height: 100vh;">
-        <div class="swiper-wrapper">
-            <div class="swiper-slide d-flex align-items-center" style="background-image:url(images/banner-large-image.png);">
-                <div class="banner-content w-100">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-6 offset-md-3 text-right">
-                                <h2 class="display-1">Ánh Sáng Mùa Hè</h2>
-                                <p class="caption">
-                                    Tortor eget placerat arcu integer. Lectus fames egestas tincidunt aliquet vivamus
-                                    nibh lorem nulla.
-                                </p>
-                                <div class="btn-left btn-swiper opacity-75">
-                                    <a href="#" class="btn btn-light text-uppercase mt-3">Mua Bộ Sưu Tập</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-slide d-flex align-items-center" style="background-image:url(images/banner-large-image1.png);">
-                <div class="banner-content w-100">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-6 offset-md-3 text-right">
-                                <h2 class="display-1">Ánh Sáng Mùa Hè</h2>
-                                <p class="caption">
-                                    Tortor eget placerat arcu integer. Lectus fames egestas tincidunt aliquet vivamus
-                                    nibh lorem nulla.
-                                </p>
-                                <div class="btn-left btn-swiper opacity-75">
-                                    <a href="#" class="btn btn-light text-uppercase mt-3">Mua Bộ Sưu Tập</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-slide d-flex align-items-center" style="background-image:url(images/banner-large-1.jpg);">
-                <div class="banner-content w-100">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-6 offset-md-3 text-right">
-                                <h2 class="display-1">Ánh Sáng Mùa Hè</h2>
-                                <p class="caption">
-                                    Tortor eget placerat arcu integer. Lectus fames egestas tincidunt aliquet vivamus
-                                    nibh lorem nulla.
-                                </p>
-                                <div class="btn-left btn-swiper opacity-75">
-                                    <a href="#" class="btn btn-light text-uppercase mt-3">Mua Bộ Sưu Tập</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-slide d-flex align-items-center" style="background-image:url(images/banner-large-1.jpg);">
-                <div class="banner-content w-100">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-6 offset-md-3 text-right">
-                                <h2 class="display-1">Ánh Sáng Mùa Hè</h2>
-                                <p class="caption">
-                                    Thời trang hiện đại với lectus fames egestas tincidunt aliquet vivamus nibh lorem
-                                    nulla.
-                                </p>
-                                <div class="btn-left btn-swiper opacity-75">
-                                    <a href="#" class="btn btn-light text-uppercase mt-3">Mua Bộ Sưu Tập</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-slide d-flex align-items-center" style="background-image:url(images/banner-large-1.jpg);">
-                <div class="banner-content w-100">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-6 offset-md-3 text-right">
-                                <h2 class="display-1">Ánh Sáng Mùa Hè</h2>
-                                <p class="caption">
-                                    Tortor eget placerat arcu integer. Lectus fames egestas tincidunt aliquet vivamus
-                                    nibh lorem nulla.
-                                </p>
-                                <div class="btn-left btn-swiper opacity-75">
-                                    <a href="#" class="btn btn-light text-uppercase mt-3">Mua Bộ Sưu Tập</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <i class="icon-arrow light-arrow icon-arrow-left main-slideshow"></i>
-        <i class="icon-arrow light-arrow icon-arrow-right main-slideshow"></i>
-    </div>
-</section>
-<section id="new-arrival" class="new-arrival product-carousel product-element swiper-menu py-5 position-relative open-up" data-aos="zoom-out">
+
+@RenderBody()
+
+
+@* <section id="best-sellers" class="best-sellers product-carousel position-relative py-5 my-5 open-up" data-aos="zoom-out">
     <div class="container">
         <div class="d-flex flex-wrap justify-content-between align-items-center mt-5 mb-3">
-            <h4 class="text-uppercase">Hàng Mới Về</h4>
+            <h4 class="text-uppercase">Sản Phẩm Bán Chạy</h4>
             <a href="shop-sidebar.html" class="btn-link">Xem Tất Cả Sản Phẩm</a>
         </div>
         <div class="swiper product-swiper overflow-hidden">
@@ -398,9 +258,9 @@
                     <div class="product-item image-zoom-effect link-effect">
                         <div class="image-holder position-relative">
                             <a href="single-product.html">
-                                <img src="images/product-item13.jpg" alt="categories" class="product-image img-fluid">
+                                <img src="images/product-item7.jpg" alt="categories" class="product-image img-fluid">
                             </a>
-                            <a href="wishlist.html" class="btn-icon btn-wishlist">
+                            <a href="wishlist.html" class="btn-icon btn-wishlist ">
                                 <svg width="24" height="24" viewBox="0 0 24 24" class="svg-color">
                                     <use xlink:href="#heart"></use>
                                 </svg>
@@ -418,9 +278,9 @@
                     <div class="product-item image-zoom-effect link-effect">
                         <div class="image-holder position-relative">
                             <a href="single-product.html">
-                                <img src="images/product-item8.jpg" alt="categories" class="product-image img-fluid">
+                                <img src="images/product-item11.jpg" alt="categories" class="product-image img-fluid">
                             </a>
-                            <a href="wishlist.html" class="btn-icon btn-wishlist">
+                            <a href="wishlist.html" class="btn-icon btn-wishlist ">
                                 <svg width="24" height="24" viewBox="0 0 24 24" class="svg-color">
                                     <use xlink:href="#heart"></use>
                                 </svg>
@@ -438,9 +298,9 @@
                     <div class="product-item image-zoom-effect link-effect">
                         <div class="image-holder position-relative">
                             <a href="single-product.html">
-                                <img src="images/product-item5.jpg" alt="categories" class="product-image img-fluid">
+                                <img src="images/product-item1.jpg" alt="categories" class="product-image img-fluid">
                             </a>
-                            <a href="wishlist.html" class="btn-icon btn-wishlist">
+                            <a href="wishlist.html" class="btn-icon btn-wishlist ">
                                 <svg width="24" height="24" viewBox="0 0 24 24" class="svg-color">
                                     <use xlink:href="#heart"></use>
                                 </svg>
@@ -458,9 +318,9 @@
                     <div class="product-item image-zoom-effect link-effect">
                         <div class="image-holder position-relative">
                             <a href="single-product.html">
-                                <img src="images/product-item12.jpg" alt="categories" class="product-image img-fluid">
+                                <img src="images/product-item3.jpg" alt="categories" class="product-image img-fluid">
                             </a>
-                            <a href="wishlist.html" class="btn-icon btn-wishlist">
+                            <a href="wishlist.html" class="btn-icon btn-wishlist ">
                                 <svg width="24" height="24" viewBox="0 0 24 24" class="svg-color">
                                     <use xlink:href="#heart"></use>
                                 </svg>
@@ -478,9 +338,9 @@
                     <div class="product-item image-zoom-effect link-effect">
                         <div class="image-holder position-relative">
                             <a href="single-product.html">
-                                <img src="images/product-item9.jpg" alt="categories" class="product-image img-fluid">
+                                <img src="images/product-item15.jpg" alt="categories" class="product-image img-fluid">
                             </a>
-                            <a href="wishlist.html" class="btn-icon btn-wishlist">
+                            <a href="wishlist.html" class="btn-icon btn-wishlist ">
                                 <svg width="24" height="24" viewBox="0 0 24 24" class="svg-color">
                                     <use xlink:href="#heart"></use>
                                 </svg>
@@ -500,8 +360,117 @@
         <div class="icon-arrow no-outline icon-arrow-right bg-light bg-opacity-10"></div>
     </div>
 </section>
+<<<<<<< HEAD
 
 <section>
+=======
+<section id="best-sellers" class="best-sellers product-carousel position-relative py-5 my-5 open-up"
+            data-aos="zoom-out">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-5 mb-3">
+            <h4 class="text-uppercase">Sản Phẩm Liên Quan</h4>
+            <a href="shop-sidebar.html" class="btn-link">Xem Tất Cả Sản Phẩm</a>
+        </div>
+        <div class="swiper product-swiper overflow-hidden">
+            <div class="swiper-wrapper d-flex">
+                <div class="swiper-slide">
+                    <div class="product-item image-zoom-effect link-effect">
+                        <div class="image-holder position-relative">
+                            <a href="single-product.html">
+                                <img src="images/product-item14.jpg" alt="categories" class="product-image img-fluid">
+                            </a>
+                            <a href="wishlist.html" class="btn-icon btn-wishlist ">
+                                <svg width="24" height="24" viewBox="0 0 24 24" class="svg-color">
+                                    <use xlink:href="#heart"></use>
+                                </svg>
+                            </a>
+                            <div class="product-content">
+                                <h5 class="text-uppercase fs-5 mt-3">
+                                    <a href="single-product.html">Clear Bioglow</a>
+                                </h5>
+                                <a href="#" class="text-decoration-none" data-after="Thêm vào giỏ hàng"><span>$95.00</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="product-item image-zoom-effect link-effect">
+                        <div class="image-holder position-relative">
+                            <a href="single-product.html">
+                                <img src="images/product-item2.jpg" alt="categories" class="product-image img-fluid">
+                            </a>
+                            <a href="wishlist.html" class="btn-icon btn-wishlist ">
+                                <svg width="24" height="24" viewBox="0 0 24 24" class="svg-color">
+                                    <use xlink:href="#heart"></use>
+                                </svg>
+                            </a>
+                            <div class="product-content">
+                                <h5 class="text-uppercase fs-5 mt-3">
+                                    <a href="single-product.html">Clear Bioglow</a>
+                                </h5>
+                                <a href="#" class="text-decoration-none" data-after="Thêm vào giỏ hàng"><span>$95.00</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="product-item image-zoom-effect link-effect">
+                        <div class="image-holder position-relative">
+                            <a href="single-product.html">
+                                <img src="images/product-item10.jpg" alt="categories" class="product-image img-fluid">
+                            </a>
+                            <a href="wishlist.html" class="btn-icon btn-wishlist ">
+                                <svg width="24" height="24" viewBox="0 0 24 24" class="svg-color">
+                                    <use xlink:href="#heart"></use>
+                                </svg>
+                            </a>
+                            <div class="product-content">
+                                <h5 class="text-uppercase fs-5 mt-3">
+                                    <a href="single-product.html">Clear Bioglow</a>
+                                </h5>
+                                <a href="#" class="text-decoration-none" data-after="Thêm vào giỏ hàng"><span>$95.00</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="product-item image-zoom-effect link-effect">
+                        <div class="image-holder position-relative">
+                            <a href="single-product.html">
+                                <img src="images/product-item6.jpg" alt="categories" class="product-image img-fluid">
+                            </a>
+                            <a href="wishlist.html" class="btn-icon btn-wishlist ">
+                                <svg width="24" height="24" viewBox="0 0 24 24" class="svg-color">
+                                    <use xlink:href="#heart"></use>
+                                </svg>
+                            </a>
+                            <div class="product-content">
+                                <h5 class="text-uppercase fs-5 mt-3">
+                                    <a href="single-product.html">Clear Bioglow</a>
+                                </h5>
+                                <a href="#" class="text-decoration-none" data-after="Thêm vào giỏ hàng"><span>$95.00</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="product-item image-zoom-effect link-effect">
+                        <div class="image-holder position-relative">
+                            <a href="single-product.html">
+                                <img src="images/product-item4.jpg" alt="categories" class="product-image img-fluid">
+                            </a>
+                            <a href="wishlist.html" class="btn-icon btn-wishlist ">
+                                <svg width="24" height="24" viewBox="0 0 24 24" class="svg-color">
+                                    <use xlink:href="#heart"></use>
+                                </svg>
+                            </a>
+                            <div class="product-content">
+                                <h5 class="text-uppercase fs-5 mt-3">
+                                    <a href="single-product.html">Clear Bioglow</a>
+                                </h5>
+                                <a href="#" class="text-decoration-none" data-after="Thêm vào giỏ hàng"><span>$95.00</span></a>
+                            </div>
+>>>>>>> main
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="dropdownShop" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Cửa Hàng</a>
                                     <ul class="dropdown-menu list-unstyled" aria-labelledby="dropdownShop">
@@ -552,7 +521,7 @@
             </a>
         </div>
     </div>
-</section>
+</section> *@
 
 <footer id="footer" class="mt-5">
     <div class="container">
@@ -726,14 +695,14 @@
         searchForm.focus();
     });
 </script>
-<script src="js/jquery.min.js"></script>
-<script src="js/plugins.js"></script>
-<script src="js/SmoothScroll.js"></script>
+<script src="~/js/jquery.min.js"></script>
+<script src="~/js/plugins.js"></script>
+<script src="~/js/SmoothScroll.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-<script src="js/script.js"></script>
+<script src="~/js/script.js"></script>
 <script>
     function toggleChatBox() {
         const chatBox = document.getElementById("chat-box");

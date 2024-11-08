@@ -221,20 +221,18 @@ namespace ASM_GS.Controllers
             }
             customer.MaKhachHang = "KH" + nextId.ToString("D3"); // Format as KH001, KH002, etc.
 
-            // Set default TrangThai
             customer.TrangThai = 1;
 
-            // Assign additional properties
             customer.NgayDangKy = DateOnly.FromDateTime(DateTime.Now);
 
-            // Save to database
+
             _context.KhachHangs.Add(customer);
             await _context.SaveChangesAsync();
             string maTaiKhoan = HttpContext.Session.GetString("SignUpAccount");
 
             if (!string.IsNullOrEmpty(maTaiKhoan))
             {
-                // Find the account in the database and set MaKhachHang
+          
                 var taiKhoan = await _context.TaiKhoans.FindAsync(maTaiKhoan);
                 if (taiKhoan != null)
                 {

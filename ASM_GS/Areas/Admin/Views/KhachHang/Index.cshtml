@@ -1,4 +1,4 @@
-﻿@model X.PagedList.IPagedList<ASM_GS.Models.KhachHang>
+@model X.PagedList.IPagedList<ASM_GS.Models.KhachHang>
 @using X.PagedList.Mvc.Core
 @{
     ViewBag.Title = "Danh Sách Khách Hàng";
@@ -26,44 +26,44 @@
     <!-- Control Buttons -->
     <div class="mb-3 d-flex justify-content-between">
         <div>
-            <label for="pageSize" class="mr-2 mb-0" style="margin-left: 10px;">Hiển thị:</label>
-            <form method="get" class="d-inline">
-                <select id="pageSize" name="pageSize" class="form-select d-inline-block w-auto" onchange="this.form.submit()" style="width: 60px; margin-left: 10px;">
-                    @if (ViewBag.PageSize == 5)
-                    {
-                        <option value="5" selected>5</option>
-                    }
-                    else
-                    {
-                        <option value="5">5</option>
-                    }
+    <label for="pageSize" class="mr-2 mb-0" style="margin-left: 10px;">Hiển thị:</label>
+    <form method="get" class="d-inline">
+        <select id="pageSize" name="pageSize" class="form-select d-inline-block w-auto" onchange="this.form.submit()" style="width: 60px; margin-left: 10px;">
+            @if (ViewBag.PageSize == 5)
+            {
+                <option value="5" selected>5</option>
+            }
+            else
+            {
+                <option value="5">5</option>
+            }
 
-                    @if (ViewBag.PageSize == 10)
-                    {
-                        <option value="10" selected>10</option>
-                    }
-                    else
-                    {
-                        <option value="10">10</option>
-                    }
+            @if (ViewBag.PageSize == 10)
+            {
+                <option value="10" selected>10</option>
+            }
+            else
+            {
+                <option value="10">10</option>
+            }
 
-                    @if (ViewBag.PageSize == 15)
-                    {
-                        <option value="15" selected>15</option>
-                    }
-                    else
-                    {
-                        <option value="15">15</option>
-                    }
-                </select>
-            </form>
-        </div>
+            @if (ViewBag.PageSize == 15)
+            {
+                <option value="15" selected>15</option>
+            }
+            else
+            {
+                <option value="15">15</option>
+            }
+        </select>
+    </form>
+</div>
         <a href="#" class="btn btn-success btn-sm" style="margin-left: 60px;padding: 10px 20px; font-size: 14px;" data-bs-toggle="modal" data-bs-target="#createCreateModal" onclick="loadCreateModal()">
             <i class="bi bi-plus"></i> Thêm khách hàng
         </a>
 
-        @*  <a href="javascript:void(0);" class="btn btn-primary" onclick="loadCreateModal()">
-        Thêm Khách Hàng
+       @*  <a href="javascript:void(0);" class="btn btn-primary" onclick="loadCreateModal()">
+            Thêm Khách Hàng
         </a> *@
     </div>
     <!-- Form tìm kiếm -->
@@ -158,8 +158,8 @@
                 }
             </tbody>
         </table>
+        </div>
     </div>
-</div>
 
 
 
@@ -281,8 +281,8 @@
     }
 
 
-    $(document).ready(function () {
-        $('#searchInput').on('input', function () {
+     $(document).ready(function() {
+        $('#searchInput').on('input', function() {
             var searchTerm = $(this).val().trim(); // Lấy giá trị tìm kiếm
 
             // Gửi yêu cầu AJAX để cập nhật kết quả tìm kiếm
@@ -290,10 +290,10 @@
                 url: '@Url.Action("Index", "KhachHang", new { area = "Admin" })', // Đường dẫn đến action
                 type: 'GET',
                 data: { searchTerm: searchTerm },
-                success: function (response) {
+                success: function(response) {
                     $('#searchResults').html($(response).find('#searchResults').html()); // Cập nhật kết quả
                 },
-                error: function () {
+                error: function() {
                     console.error('Không thể tải kết quả tìm kiếm. Vui lòng thử lại sau.');
                 }
             });

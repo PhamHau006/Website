@@ -241,7 +241,7 @@ namespace ASM_GS.Controllers
                 {
                     MaGiamGia = "CP002",
                     TenGiamGia = "Giảm giá Noel",
-                    GiaTri = 0.15m, //Giảm giá 15%
+                    GiaTri = 0.15m, 
                     NgayBatDau = new DateOnly(2025, 12, 20),
                     NgayKetThuc = new DateOnly(2025, 12, 25),
                     TrangThai = 1,

@@ -428,34 +428,61 @@
 
     </script>
     <script>
-        function onSuccess(googleUser) {
-            const profile = googleUser.getBasicProfile();
-            const name = profile.getName();
-            const email = profile.getEmail();
-            document.getElementById("Logined").innerHTML = `Đăng nhập thành công! Tên: ${name}, Email: ${email}`;
-        }
-
-        function onFailure(error) {
-            console.log(error);
-            if (error.error === 'popup_closed_by_user') {
-                document.getElementById("errorMessages").innerText = "Bạn đã đóng cửa sổ đăng nhập. Vui lòng thử lại.";
-            } else {
-                document.getElementById("errorMessages").innerText = "Đăng nhập thất bại. Vui lòng thử lại.";
-            }
-        }
-        function renderButton() {
-            gapi.signin2.render('my-signin2', {
-                'scope': 'profile email',
-                'width': 240,
-                'height': 50,
-                'longtitle': true,
-                'theme': 'dark',
-                'onsuccess': onSuccess,
-                'onfailure': onFailure
+        function onSuccess(response) {
+            const credential = response.credential;
+            const user = parseJwt(credential);
+            const name = user.name;
+            const email = user.email;
+            const picture = user.picture;
+            console.log(name);
+            console.log(email);
+            console.log(picture);
+            $.ajax({
+                url: '/LoginAndSignUp/CreateCustomerFromGoogleLogin',
+                type: 'POST',
+                data: JSON.stringify({ name: name, email: email, picture: picture }),
+                contentType: 'application/json; charset=utf-8',
+                success: function (result) {
+                    if (result === "Đã tạo tài khoản và khách hàng mới thành công.") {
+                        window.location.href = '/Home';
+                    } else {
+                        window.location.href = '/Home';
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Lỗi khi tạo tài khoản:", error);
+                    alert("Có lỗi xảy ra. Vui lòng thử lại.");
+                }
             });
         }
+        function onFailure() {
+            document.getElementById("errorMessages").innerText = "Đăng nhập thất bại. Vui lòng thử lại.";
+        }
+
+        function parseJwt(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        }
+
+        window.onload = function () {
+            google.accounts.id.initialize({
+                client_id: "@(ViewData["GoogleClientId"])",
+                callback: onSuccess,
+                cancel_on_tap_outside: false // Optional
+            });
+            google.accounts.id.renderButton(
+                document.getElementById("my-signin2"),
+                { theme: "dark", size: "large" }  // Customizations for the button
+            );
+            google.accounts.id.prompt(); // Show the One Tap prompt
+        };
     </script>
-    <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
         function submitLogin() {
 

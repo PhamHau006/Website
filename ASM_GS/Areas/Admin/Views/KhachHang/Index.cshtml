@@ -76,7 +76,7 @@
                 <td>@khachHang.Cccd</td>
                 <td>@(khachHang.NgaySinh?.ToShortDateString() ?? "N/A")</td>
                 <td>@(khachHang.GioiTinh.HasValue ? (khachHang.GioiTinh.Value ? "Nam" : "Nữ") : "N/A")</td>
-                <td>@(khachHang.TrangThai == 1 ? "Hoạt động" : "Ngừng hoạt động")</td>
+                <td>@(khachHang.TrangThai == 0 ? "Ngừng Hoạt Động" : "Hoạt Động")</td>
                 <td>
                     <button class="btn btn-warning" onclick="loadEditModal('@khachHang.MaKhachHang')">Sửa</button>
                     <a href="javascript:void(0);" class="btn btn-danger" onclick="loadDeleteModal('@khachHang.MaKhachHang', '@khachHang.TenKhachHang')">Xóa</a>

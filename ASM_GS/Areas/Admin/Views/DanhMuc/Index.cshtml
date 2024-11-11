@@ -7,11 +7,10 @@
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<h1 class="card-header">@ViewData["Title"]</h1>
 
 
 <!-- Button to Trigger Modal for Adding New Category -->
-<div class="col-lg-4 col-md-6 mb-3">
+@* <div class="col-lg-4 col-md-6 mb-3">
     <small class="text-light fw-semibold">Thêm Danh Mục</small>
     <div class="mt-3">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAddCategory">
@@ -19,7 +18,7 @@
         </button>
     </div>
 </div>
-
+ *@
 <!-- Modal for Adding New Category -->
 <div class="modal fade" id="modalAddCategory" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -38,90 +37,97 @@
 </div>
 
 <!-- Similar filter form and table as SanPham, adapted for DanhMuc -->
-<!-- Filter form -->
-<form id="filterForm" class="mb-3">
-    <div class="row">
-        <div class="col-md-4">
-            <input type="text" name="searchName" id="searchName" class="form-control" placeholder="Tìm theo tên" />
-        </div>
-        <div class="col-md-2">
-            <select name="status" id="status" class="form-control">
-                <option value="">-- Trạng thái --</option>
-                <option value="1">Hoạt Động</option>
-                <option value="0">Không Hoạt Động</option>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <select name="sortOrder" id="sortOrder" class="form-control">
-                <option value="">Sắp xếp theo tên (A-Z)</option>
-                <option value="name_desc">Sắp xếp theo tên (Z-A)</option>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <select id="pageSize" name="pageSize" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
-                @for (int i = 5; i <= 50; i += 5)
+<div class="d-flex justify-content-between align-items-center mb-3" style="gap: 10px; padding: 10px;">
+    <form id="filterForm" class="form-inline d-flex align-items-center" style="margin-left: 5px;">
+        <label for="pageSize" class="mr-2 mb-0" style="margin-left: 10px;">Hiển thị:</label>
+        <select id="pageSize" name="pageSize" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
+            @for (int i = 5; i <= 50; i += 5)
+            {
+                @if (ViewBag.PageSize == i)
                 {
-                    @if (ViewBag.PageSize == i)
-                    {
-                        <option value="@i" selected="selected">@i</option>
-                    }
-                    else
-                    {
-                        <option value="@i">@i</option>
-                    }
+                    <option value="@i" selected="selected">@i</option>
                 }
-            </select>
-        </div>
-    </div>
-</form>
+                else
+                {
+                    <option value="@i">@i</option>
+                }
+            }
+        </select>
+    </form>
+    <a href="javascript:void(0)" class="btn btn-primary" style="padding: 10px 10px; font-size: 14px; margin-right: 300px;" onclick="loadAddCategoryModal()">
+        <i class="bi bi-plus" style="margin-right: 5px;"></i> Thêm Danh Mục
+    </a>
+    <form id="filterForm" class="form-inline d-flex align-items-center" method="get" action="@Url.Action("Index")" style="gap:5px; margin-right:5px">
+        <input type="text" name="searchName" id="searchName" class="form-control" placeholder="Tìm theo tên" onchange="this.form.submit()" />
+        <select name="status" id="status" class="form-control" onchange="this.form.submit()">
+            <option value="">-- Trạng thái --</option>
+            <option value="1">Hoạt Động</option>
+            <option value="0">Không Hoạt Động</option>
+        </select>
+        <select name="sortOrder" id="sortOrder" class="form-control" onchange="this.form.submit()">
+            <option value="">Sắp xếp theo tên (A-Z)</option>
+            <option value="name_desc">Sắp xếp theo tên (Z-A)</option>
+        </select>
+    </form>
+
+
+</div>
+<!-- Filter form -->
+
 
 <!-- Table display -->
-<div id="productListContainer">
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>
-                        <a href="?sortOrder=@(Context.Request.Query["sortOrder"] == "name_desc" ? "" : "name_desc")">Tên Danh Mục</a>
-                    </th>
-                    <th>Trạng Thái</th>
-                    <th>Hành Động</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.TenDanhMuc</td>
-                        <td>
-                            @if (item.TrangThai == 1)
-                            {
-                                <span class="badge bg-success">Hoạt Động</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-danger">Không Hoạt Động</span>
-                            }
-                        </td>
-                        <td>
-                            <div class="dropdown">
-                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEditCategory" onclick="loadEditDanhMuc('@item.MaDanhMuc')">
-                                        <i class="bi bi-pencil-square"></i> Sửa
-                                    </a>
-                                    <a href="javascript:void(0)" class="dropdown-item" onclick="confirmDelete('@item.MaDanhMuc')">
-                                        <i class="bx bx-trash me-1"></i> Xóa
-                                    </a>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+
+<div class="card">
+    <h5 class="card-header">@ViewData["Title"]</h5>
+    <div class="card-body">
+        <div id="productListContainer">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>
+                                <a href="?sortOrder=@(Context.Request.Query["sortOrder"] == "name_desc" ? "" : "name_desc")">Tên Danh Mục</a>
+                            </th>
+                            <th>Trạng Thái</th>
+                            <th>Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.TenDanhMuc</td>
+                                <td>
+                                    @if (item.TrangThai == 1)
+                                    {
+                                        <span class="badge bg-success">Hoạt Động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Không Hoạt Động</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEditCategory" onclick="loadEditDanhMuc('@item.MaDanhMuc')">
+                                                <i class="bi bi-pencil-square"></i> Sửa
+                                            </a>
+                                            <a href="javascript:void(0)" class="dropdown-item text-danger" onclick="confirmDelete('@item.MaDanhMuc')">
+                                                <i class="bi bi-trash"></i> Xóa
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -153,20 +159,25 @@
 <!-- AJAX Script -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#modalAddCategory').on('show.bs.modal', function() {
+    function loadAddCategoryModal() {
+        $('#modalAddCategory').on('show.bs.modal', function () {
             $.ajax({
-                url: '/Admin/DanhMuc/CreatePartial', // URL to your CreatePartial action
+                url: '/Admin/DanhMuc/CreatePartial', // URL tới action CreatePartial
                 type: 'GET',
-                success: function(data) {
-                    $('#modalAddCategory .modal-content').html(data); // Load partial view content into modal
+                success: function (data) {
+                    $('#modalAddCategory .modal-content').html(data); // Tải nội dung vào modal
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error("Error loading partial view:", error);
                 }
             });
         });
-    });
+
+        // Hiển thị modal sau khi nội dung đã được tải
+        $('#modalAddCategory').modal('show');
+    }
+
+    
 
 
     function loadEditDanhMuc(maDanhMuc) {

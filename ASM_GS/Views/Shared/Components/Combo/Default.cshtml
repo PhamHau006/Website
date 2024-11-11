@@ -1,0 +1,40 @@
+﻿@model IEnumerable<ASM_GS.Models.Combo>
+
+<!-- Danh sách sản phẩm với Swiper -->
+<div class="swiper product-swiper overflow-hidden">
+    <div class="swiper-wrapper d-flex">
+        @foreach (var item in Model)
+        {
+            <div class="swiper-slide" style="display: flex; align-items: stretch; justify-content: center;">
+                <div class="product-item image-zoom-effect link-effect position-relative" style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100%;">
+                    <div class="image-holder" style="width: 100%; height: 300px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                        <a href="@Url.Action("Index", "DetailCombo", new { id = item.MaCombo })">
+                            @if (!string.IsNullOrEmpty(item.Anh))
+                            {
+                                <img src="@Url.Content(item.Anh)" alt="categories" class="product-image img-fluid" style="max-width: 100%; max-height: 100%; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <img src="~/img/default-product.jpg" alt="hình ảnh mặc định" class="product-image img-fluid" style="max-width: 100%; max-height: 100%; object-fit: cover;" />
+                            }
+                        </a>
+                        <a href="wishlist.html" class="btn-icon btn-wishlist">
+                            <svg width="24" height="24" viewBox="0 0 24 24" class="svg-color">
+                                <use xlink:href="#heart"></use>
+                            </svg>
+                        </a>
+                    </div>
+                    <!-- Nội dung sản phẩm -->
+                    <div class="product-content text-center" style="padding: 10px; flex: 1; display: flex; flex-direction: column; justify-content: flex-end;">
+                        <h5 class="text-uppercase fs-5 mt-3" style="margin-bottom: 8px; font-size: 16px; line-height: 1.2;">
+                            <a href="@Url.Action("Index", "DetailCombo", new { id = item.MaCombo })" style="padding: 5px;">@item.TenCombo</a>
+                        </h5>
+                        <a href="#" class="text-decoration-none" data-after="Thêm vào giỏ hàng">
+                            <span class="price" style="font-weight: bold; color: #333;">@item.Gia.ToString("N0") VND</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

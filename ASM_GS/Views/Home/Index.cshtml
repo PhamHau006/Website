@@ -1,6 +1,16 @@
-﻿@{
+﻿﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<div class="text-center">
+    @if (!string.IsNullOrEmpty(ViewBag.TenKhachHang))
+    {
+        <h2>Chào mừng, @ViewBag.TenKhachHang!</h2>
+    }
+    else
+    {
+        <h2>Chào mừng đến với trang chủ!</h2>
+    }
+</div>
 <section class="text-white">
     <div class="slideshow slide-in" style="height: 100vh;">
         <div class="swiper-wrapper">
@@ -109,5 +119,13 @@
         <div class="icon-arrow no-outline icon-arrow-left bg-light bg-opacity-10"></div>
         <div class="icon-arrow no-outline icon-arrow-right bg-light bg-opacity-10"></div>
     </div>
-</section>
 
+</section>
+<section id="new-arrival" class="new-arrival product-carousel product-element swiper-menu py-5 position-relative open-up" data-aos="zoom-out">
+    <div class="container">
+        @await Component.InvokeAsync("Combo")
+        <div class="icon-arrow no-outline icon-arrow-left bg-light bg-opacity-10"></div>
+        <div class="icon-arrow no-outline icon-arrow-right bg-light bg-opacity-10"></div>
+    </div>
+
+</section>

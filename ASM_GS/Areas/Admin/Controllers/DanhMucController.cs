@@ -23,36 +23,43 @@ namespace ASM_GS.Areas.Admin.Controllers
         // GET: Admin/DanhMuc
         public async Task<IActionResult> Index(string searchName, int? status, string sortOrder, int? page, int? pageSize)
         {
-            int defaultPageSize = pageSize ?? 5;
-            int pageNumber = page ?? 1;
+            int defaultPageSize = pageSize ?? 5; // Gán giá trị mặc định cho pageSize
+            int pageNumber = page ?? 1; // Gán giá trị mặc định cho pageNumber
 
-            var danhMucs = _context.DanhMucs.AsQueryable();
+            var danhMucs = _context.DanhMucs.AsQueryable(); // Khởi tạo truy vấn
 
-            // Apply filters and sorting
+            // Áp dụng bộ lọc theo tên
             if (!string.IsNullOrEmpty(searchName))
             {
                 danhMucs = danhMucs.Where(d => d.TenDanhMuc.Contains(searchName));
             }
+
+            // Áp dụng bộ lọc theo trạng thái
             if (status.HasValue)
             {
                 danhMucs = danhMucs.Where(d => d.TrangThai == status.Value);
             }
+
+            // Áp dụng sắp xếp
             danhMucs = sortOrder switch
             {
                 "name_desc" => danhMucs.OrderByDescending(d => d.TenDanhMuc),
                 _ => danhMucs.OrderBy(d => d.TenDanhMuc)
             };
 
-            
-
-            
-
-            // Normal request (full page load)
+            // Lưu trữ thông tin cho ViewBag
             ViewBag.CurrentPageSize = defaultPageSize;
             ViewBag.PageSize = defaultPageSize;
-            var pagedList = danhMucs.ToPagedList(pageNumber, defaultPageSize);
+            ViewBag.CurrentSearchName = searchName; // Lưu tên tìm kiếm hiện tại
+            ViewBag.CurrentStatus = status; // Lưu trạng thái hiện tại
+            ViewBag.CurrentSortOrder = sortOrder; // Lưu thứ tự sắp xếp hiện tại
+
+            // Phân trang
+            var pagedList = danhMucs.ToPagedList(pageNumber, defaultPageSize); // Sử dụng ToPagedListAsync cho async
+
             return View(pagedList);
         }
+
 
         // GET: Admin/DanhMuc/CreatePartial
         public IActionResult CreatePartial()

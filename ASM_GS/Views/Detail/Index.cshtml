@@ -1,4 +1,25 @@
 ﻿@model ASM_GS.Models.SanPham
+
+@{
+    var userName = ViewBag.TenKhachHang as string;  // Lấy tên khách hàng từ ViewBag
+    if (string.IsNullOrEmpty(userName))
+    {
+        userName = "Khách hàng"; // Nếu không có tên, hiển thị "Khách hàng"
+    }
+}
+<style>
+    .img-avatar {
+    width: 50px; /* Chiều rộng cố định */
+    height: 50px; /* Chiều cao cố định */
+    object-fit: cover; /* Giữ tỷ lệ khung hình */
+    border-radius: 50%; /* Đảm bảo ảnh là hình tròn */
+}
+.review-item {
+    border: 1px solid #ccc; /* Đường viền cho nhận xét */
+    border-radius: 8px; /* Bo góc cho nhận xét */
+    padding: 15px; /* Padding cho nội dung */
+}
+</style>
 <main class="main-content mt-5" style="padding-top: 200px">
     <section id="product-detail" class="single-product py-5 no-padding-top">
         <div class="container">
@@ -11,11 +32,10 @@
                                     @foreach (var anh in Model.AnhSanPhams)
                                     {
                                         <div class="swiper-slide">
-                                            <img src="@Url.Content(anh.UrlAnh)" alt="Product Image" class="product-image img-fluid" style="max-width: 100%; max-height: 100%; object-fit: cover;" />
+                                            <img src="@Url.Content(anh.UrlAnh)" alt="Product Image" class="product-image img-fluid" style="width: 100%; height:700px; object-fit: cover;" />
                                         </div>
                                     }
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -30,7 +50,7 @@
                                 <span class="rating-title">Đánh giá:</span>
                                 <div class="stars">
                                     @{
-                                        double avgRating = ViewBag.AverageRating;
+                                        double avgRating = ViewBag.AverageRating ?? 0;  // Nếu null thì gán giá trị 0
                                         for (int i = 1; i <= 5; i++)
                                         {
                                             if (i <= avgRating)
@@ -54,13 +74,10 @@
                             <div class="product-price my-3">
                                 <span class="fs-2 text-black">@Model.Gia.ToString("N0") VND</span>
                             </div>
-                           
                             <br />
-
                             <p>@Model.MoTa</p>
                             <div class="product-action mt-4">
-@*                                 <div class="item-title">@Model.SoLuong in stock</div>
- *@                                <div class="product-quantity d-flex flex-wrap">
+                                <div class="product-quantity d-flex flex-wrap">
                                     <div class="input-group product-qty me-3" style="max-width: 150px;">
                                         <button type="button" class="quantity-left-minus btn btn-light btn-number" data-type="minus">
                                             <svg width="16" height="16"><use xlink:href="#minus"></use></svg>
@@ -81,79 +98,157 @@
             </div>
         </div>
     </section>
+
     <section class="product-tabs mt-5">
         <div class="container">
             <div class="row">
                 <div class="tabs-listing">
                     <nav>
                         <div class="nav nav-tabs d-flex justify-content-center" id="nav-tab" role="tablist">
-                            <button class="nav-link text-uppercase px-5 py-3" id="nav-review-tab" data-bs-toggle="tab"
-                                    data-bs-target="#nav-review" type="button" role="tab" aria-controls="nav-review"
-                                    aria-selected="false">
-                                Reviews
-                            </button>
+                            
+                            <button class="nav-link active text-uppercase px-5 py-3" id="nav-home-tab" data-bs-toggle="tab"
+                              data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home"
+                              aria-selected="true">Đánh giá sản phẩm</button>
+                           
                         </div>
                     </nav>
-                    <div class="tab-content py-5" id="nav-tabContent">
-                        <div class="tab-pane fade" id="nav-review" role="tabpanel" aria-labelledby="nav-review-tab">
-                            <!-- Hiển thị nhận xét đã có -->
-                            <div class="review-box review-style1 d-flex flex-column">
-                                @foreach (var review in Model.DanhGia)
+                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                       
+                    </div>
+
+
+
+                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        <!-- Hiển thị nhận xét đã có -->
+                        <div class="review-box review-style1">
+                            <div class="row g-4">
+                                @foreach (var review in ViewBag.DanhGia)
                                 {
-                                    <div class="review-item my-3 p-3 border rounded">
-                                        <p><strong>@review.MaKhachHangNavigation.TenKhachHang</strong> - @review.SoSao Sao</p>
-                                        <p>@review.NoiDung</p>
+                                    <div class="col-md-6"> <!-- Mỗi nhận xét chiếm 6 cột -->
+                                        <div class="review-item my-3 p-3 border rounded">
+                                            <div class="reviewer-info d-flex align-items-center">
+                                                <!-- Kiểm tra và hiển thị ảnh khách hàng nếu có -->
+                                                @if (review.MaKhachHangNavigation != null && !string.IsNullOrEmpty(review.MaKhachHangNavigation.HinhAnh))
+                                                {
+                                                    <img src="@Url.Content($"{review.MaKhachHangNavigation.HinhAnh}")" alt="Avatar" class="rounded-circle img-fluid img-avatar me-3">
+                                                }
+                                                else
+                                                {
+                                                    <!-- Nếu không có ảnh, hiển thị ảnh mặc định -->
+                                                    <img src="@Url.Content($"~/img/AnhKhachHang/default-avatar.jpg")" alt="Avatar" class="rounded-circle img-fluid img-avatar me-3">
+                                                }
+                                                <!-- Hiển thị tên khách hàng -->
+                                                <strong>@((review.MaKhachHangNavigation != null) ? review.MaKhachHangNavigation.TenKhachHang : "Khách hàng ẩn danh")</strong>
+                                                <span>- @review.SoSao Sao</span>
+                                            </div>
+                                            <div class="rating-container d-flex align-items-center">
+                                                <!-- Hiển thị sao đánh giá -->
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    <div class="rating" data-rating="@i" onclick="rate(@i)">
+                                                        <svg width="32" height="32">
+                                                            <use xlink:href="@(i <= review.SoSao ? "#star-solid" : "#star-outline")"></use>
+                                                        </svg>
+                                                    </div>
+                                                }
+                                                <span class="rating-count">(@review.SoSao.ToString("F1"))</span>
+                                            </div>
+                                            <p>@review.NoiDung</p>
+                                        </div>
                                     </div>
                                 }
                             </div>
+                        </div>
 
-                            <!-- Thêm form nhận xét mới -->
-                            <div class="mt-5">
-                                <h5>Gửi Nhận Xét Của Bạn</h5>
-                                <form asp-action="SubmitReview" method="post">
-                                    <input type="hidden" name="MaSanPham" value="@Model.MaSanPham" />
 
-                                    <div class="mb-3">
-                                        <label for="reviewName" class="form-label">Tên Của Bạn</label>
-                                        <input type="text" class="form-control" id="reviewName" name="Name" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="reviewRating" class="form-label">Đánh Giá</label>
-                                        <div id="starRating" class="stars">
-                                            <i class="fa fa-star" data-value="1"></i>
-                                            <i class="fa fa-star" data-value="2"></i>
-                                            <i class="fa fa-star" data-value="3"></i>
-                                            <i class="fa fa-star" data-value="4"></i>
-                                            <i class="fa fa-star" data-value="5"></i>
-                                        </div>
-                                        <!-- Trường ẩn để lưu giá trị rating -->
-                                        <input type="hidden" id="reviewRating" name="Rating" value="0">
-                                    </div>
 
-                                    <div class="mb-3">
-                                        <label for="reviewComment" class="form-label">Nhận Xét Của Bạn</label>
-                                        <textarea class="form-control" id="reviewComment" name="Comment" rows="3" required></textarea>
+                        <!-- Thêm form nhận xét mới -->
+                        <!-- Thêm form nhận xét mới -->
+                        <div class="mt-5">
+                            <h5>Gửi Nhận Xét Của Bạn</h5>
+                            <form asp-action="SubmitReview" method="post">
+                                <input type="hidden" name="MaSanPham" value="@Model.MaSanPham" />
+                                <div class="mb-3">
+                                    <label for="reviewName" class="form-label">Tên Của Bạn</label>
+                                    <input type="text" class="form-control" id="reviewName" name="Name" value="@ViewBag.TenKhachHang" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reviewRating" class="form-label">Đánh Giá</label>
+                                    <div id="starRating" class="starsDanhGia">
+                                        <i class="fa fa-star" data-value="1"></i>
+                                        <i class="fa fa-star" data-value="2"></i>
+                                        <i class="fa fa-star" data-value="3"></i>
+                                        <i class="fa fa-star" data-value="4"></i>
+                                        <i class="fa fa-star" data-value="5"></i>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Gửi Nhận Xét</button>
-                                </form>
-                            </div>
+                                    <input type="hidden" id="reviewRating" name="Rating" value="0">
+                                </div>
+
+                                <div class="mb-3" >
+                                    <label for="reviewComment" class="form-label">Nhận Xét Của Bạn</label>
+                                    <textarea class="form-control" id="reviewComment" name="Comment" rows="3" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Gửi Nhận Xét</button>
+                            </form>
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
         </div>
     </section>
-
-
+    <div class="d-flex flex-wrap justify-content-between align-items-center my-5 py-lg-5">
+          <div class="line-img my-2">
+            <img src="~/images/line.png" alt="">
+          </div>
+          <h4 class="text-uppercase mb-0"> Sản phẩm liên quan </h4>
+          <div class="line-img my-2">
+            <img src="~/images/line.png" alt="">
+          </div>
+    </div>
+     <div class="swiper-container">
+        <div class="swiper-wrapper">
+            @if (ViewBag.SanPhamLienQuan is List<ASM_GS.Models.SanPham> sanPhamLienQuan && sanPhamLienQuan.Any())
+            {
+                foreach (var sp in sanPhamLienQuan)
+                {
+                    <div class="swiper-slide">
+                        <div class="product-item">
+                            <a href="@Url.Action("Index", "Detail", new { id = sp.MaSanPham })">
+                                <img src="@Url.Content(sp.AnhSanPhams.FirstOrDefault()?.UrlAnh ?? "/images/default-product.png")"
+                                        alt="Product Image"
+                                        class="product-image img-fluid"
+                                        style="width: 100%; height:500px; object-fit: cover;" />
+                                <br />
+                                <br />
+                                <h6>@sp.TenSanPham</h6>
+                                <span>@sp.Gia.ToString("N0") VND</span>
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="swiper-slide">
+                    <div>Không có sản phẩm liên quan.</div>
+                </div>
+            }
+        </div>
+    </div>
+     <div class="text-center mt-5">
+        <a href="@Url.Action("Index", "Shop")" class="btn-link">Xem Tất Cả Sản Phẩm</a>
+    </div>
 </main>
+
 <!-- Swiper CSS -->
 <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
 
 <!-- Swiper JavaScript -->
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 <script>
-    // Initialize Swiper with autoplay
     var swiper = new Swiper('.product-large-slider', {
         slidesPerView: 1,
         spaceBetween: 10,
@@ -167,51 +262,83 @@
             disableOnInteraction: false, // Keep autoplay running even after user interaction
         }
     });
-         document.addEventListener("DOMContentLoaded", function() {
+     var swiper = new Swiper('.swiper-container', {
+        slidesPerView: 3, // Số lượng sản phẩm hiển thị trên một hàng
+        spaceBetween: 10, // Khoảng cách giữa các sản phẩm
+        loop: true, // Bật chế độ lặp
+        autoplay: {
+            delay: 2000, // Thời gian tự động chuyển đổi giữa các sản phẩm
+            disableOnInteraction: false, // Không dừng autoplay khi tương tác
+        },
+    });
+    document.addEventListener("DOMContentLoaded", function () {
         const stars = document.querySelectorAll("#starRating i");
         const ratingInput = document.getElementById("reviewRating");
 
         stars.forEach(star => {
-            star.addEventListener("click", function() {
+            star.addEventListener("mouseover", function () {
                 const ratingValue = this.getAttribute("data-value");
-                ratingInput.value = ratingValue; // Cập nhật giá trị rating cho input ẩn
 
-                stars.forEach(s => s.classList.remove("selected"));
-                this.classList.add("selected");
-
-                for (let i = 0; i < ratingValue; i++) {
-                    stars[i].classList.add("selected");
-                }
-            });
-
-            star.addEventListener("mouseover", function() {
+                // Thêm class hover vào các sao trước sao đang hover
                 stars.forEach(s => s.classList.remove("hover"));
-                this.classList.add("hover");
-
-                for (let i = 0; i < this.getAttribute("data-value"); i++) {
+                for (let i = 0; i < ratingValue; i++) {
                     stars[i].classList.add("hover");
                 }
             });
 
-            star.addEventListener("mouseout", function() {
+            star.addEventListener("mouseout", function () {
+                // Khi di chuột ra ngoài, reset sao
                 stars.forEach(s => s.classList.remove("hover"));
+            });
+
+            star.addEventListener("click", function () {
+                const ratingValue = this.getAttribute("data-value");
+                ratingInput.value = ratingValue; // Cập nhật giá trị rating cho input ẩn
+
+                // Gán sao đã chọn
+                stars.forEach(s => s.classList.remove("selected"));
+                for (let i = 0; i < ratingValue; i++) {
+                    stars[i].classList.add("selected");
+                }
             });
         });
     });
 
-
-
 </script>
+
 <style>
     .stars i {
+    font-size: 24px;
+    color: #ccc; /* Màu xám cho sao chưa chọn */
+    cursor: default; /* Chặn khả năng tương tác */
+    }
+
+    .stars i.selected, .stars i:hover {
+        color: #FFD700; /* Màu vàng cho sao đã chọn hoặc hover */
+    }
+
+    .stars i.far.fa-star {
+        color: #ccc; /* Màu xám cho sao chưa chọn */
+    }
+
+    .stars i.fa-star {
+        color: #FFD700; /* Màu vàng cho sao đầy */
+    }
+
+
+    .starsDanhGia i {
         font-size: 24px;
         color: #ccc; /* Màu xám cho sao chưa chọn */
         cursor: pointer;
     }
 
-        .stars i.selected, .stars i:hover, .stars i:hover ~ i {
-            color: #FFD700; /* Màu vàng cho sao đã chọn */
-        }
+    .starsDanhGia i.selected, .starsDanhGia i.hover {
+        color: #FFD700; /* Màu vàng cho sao đã chọn hoặc khi hover */
+    }
 
+    /* Khi sao được chọn */
+    .starsDanhGia i.selected {
+        color: #FFD700; /* Sao màu vàng */
+    }
 
 </style>

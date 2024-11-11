@@ -64,14 +64,14 @@
                         <div class="col-md-4 mb-5 product-item">
                             <div class="image-holder position-relative">
                                 <a href="@Url.Action("index", "Detail", new { id = product.MaSanPham })">
-                                    <img src="@Url.Content(product.AnhSanPhams.FirstOrDefault()?.UrlAnh)" alt="Product Image" class="product-image img-fluid" style="max-width: 100%; max-height: 100%; object-fit: cover;" />
+                                        <img src="@Url.Content(product.AnhSanPhams.FirstOrDefault()?.UrlAnh)" alt="Product Image" class="product-image img-fluid" style="width: 100%; height:350px; object-fit: cover;" />
                                 </a>
-                  
-                                <a href="wishlist.html" class="btn-icon btn-wishlist">
+
+                                @* <a href="cart.html" class="btn-icon btn-wishlist">
                                     <svg width="24" height="24" viewBox="0 0 24 24" class="svg-color">
-                                        <use xlink:href="#heart"></use>
+                                        <use xlink:href="#cart"></use>
                                     </svg>
-                                </a>
+                                </a> *@
                                 <a href="cart.html" class="btn-icon btn-cart">
                                     <svg width="24" height="24" viewBox="0 0 24 24" class="svg-color">
                                         <use xlink:href="#cart"></use>

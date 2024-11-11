@@ -9,6 +9,7 @@
         <div class="mb-3">
             <label for="TenDanhMuc" class="form-label">Tên Danh Mục</label>
             <input type="text" id="TenDanhMuc" name="TenDanhMuc" class="form-control" placeholder="Nhập tên danh mục" required />
+            <div id="errorTenDanhMuc" class="text-danger"></div> <!-- Để hiển thị lỗi -->
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -18,22 +19,22 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-        $('#createForm').on('submit', function(e) {
-            e.preventDefault(); // Prevent default form submission
+    $(document).ready(function () {
+        $('#createForm').on('submit', function (e) {
+            e.preventDefault(); // Ngăn chặn hành động gửi form mặc định
 
             var formData = new FormData(this);
 
-            // Clear previous error messages
+            // Xóa thông báo lỗi trước đó
             $('.text-danger').text('');
 
             $.ajax({
-                url: '/Admin/DanhMuc/Create', // URL to your Create action
+                url: '/Admin/DanhMuc/Create', // Đường dẫn đến action Create
                 type: 'POST',
                 data: formData,
                 contentType: false,
                 processData: false,
-                success: function(response) {
+                success: function (response) {
                     if (response.success) {
                         Swal.fire({
                             icon: 'success',
@@ -41,18 +42,17 @@
                             text: response.message,
                             confirmButtonText: 'OK'
                         }).then(() => {
-                            location.reload();
-                            $('#modalAddCategory').modal('hide');
-
+                            $('#modalAddCategory').modal('hide'); // Đóng modal
+                            location.reload(); // Tải lại trang
                         });
                     } else {
-                        // Display validation errors below each field
-                        $.each(response.errors, function(field, message) {
-                            $('#error' + field).text(message); // Display error message
+                        // Hiển thị lỗi xác thực dưới mỗi trường
+                        $.each(response.errors, function (field, message) {
+                            $('#error' + field).text(message); // Hiển thị thông báo lỗi
                         });
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error("Error:", error);
                     Swal.fire({
                         icon: 'error',

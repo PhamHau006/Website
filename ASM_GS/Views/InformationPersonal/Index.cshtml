@@ -1,0 +1,127 @@
+﻿@model ASM_GS.Models.KhachHang
+@{
+    ViewData["Title"] = "Thông Tin Cá Nhân";
+}
+
+
+
+<h2>Thông Tin Cá Nhân</h2>
+
+<div>
+    <div class="form-group">
+        <label>Ảnh cá nhân:</label><br>
+        @if (!string.IsNullOrEmpty(Model.HinhAnh))
+        {
+            <img src="@Model.HinhAnh" alt="Ảnh cá nhân" width="150" />
+        }
+        else
+        {
+            <p>Chưa có ảnh</p>
+        }
+    </div>
+
+    <div class="form-group">
+        <label>Chọn ảnh mới:</label>
+        <input type="file" id="Anh" class="form-control" accept="image/*" />
+    </div>
+    <div class="form-group">
+        <label>Mã khách hàng:</label>
+        <input type="text" class="form-control" value="@Model.MaKhachHang" readonly />
+    </div>
+
+    <div class="form-group">
+        <label>Tên khách hàng:</label>
+        <input type="text" id="TenKhachHang" class="form-control" value="@Model.TenKhachHang" />
+    </div>
+
+    <div class="form-group">
+        <label>Số điện thoại:</label>
+        <input type="text" id="SoDienThoai" class="form-control" value="@Model.SoDienThoai" />
+    </div>
+
+    <div class="form-group">
+        <label>Địa chỉ:</label>
+        <input type="text" id="DiaChi" class="form-control" value="@Model.DiaChi" />
+    </div>
+
+    <div class="form-group">
+        <label>CCCD:</label>
+        <input type="text" id="Cccd" class="form-control" value="@Model.Cccd" />
+    </div>
+
+    <div class="form-group">
+        <label>Ngày sinh:</label>
+        <input type="date" id="NgaySinh" class="form-control" value="@Model.NgaySinh?.ToString("dd-MM-yyyy")" />
+    </div>
+
+    <div class="form-group">
+        <label>Giới tính:</label>
+        <select id="GioiTinh" class="form-control">
+            @if (Model.GioiTinh.HasValue && Model.GioiTinh.Value)
+            {
+                <option value="true" selected>Nam</option>
+                <option value="false">Nữ</option>
+            }
+            else
+            {
+                <option value="true">Nam</option>
+                <option value="false" selected>Nữ</option>
+            }
+        </select>
+    </div>
+
+    <button onclick="saveChanges()" class="btn btn-primary mt-3">Lưu thay đổi</button>
+</div>
+
+<!-- SweetAlert2 for showing success or error messages -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function saveChanges() {
+        const formData = new FormData();
+        const imageFile = document.getElementById('Anh').files[0];
+        if (imageFile) {
+            formData.append('Anh', imageFile);
+        }
+
+        formData.append('TenKhachHang', document.getElementById('TenKhachHang').value);
+        formData.append('SoDienThoai', document.getElementById('SoDienThoai').value);
+        formData.append('DiaChi', document.getElementById('DiaChi').value);
+        formData.append('Cccd', document.getElementById('Cccd').value);
+        formData.append('NgaySinh', document.getElementById('NgaySinh').value);
+        formData.append('GioiTinh', document.getElementById('GioiTinh').value === 'true');
+
+        fetch('@Url.Action("Edit", "InformationPersonal")', {
+            method: 'POST',
+            headers: {
+                'RequestVerificationToken': '@Html.AntiForgeryToken()'
+            },
+            body: formData
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: 'Thông tin cá nhân đã được cập nhật thành công!'
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: result.message || 'Có lỗi xảy ra trong quá trình cập nhật.'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể kết nối với server. Vui lòng thử lại.'
+                });
+                console.error('Error:', error);
+            });
+    }
+</script>

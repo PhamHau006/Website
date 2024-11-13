@@ -11,6 +11,7 @@ using X.PagedList.Extensions;
 using X.PagedList;
 using X.PagedList.Mvc.Core;
 using ASM_GS.Migrations;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace ASM_GS.Areas.Admin.Controllers
 {
@@ -29,6 +30,11 @@ namespace ASM_GS.Areas.Admin.Controllers
         // GET: Admin/KhachHang
         public IActionResult Index(string searchTerm, int? pageSize, int page = 1)
         {
+            if (HttpContext.Session.GetString("StaffAccount") == null)
+            {
+                HttpContext.Session.SetString("RedirectUrl", HttpContext.Request.GetDisplayUrl());
+				ViewData["RedirectUrl"] = HttpContext.Session.GetString("RedirectUrl");
+			}
             int pageSizeValue = pageSize ?? 5; // Giá trị mặc định cho pageSize
 
             // Lấy tất cả khách hàng từ cơ sở dữ liệu

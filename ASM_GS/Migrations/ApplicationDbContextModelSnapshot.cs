@@ -602,9 +602,6 @@ namespace ASM_GS.Migrations
                     b.Property<string>("NoiDung")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ReviewDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("SoSao")
                         .HasColumnType("int");
 
@@ -795,14 +792,10 @@ namespace ASM_GS.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Cccd")
-                        .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DiaChi")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("GioiTinh")
                         .HasColumnType("bit");
@@ -817,14 +810,11 @@ namespace ASM_GS.Migrations
                         .HasColumnType("date");
 
                     b.Property<string>("SoDienThoai")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TenKhachHang")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("TrangThai")
                         .HasColumnType("int");

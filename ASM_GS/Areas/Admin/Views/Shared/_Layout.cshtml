@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿
+@{
+    var TenNhanVien = ViewData["TenNhanVien"] as string;
+    var FromLogin = ViewData["LoginStaffRoute"] as string; 
+}
+<!DOCTYPE html>
 
 <!-- =========================================================
 * Sneat - Bootstrap 5 HTML Admin Template - Pro | v1.0.0
@@ -98,7 +103,7 @@
                     </li>
 
                     <!-- Bảng -->
-
+                    
 
 
                     <li class="menu-header small text-uppercase">
@@ -429,6 +434,46 @@
                 </div>
                 </div>
                 <!-- /Search -->
+                    @if (FromLogin != null && TenNhanVien != null)
+                    {
+                        <div id="welcomeMessage" style="position: fixed; top: 10px; right: 10px; background-color: deepskyblue; padding: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 11px; opacity: 0; transition: opacity 0.5s; width: 400px; height: 40px">
+                            Chào mừng bạn quay trở lại!
+                        </div>
+
+                        <script>
+                            function removeRoutedFromLoginSession() {
+                                fetch('/Home/RemoveRoutedFromLoginSession', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    }
+                                }).then(response => {
+                                    if (response.ok) {
+                                        console.log("Session key 'RoutedFromLogin' removed");
+                                    }
+                                }).catch(error => console.error("Error removing session key:", error));
+                            }
+
+                            window.onload = function () {
+                                removeRoutedFromLoginSession();
+
+                                const welcomeMessage = document.getElementById("welcomeMessage");
+                                const tenNhanVien = "@TenNhanVien";
+
+                                welcomeMessage.innerHTML = `Chào mừng bạn quay trở lại, ${tenNhanVien}!`;
+
+                                if (welcomeMessage) {
+                                    welcomeMessage.style.opacity = 1;
+                                    setTimeout(function () {
+                                        welcomeMessage.style.opacity = 0;
+                                    }, 3000);
+                                }
+                            };
+                        </script>
+                    }
+                    }
+            </nav>
+            </nav> *@
 
                 <ul class="navbar-nav flex-row align-items-center ms-auto">
                 <!-- Place this tag where you want the button to render. -->

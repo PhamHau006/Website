@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ASM_GS.Migrations
 {
     /// <inheritdoc />
-    public partial class AddBanMyPhamToDb : Migration
+    public partial class UpdateAnhSanPhamData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,7 +34,7 @@ namespace ASM_GS.Migrations
                 columns: table => new
                 {
                     MaDanhMuc = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TenDanhMuc = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TenDanhMuc = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     TrangThai = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -105,13 +105,13 @@ namespace ASM_GS.Migrations
                 columns: table => new
                 {
                     MaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TenSanPham = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TenSanPham = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Gia = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    MoTa = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MaDanhMuc = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    SoLuong = table.Column<int>(type: "int", nullable: true),
+                    MoTa = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    MaDanhMuc = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SoLuong = table.Column<int>(type: "int", nullable: false),
                     NgayThem = table.Column<DateOnly>(type: "date", nullable: true),
-                    DonVi = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DonVi = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Nsx = table.Column<DateOnly>(type: "date", nullable: true),
                     Hsd = table.Column<DateOnly>(type: "date", nullable: true),
                     TrangThai = table.Column<int>(type: "int", nullable: true)
@@ -123,7 +123,8 @@ namespace ASM_GS.Migrations
                         name: "FK_SanPhams_DanhMucs_MaDanhMuc",
                         column: x => x.MaDanhMuc,
                         principalTable: "DanhMucs",
-                        principalColumn: "MaDanhMuc");
+                        principalColumn: "MaDanhMuc",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -434,9 +435,9 @@ namespace ASM_GS.Migrations
                 columns: new[] { "MaCombo", "Anh", "Gia", "MoTa", "TenCombo", "TrangThai" },
                 values: new object[,]
                 {
-                    { "CB001", "wwwroot/img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg", 800000m, "Combo gồm các sản phẩm dưỡng ẩm", "Combo Dưỡng Ẩm", 1 },
-                    { "CB002", "wwwroot/img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg", 1200000m, "Combo chăm sóc da toàn diện", "Combo Chăm Sóc Da", 1 },
-                    { "CB003", "wwwroot/img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg", 950000m, "Combo sản phẩm ngừa mụn hiệu quả", "Combo Ngừa Mụn", 1 }
+                    { "CB001", "img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg", 800000m, "Combo gồm các sản phẩm dưỡng ẩm", "Combo Dưỡng Ẩm", 1 },
+                    { "CB002", "img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg", 1200000m, "Combo chăm sóc da toàn diện", "Combo Chăm Sóc Da", 1 },
+                    { "CB003", "img/AnhCombo/z5959105369727_62f7dd6336f7577e1dd7ee873b52f574.jpg", 950000m, "Combo sản phẩm ngừa mụn hiệu quả", "Combo Ngừa Mụn", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -498,46 +499,46 @@ namespace ASM_GS.Migrations
                 columns: new[] { "Id", "MaSanPham", "UrlAnh" },
                 values: new object[,]
                 {
-                    { 1, "SP001", "wwwroot/img/AnhSanPham/kemduongam1.jpg" },
-                    { 2, "SP001", "wwwroot/img/AnhSanPham/kemduongam2.jpg" },
-                    { 3, "SP001", "wwwroot/img/AnhSanPham/kemduongam3.jpg" },
-                    { 4, "SP001", "wwwroot/img/AnhSanPham/kemduongam4.jpg" },
-                    { 5, "SP002", "wwwroot/img/AnhSanPham/suaruamat1.jpg" },
-                    { 6, "SP002", "wwwroot/img/AnhSanPham/suaruamat2.jpg" },
-                    { 7, "SP002", "wwwroot/img/AnhSanPham/suaruamat3.jpg" },
-                    { 8, "SP002", "wwwroot/img/AnhSanPham/suaruamat4.jpg" },
-                    { 9, "SP003", "wwwroot/img/AnhSanPham/toner1.png" },
-                    { 10, "SP003", "wwwroot/img/AnhSanPham/toner2.png" },
-                    { 11, "SP003", "wwwroot/img/AnhSanPham/toner3.png" },
-                    { 12, "SP003", "wwwroot/img/AnhSanPham/toner4.png" },
-                    { 13, "SP004", "wwwroot/img/AnhSanPham/serumtrang1.jpg" },
-                    { 14, "SP004", "wwwroot/img/AnhSanPham/serumtrang2.jpg" },
-                    { 15, "SP004", "wwwroot/img/AnhSanPham/serumtrang3.jpg" },
-                    { 16, "SP004", "wwwroot/img/AnhSanPham/serumtrang4.jpg" },
-                    { 17, "SP005", "wwwroot/img/AnhSanPham/mark1.jpg" },
-                    { 18, "SP005", "wwwroot/img/AnhSanPham/mark2.jpg" },
-                    { 19, "SP005", "wwwroot/img/AnhSanPham/mark3.jpg" },
-                    { 20, "SP005", "wwwroot/img/AnhSanPham/mark4.jpg" },
-                    { 21, "SP006", "wwwroot/img/AnhSanPham/sp006_1.jpg" },
-                    { 22, "SP006", "wwwroot/img/AnhSanPham/sp006_2.jpg" },
-                    { 23, "SP006", "wwwroot/img/AnhSanPham/sp006_3.jpg" },
-                    { 24, "SP006", "wwwroot/img/AnhSanPham/sp006_4.jpg" },
-                    { 25, "SP007", "wwwroot/img/AnhSanPham/sp007_1.jpg" },
-                    { 26, "SP007", "wwwroot/img/AnhSanPham/sp007_2.jpg" },
-                    { 27, "SP007", "wwwroot/img/AnhSanPham/sp007_3.jpg" },
-                    { 28, "SP007", "wwwroot/img/AnhSanPham/sp007_4.jpg" },
-                    { 29, "SP008", "wwwroot/img/AnhSanPham/sp008_1.jpg" },
-                    { 30, "SP008", "wwwroot/img/AnhSanPham/sp008_2.jpg" },
-                    { 31, "SP008", "wwwroot/img/AnhSanPham/sp008_3.jpg" },
-                    { 32, "SP008", "wwwroot/img/AnhSanPham/sp008_4.jpg" },
-                    { 33, "SP009", "wwwroot/img/AnhSanPham/sp009_1.jpg" },
-                    { 34, "SP009", "wwwroot/img/AnhSanPham/sp009_2.jpg" },
-                    { 35, "SP009", "wwwroot/img/AnhSanPham/sp009_3.jpg" },
-                    { 36, "SP009", "wwwroot/img/AnhSanPham/sp009_4.jpg" },
-                    { 37, "SP010", "wwwroot/img/AnhSanPham/sp010_1.jpg" },
-                    { 38, "SP010", "wwwroot/img/AnhSanPham/sp010_2.jpg" },
-                    { 39, "SP010", "wwwroot/img/AnhSanPham/sp010_3.jpg" },
-                    { 40, "SP010", "wwwroot/img/AnhSanPham/sp010_4.jpg" }
+                    { 1, "SP001", "img/AnhSanPham/kemduongam1.jpg" },
+                    { 2, "SP001", "img/AnhSanPham/kemduongam2.jpg" },
+                    { 3, "SP001", "img/AnhSanPham/kemduongam3.jpg" },
+                    { 4, "SP001", "img/AnhSanPham/kemduongam4.jpg" },
+                    { 5, "SP002", "img/AnhSanPham/suaruamat1.jpg" },
+                    { 6, "SP002", "img/AnhSanPham/suaruamat2.jpg" },
+                    { 7, "SP002", "img/AnhSanPham/suaruamat3.jpg" },
+                    { 8, "SP002", "img/AnhSanPham/suaruamat4.jpg" },
+                    { 9, "SP003", "img/AnhSanPham/toner1.png" },
+                    { 10, "SP003", "img/AnhSanPham/toner2.png" },
+                    { 11, "SP003", "img/AnhSanPham/toner3.png" },
+                    { 12, "SP003", "img/AnhSanPham/toner4.png" },
+                    { 13, "SP004", "img/AnhSanPham/serumtrang1.jpg" },
+                    { 14, "SP004", "img/AnhSanPham/serumtrang2.jpg" },
+                    { 15, "SP004", "img/AnhSanPham/serumtrang3.jpg" },
+                    { 16, "SP004", "img/AnhSanPham/serumtrang4.jpg" },
+                    { 17, "SP005", "img/AnhSanPham/mark1.jpg" },
+                    { 18, "SP005", "img/AnhSanPham/mark2.jpg" },
+                    { 19, "SP005", "img/AnhSanPham/mark3.jpg" },
+                    { 20, "SP005", "img/AnhSanPham/mark4.jpg" },
+                    { 21, "SP006", "img/AnhSanPham/kcn1.jpg" },
+                    { 22, "SP006", "img/AnhSanPham/kcn2.jpg" },
+                    { 23, "SP006", "img/AnhSanPham/kcn3.jpg" },
+                    { 24, "SP006", "img/AnhSanPham/kcn4.jpg" },
+                    { 25, "SP007", "img/AnhSanPham/taytrang1.jpg" },
+                    { 26, "SP007", "img/AnhSanPham/taytrang2.jpg" },
+                    { 27, "SP007", "img/AnhSanPham/taytrang3.jpg" },
+                    { 28, "SP007", "img/AnhSanPham/taytrang4.jpg" },
+                    { 29, "SP008", "img/AnhSanPham/tinhchat1.jpg" },
+                    { 30, "SP008", "img/AnhSanPham/tinhchat2.jpg" },
+                    { 31, "SP008", "img/AnhSanPham/tinhchat3.jpg" },
+                    { 32, "SP008", "img/AnhSanPham/tinhchat4.jpg" },
+                    { 33, "SP009", "img/AnhSanPham/xitkhoang1.jpg" },
+                    { 34, "SP009", "img/AnhSanPham/xitkhoang2.jpg" },
+                    { 35, "SP009", "img/AnhSanPham/xitkhoang3.jpg" },
+                    { 36, "SP009", "img/AnhSanPham/xitkhoang4.jpg" },
+                    { 37, "SP010", "img/AnhSanPham/bandem1.jpg" },
+                    { 38, "SP010", "img/AnhSanPham/bandem2.jpg" },
+                    { 39, "SP010", "img/AnhSanPham/bandem3.jpg" },
+                    { 40, "SP010", "img/AnhSanPham/bandem4.jpg" }
                 });
 
             migrationBuilder.InsertData(

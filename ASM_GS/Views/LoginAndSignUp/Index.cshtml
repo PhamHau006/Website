@@ -68,7 +68,7 @@
 
     <!-- Thêm video background -->
     <video id="background-video" class="background-video" autoplay loop playsinline>
-        <source src="@Url.Content("~/videos/Dabin.mp4")" type="video/mp4">
+        <source src="@Url.Content("~/videos/Dior Forever - The Iconic Clean Foundation.mp4")" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 
@@ -145,8 +145,6 @@
                     </label>
 
                     <button type="button" class="submit" onclick="submitSignUp()" style="background-color:lightpink">Đăng Ký</button>
-
-                    <!-- Display common errors for sign-up here -->
                     <div id="signUpErrorMessages" class="text-danger" style="text-align:center"></div>
                 </div>
             </form>
@@ -175,6 +173,7 @@
                                 <p class="text-muted mb-0">Allowed JPG, GIF or PNG. Max size of 800K</p>
                             </div>
                         </div>
+                        <span id="errorAnh" class="text-danger"></span>
                     </div>
 
                     <div class="card mb-4">
@@ -564,6 +563,8 @@
                 $('#errorDiaChi').empty();
                 $('#errorCccd').empty();
                 $('#errorNgaySinh').empty();
+                $('#errorAnh').empty();  // Reset lỗi của trường Anh (ảnh)
+
                 var formData = new FormData(this);
                 $.ajax({
                     url: '@Url.Action("CreateCustomer", "LoginAndSignUp")',
@@ -591,6 +592,9 @@
                             if (response.errors.NgaySinh) {
                                 $('#errorNgaySinh').html(response.errors.NgaySinh);
                             }
+                            if (response.errors.Anh) {  // Kiểm tra lỗi Anh (ảnh)
+                                $('#errorAnh').html(response.errors.Anh);
+                            }
                         }
                     },
                     error: function () {
@@ -604,17 +608,9 @@
     <script src="@Url.Content("~/assets/vendor/libs/popper/popper.js")"></script>
     <script src="@Url.Content("~/assets/vendor/js/bootstrap.js")"></script>
     <script src="@Url.Content("~/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js")"></script>
-
     <script src="@Url.Content("~/assets/vendor/js/menu.js")"></script>
-    <!-- endbuild -->
-    <!-- Vendors JS -->
-    <!-- Main JS -->
     <script src="@Url.Content("~/assets/js/main.js")"></script>
-
-    <!-- Page JS -->
     <script src="@Url.Content("~/assets/js/pages-account-settings-account.js")"></script>
-
-    <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
 </body>
 

@@ -6,6 +6,7 @@
 @{
     ViewData["Title"] = "Danh Sách Combo";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var Direct = ViewData["RedirectUrl"] as string;
 }
 <style>
     .custom-alert {
@@ -155,7 +156,6 @@
 
 
 </div>
-<!-- Nút mở Modal tạo Combo -->
 
 
 <!-- Modal tạo Combo -->
@@ -338,6 +338,23 @@
         PageClasses = new[] { "page-link" }
     })
 </div>
+<div id="loginMessage" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);width: 500px; height:300px; text-align:center; align-items: center">
+    <p style="color: red; font-size: 2rem">Vui lòng đăng nhập</p>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var directUrl = '@Direct';
+
+        if (directUrl) {
+            const ThongBao = document.getElementById('loginMessage')
+            ThongBao.style.display = "block";
+            setTimeout(function () {
+                window.location.href = '/LoginAdmin';
+            }, 3000);
+        }
+    });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
    @*  // Tự động ẩn thông báo sau 2 giây (2000 ms)

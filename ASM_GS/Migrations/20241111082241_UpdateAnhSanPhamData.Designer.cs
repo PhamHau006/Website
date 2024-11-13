@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ASM_GS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241105053637_UpdateAnhSanPhamData")]
+    [Migration("20241111082241_UpdateAnhSanPhamData")]
     partial class UpdateAnhSanPhamData
     {
         /// <inheritdoc />
@@ -172,121 +172,121 @@ namespace ASM_GS.Migrations
                         {
                             Id = 21,
                             MaSanPham = "SP006",
-                            UrlAnh = "img/AnhSanPham/sp006_1.jpg"
+                            UrlAnh = "img/AnhSanPham/kcn1.jpg"
                         },
                         new
                         {
                             Id = 22,
                             MaSanPham = "SP006",
-                            UrlAnh = "img/AnhSanPham/sp006_2.jpg"
+                            UrlAnh = "img/AnhSanPham/kcn2.jpg"
                         },
                         new
                         {
                             Id = 23,
                             MaSanPham = "SP006",
-                            UrlAnh = "img/AnhSanPham/sp006_3.jpg"
+                            UrlAnh = "img/AnhSanPham/kcn3.jpg"
                         },
                         new
                         {
                             Id = 24,
                             MaSanPham = "SP006",
-                            UrlAnh = "img/AnhSanPham/sp006_4.jpg"
+                            UrlAnh = "img/AnhSanPham/kcn4.jpg"
                         },
                         new
                         {
                             Id = 25,
                             MaSanPham = "SP007",
-                            UrlAnh = "img/AnhSanPham/sp007_1.jpg"
+                            UrlAnh = "img/AnhSanPham/taytrang1.jpg"
                         },
                         new
                         {
                             Id = 26,
                             MaSanPham = "SP007",
-                            UrlAnh = "img/AnhSanPham/sp007_2.jpg"
+                            UrlAnh = "img/AnhSanPham/taytrang2.jpg"
                         },
                         new
                         {
                             Id = 27,
                             MaSanPham = "SP007",
-                            UrlAnh = "img/AnhSanPham/sp007_3.jpg"
+                            UrlAnh = "img/AnhSanPham/taytrang3.jpg"
                         },
                         new
                         {
                             Id = 28,
                             MaSanPham = "SP007",
-                            UrlAnh = "img/AnhSanPham/sp007_4.jpg"
+                            UrlAnh = "img/AnhSanPham/taytrang4.jpg"
                         },
                         new
                         {
                             Id = 29,
                             MaSanPham = "SP008",
-                            UrlAnh = "img/AnhSanPham/sp008_1.jpg"
+                            UrlAnh = "img/AnhSanPham/tinhchat1.jpg"
                         },
                         new
                         {
                             Id = 30,
                             MaSanPham = "SP008",
-                            UrlAnh = "img/AnhSanPham/sp008_2.jpg"
+                            UrlAnh = "img/AnhSanPham/tinhchat2.jpg"
                         },
                         new
                         {
                             Id = 31,
                             MaSanPham = "SP008",
-                            UrlAnh = "img/AnhSanPham/sp008_3.jpg"
+                            UrlAnh = "img/AnhSanPham/tinhchat3.jpg"
                         },
                         new
                         {
                             Id = 32,
                             MaSanPham = "SP008",
-                            UrlAnh = "img/AnhSanPham/sp008_4.jpg"
+                            UrlAnh = "img/AnhSanPham/tinhchat4.jpg"
                         },
                         new
                         {
                             Id = 33,
                             MaSanPham = "SP009",
-                            UrlAnh = "img/AnhSanPham/sp009_1.jpg"
+                            UrlAnh = "img/AnhSanPham/xitkhoang1.jpg"
                         },
                         new
                         {
                             Id = 34,
                             MaSanPham = "SP009",
-                            UrlAnh = "img/AnhSanPham/sp009_2.jpg"
+                            UrlAnh = "img/AnhSanPham/xitkhoang2.jpg"
                         },
                         new
                         {
                             Id = 35,
                             MaSanPham = "SP009",
-                            UrlAnh = "img/AnhSanPham/sp009_3.jpg"
+                            UrlAnh = "img/AnhSanPham/xitkhoang3.jpg"
                         },
                         new
                         {
                             Id = 36,
                             MaSanPham = "SP009",
-                            UrlAnh = "img/AnhSanPham/sp009_4.jpg"
+                            UrlAnh = "img/AnhSanPham/xitkhoang4.jpg"
                         },
                         new
                         {
                             Id = 37,
                             MaSanPham = "SP010",
-                            UrlAnh = "img/AnhSanPham/sp010_1.jpg"
+                            UrlAnh = "img/AnhSanPham/bandem1.jpg"
                         },
                         new
                         {
                             Id = 38,
                             MaSanPham = "SP010",
-                            UrlAnh = "img/AnhSanPham/sp010_2.jpg"
+                            UrlAnh = "img/AnhSanPham/bandem2.jpg"
                         },
                         new
                         {
                             Id = 39,
                             MaSanPham = "SP010",
-                            UrlAnh = "img/AnhSanPham/sp010_3.jpg"
+                            UrlAnh = "img/AnhSanPham/bandem3.jpg"
                         },
                         new
                         {
                             Id = 40,
                             MaSanPham = "SP010",
-                            UrlAnh = "img/AnhSanPham/sp010_4.jpg"
+                            UrlAnh = "img/AnhSanPham/bandem4.jpg"
                         });
                 });
 
@@ -624,7 +624,8 @@ namespace ASM_GS.Migrations
 
                     b.Property<string>("TenDanhMuc")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int?>("TrangThai")
                         .HasColumnType("int");
@@ -824,6 +825,32 @@ namespace ASM_GS.Migrations
                     b.HasKey("MaKhachHang");
 
                     b.ToTable("KhachHangs");
+
+                    b.HasData(
+                        new
+                        {
+                            MaKhachHang = "KH001",
+                            Cccd = "123456789",
+                            DiaChi = "123 Main St",
+                            GioiTinh = true,
+                            NgayDangKy = new DateOnly(2023, 1, 15),
+                            NgaySinh = new DateOnly(1990, 1, 1),
+                            SoDienThoai = "0123456789",
+                            TenKhachHang = "Embo",
+                            TrangThai = 1
+                        },
+                        new
+                        {
+                            MaKhachHang = "KH002",
+                            Cccd = "987654321",
+                            DiaChi = "456 Elm St",
+                            GioiTinh = false,
+                            NgayDangKy = new DateOnly(2023, 1, 16),
+                            NgaySinh = new DateOnly(1992, 2, 2),
+                            SoDienThoai = "0987654321",
+                            TenKhachHang = "Ember",
+                            TrangThai = 1
+                        });
                 });
 
             modelBuilder.Entity("ASM_GS.Models.MaNhapGiamGia", b =>
@@ -900,7 +927,8 @@ namespace ASM_GS.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("DonVi")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("Gia")
                         .HasColumnType("decimal(18,2)");
@@ -909,10 +937,12 @@ namespace ASM_GS.Migrations
                         .HasColumnType("date");
 
                     b.Property<string>("MaDanhMuc")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("MoTa")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<DateOnly?>("NgayThem")
                         .HasColumnType("date");
@@ -920,12 +950,13 @@ namespace ASM_GS.Migrations
                     b.Property<DateOnly?>("Nsx")
                         .HasColumnType("date");
 
-                    b.Property<int?>("SoLuong")
+                    b.Property<int>("SoLuong")
                         .HasColumnType("int");
 
                     b.Property<string>("TenSanPham")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int?>("TrangThai")
                         .HasColumnType("int");
@@ -1038,9 +1069,6 @@ namespace ASM_GS.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MaKhachHang")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MaKhachHangNavigationMaKhachHang")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("MaNhanVien")
@@ -1056,17 +1084,42 @@ namespace ASM_GS.Migrations
                     b.Property<string>("TenTaiKhoan")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("TinhTrang")
+                        .HasColumnType("int");
+
                     b.Property<string>("VaiTro")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("MaTaiKhoan");
 
-                    b.HasIndex("MaKhachHangNavigationMaKhachHang");
+                    b.HasIndex("MaKhachHang");
 
                     b.HasIndex("MaNhanVienNavigationMaNhanVien");
 
                     b.ToTable("TaiKhoans");
+
+                    b.HasData(
+                        new
+                        {
+                            MaTaiKhoan = "TK001",
+                            Email = "customer1@example.com",
+                            MaKhachHang = "KH001",
+                            MatKhau = "123",
+                            TenTaiKhoan = "customer1",
+                            TinhTrang = 0,
+                            VaiTro = "Customer"
+                        },
+                        new
+                        {
+                            MaTaiKhoan = "TK002",
+                            Email = "customer2@example.com",
+                            MaKhachHang = "KH002",
+                            MatKhau = "123",
+                            TenTaiKhoan = "customer2",
+                            TinhTrang = 0,
+                            VaiTro = "Customer"
+                        });
                 });
 
             modelBuilder.Entity("ASM_GS.Models.AnhSanPham", b =>
@@ -1240,7 +1293,9 @@ namespace ASM_GS.Migrations
                 {
                     b.HasOne("ASM_GS.Models.DanhMuc", "MaDanhMucNavigation")
                         .WithMany("SanPhams")
-                        .HasForeignKey("MaDanhMuc");
+                        .HasForeignKey("MaDanhMuc")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("MaDanhMucNavigation");
                 });
@@ -1249,7 +1304,7 @@ namespace ASM_GS.Migrations
                 {
                     b.HasOne("ASM_GS.Models.KhachHang", "MaKhachHangNavigation")
                         .WithMany("TaiKhoans")
-                        .HasForeignKey("MaKhachHangNavigationMaKhachHang");
+                        .HasForeignKey("MaKhachHang");
 
                     b.HasOne("ASM_GS.Models.NhanVien", "MaNhanVienNavigation")
                         .WithMany("TaiKhoans")

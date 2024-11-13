@@ -1,5 +1,7 @@
 ﻿using ASM_GS.Models;
+using ASM_GS.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Diagnostics;
@@ -9,22 +11,94 @@ namespace ASM_GS.Controllers
 {
     public class HomeController : Controller
     {
-
+        private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
         private readonly GeminiSettings _authSettings;
-        public HomeController(ILogger<HomeController> logger, IOptions<GeminiSettings> authSettings)
+        public HomeController(ILogger<HomeController> logger, IOptions<GeminiSettings> authSettings, ApplicationDbContext context)
         {
+            _context = context;
             _authSettings = authSettings.Value;
             _logger = logger;
+            _context = context; // Assign _context here
         }
 
         public IActionResult Index()
-        {
+            {
+            var today = DateOnly.FromDateTime(DateTime.Now);
+
+            // Lấy danh sách sản phẩm
+            var sanPhamList = _context.SanPhams
+                .Where(h => h.SoLuong > 0 && h.TrangThai == 1)
+                .AsNoTracking() // thêm AsNoTracking
+                .ToList();
+
+            // Lấy giảm giá nhiều nhất
+            var giamNhieuNhat = _context.GiamGia
+                .Where(g => g.NgayBatDau <= today && g.NgayKetThuc >= today && g.TrangThai == 1)
+                .OrderByDescending(g => g.GiaTri)
+                .AsNoTracking() // thêm AsNoTracking
+                .FirstOrDefault();
+
+            // Lấy danh sách tên danh mục
+            var danhMucDict = _context.DanhMucs
+                .AsNoTracking() // thêm AsNoTracking
+                .ToDictionary(dm => dm.MaDanhMuc, dm => dm.TenDanhMuc);
+
+            // Xử lý kết quả
+            var sanPhamList2 = sanPhamList.Select(item => new SearchingProduct
+            {
+                MaSanPham = item.MaSanPham,
+                TenSanPham = item.TenSanPham,
+                GiaGoc = (float)item.Gia,
+                MoTa = item.MoTa,
+                MaDanhMuc = danhMucDict.ContainsKey(item.MaDanhMuc) ? danhMucDict[item.MaDanhMuc] : null,
+                Ava = _context.AnhSanPhams.Where(a => (a.MaSanPham == item.MaSanPham)).Select(a => a.UrlAnh).FirstOrDefault(),
+                DonVi = item.DonVi,
+                TrangThai = item.TrangThai ?? 1,
+                GiaDaGiam = giamNhieuNhat != null ? (float)(item.Gia * (1 - giamNhieuNhat.GiaTri)) : (float)item.Gia,
+                TietKiem = giamNhieuNhat != null ? (float)(giamNhieuNhat.GiaTri * item.Gia) : 0
+            }).ToList();
+            ViewData["SanPhamList2"] = sanPhamList2;
+            ViewData["Account"] = _context.TaiKhoans
+                .Where(a => a.MaTaiKhoan == HttpContext.Session.GetString("UserAccount"))
+                .Select(a => new
+                {
+                    MaTaiKhoan = a.MaTaiKhoan,
+                    TenTaiKhoan = a.TenTaiKhoan,
+
+                })
+                .FirstOrDefault();
+
+            ViewData["Customer"] = _context.KhachHangs
+                .Where(a => a.MaKhachHang == HttpContext.Session.GetString("User"))
+                .Select(c => new
+                {
+                    MaKhachHang = c.MaKhachHang,
+                    TenKhachHang = c.TenKhachHang,
+                })
+                .FirstOrDefault();
+            ViewData["RoutedFromLogin"] = HttpContext.Session.GetString("LoginRoute");
+
+        
+            string maKhachHang = HttpContext.Session.GetString("User");
+            string tenKhachHang = string.Empty;
+
+            if (!string.IsNullOrEmpty(maKhachHang))
+            {
+                var khachHang = _context.KhachHangs.FirstOrDefault(kh => kh.MaKhachHang == maKhachHang);
+                if (khachHang != null)
+                {
+                    tenKhachHang = khachHang.TenKhachHang;
+                }
+            }
+
+            ViewBag.TenKhachHang = tenKhachHang;
+
             return View();
         }
-
         public IActionResult Privacy()
         {
+
             return View();
         }
 
@@ -77,6 +151,13 @@ namespace ASM_GS.Controllers
                 string answer = responseObject?.candidates[0].content?.parts[0]?.text ?? "Xin lỗi, câu hỏi của chủ nhân đã vi phạm chính sách của Google hoặc câu trở lời quá dài nên Rem không hiển thị cho bạn được";
                 return Json(new { response = answer });
             }
+        }
+        [HttpPost]
+        public IActionResult RemoveRoutedFromLoginSession()
+        {
+            HttpContext.Session.Remove("LoginRoute");
+            ViewData["RoutedFromLogin"] = HttpContext.Session.GetString("LoginRoute");
+            return Ok();
         }
     }
 }

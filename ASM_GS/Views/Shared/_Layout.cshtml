@@ -1,24 +1,30 @@
-﻿﻿
+﻿@{
+    var sanPhamList2 = ViewData["SanPhamList2"] as List<ASM_GS.ViewModels.SearchingProduct>;
+    var taiKhoanLogin = ViewData["Account"] ;
+    var khachHangLogin = ViewData["Customer"] ;
+    var LoginRoute = ViewData["RoutedFromLogin"];
+}
+@using Newtonsoft.Json
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
 
 <head>
-    <title>Website bán mỹ phẩm GS</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="author" content="TemplatesJungle">
-    <meta name="keywords" content="ecommerce,fashion,store">
-    <meta name="description" content="Website bán mỹ phẩm GS">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="~/icomoon/icomoon.css">
-    <link rel="stylesheet" type="text/css" href="~/css/vendor.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
-    <link rel="stylesheet" type="text/css" href="~/style.css">
-    <link rel="icon" type="image/x-icon" href="~/images/Enigma (1).png" style="height: 60px; width: 100px;" />
+<title>Website bán mỹ phẩm GS</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="author" content="TemplatesJungle">
+<meta name="keywords" content="ecommerce,fashion,store">
+<meta name="description" content="Website bán mỹ phẩm GS">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="~/icomoon/icomoon.css">
+<link rel="stylesheet" type="text/css" href="~/css/vendor.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+<link rel="stylesheet" type="text/css" href="~/style.css">
+<link rel="icon" type="image/x-icon" href="~/images/Enigma (1).png" style="height: 60px; width: 100px;" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -148,7 +154,7 @@
 
     <div class="search-popup">
         <div class="search-popup-container">
-            <form role="search" method="get" class="form-group position-relative" action="">
+            <div role="search" method="get" class="form-group position-relative">
                 <input type="search" id="search-form" class="form-control border-0 border-bottom"
                        placeholder="Nhập và nhấn enter" value="" name="s" />
                 <button type="submit" class="search-submit border-0 position-absolute bg-white"
@@ -157,16 +163,25 @@
                         <use xlink:href="#search"></use>
                     </svg>
                 </button>
-                <span id="record" style="top: 15px; right: 50px; cursor: pointer;">
-                    <i class="bi bi-mic"></i>
+                <span id="record" class="search-submit border-0 position-absolute bg-white" style="top: 15px; right: 70px; cursor: pointer;">
+                    <svg class="search" width="24" height="24">
+                        <i class="bi bi-mic" style="font-size:1.4rem"></i>
+                    </svg>
                 </span>
-                <span id="clear-icon" style="display: none; cursor: pointer; position: absolute; top: 15px; right: 100px;">
+                <span id="clear-icon" style="display: none; cursor: pointer; position: absolute; top: 15px; right: 110px;">
                     ✖
                 </span>
-            </form>
+                <div id="search-results" style="display: none; position: absolute; top: 100%; left: 0; right: 0; max-height: 300px; overflow-y: auto; background-color: white; z-index: 9999; border: 1px solid #ddd; border-top: none;">
+                    <div class="container" id="abc">
+                        <h1>Hello World</h1>
+                    </div>
+                </div>
+            </div>
+
+
+           
 
             <h5 class="cat-list-title">Duyệt theo danh mục</h5>
-
             <ul class="cat-list">
                 <li class="cat-list-item mb-3">
                     <a href="#" title="Trang Điểm">Trang Điểm</a>
@@ -175,7 +190,7 @@
                     <a href="#" title="Chăm Sóc Da">Chăm Sóc Da</a>
                 </li>
                 <li class="cat-list-item mb-3">
-                    <a href="#" title="Sản Phẩm Tắm">Sản Phẩm Tắm</a>
+                    <a href="#" title="Sản Phẩm Tắm">Sản Phẩm Tắm</a>   
                 </li>
                 <li class="cat-list-item mb-3">
                     <a href="#" title="Chăm Sóc Tóc">Chăm Sóc Tóc</a>
@@ -190,7 +205,6 @@
                     <a href="#" title="Dụng Cụ & Cọ">Dụng Cụ & Cọ</a>
                 </li>
             </ul>
-
         </div>
     </div>
 
@@ -206,15 +220,119 @@
                     </a>
                 </div>
 
-                <div class="col-auto">
-                    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar2" aria-controls="offcanvasNavbar2">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+            <div class="col-auto">
+                <ul class="list-unstyled d-flex m-0 mt-3 mt-xl-0">
+                    @* <li>
+                        <a href="wishlist.html" class="text-uppercase mx-3">
+                            <svg width="24" height="24" viewBox="0 0 24 24">
+                                <use xlink:href="#heart"></use>
+                            </svg>
+                            <span class="wishlist-count">(0)</span>
+                        </a>
+                    </li> *@
+                    <li>
+                        <a href="cart.html" class="text-uppercase mx-3">
+                            <svg width="24" height="24" viewBox="0 0 24 24">
+                                <use xlink:href="#cart"></use>
+                            </svg>
+                            <span class="cart-count">(0)</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" class="mx-3" onclick="checkLoginStatus()">
+                            <svg width="24" height="24" viewBox="0 0 24 24">
+                                <use xlink:href="#user"></use>
+                            </svg>
+                        </a>
+                    </li>
+                    <li class="search-box">
+                        <a href="#" class="search-button mx-3">
+                            <svg width="24" height="24" viewBox="0 0 24 24" class="search">
+                                <use xlink:href="#search"></use>
+                            </svg>
+                        </a>
+                    </li>
+                     <li class="" id="BtnLogOut" style="display:none">
+                        <a href="#" class="">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-                    <div class="offcanvas offcanvas-end homever2 bg-dark" tabindex="-1" id="offcanvasNavbar2" aria-labelledby="offcanvasNavbar2Label">
-                        <div class="offcanvas-header">
-                            <h5 class="offcanvas-title" id="offcanvasNavbar2Label">Menu</h5>
-                            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Đóng"></button>
+        </div>
+    </div>
+
+        @if (khachHangLogin != null && LoginRoute!=null)
+        {
+            <div id="welcomeMessage" style="position: fixed; top: 10px; right: 10px; background-color: deepskyblue; padding: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 11px; opacity: 0; transition: opacity 0.5s; width: 400px; height: 40px">
+                Chào mừng bạn quay trở lại!
+            </div>
+
+            <script>
+                function removeRoutedFromLoginSession() {
+                    fetch('/Home/RemoveRoutedFromLoginSession', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            console.log("Session key 'RoutedFromLogin' removed");
+                        }
+                    }).catch(error => console.error("Error removing session key:", error));
+                }
+
+                window.onload = function () {
+                    removeRoutedFromLoginSession(); 
+
+                    const khachHang1 = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(khachHangLogin ?? new { }));
+                    const welcomeMessage = document.getElementById("welcomeMessage");
+                    welcomeMessage.innerHTML = `Chào mừng bạn quay trở lại, ${khachHang1.TenKhachHang}`;
+
+                    if (welcomeMessage) {
+                        welcomeMessage.style.opacity = 1;
+                        setTimeout(function () {
+                            welcomeMessage.style.opacity = 0;
+                        }, 3000);
+                    }
+                };
+            </script>
+        }
+
+
+
+
+
+</nav>
+
+    @RenderBody()
+
+@* <section id="best-sellers" class="best-sellers product-carousel position-relative py-5 my-5 open-up" data-aos="zoom-out">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-5 mb-3">
+            <h4 class="text-uppercase">Sản Phẩm Bán Chạy</h4>
+            <a href="shop-sidebar.html" class="btn-link">Xem Tất Cả Sản Phẩm</a>
+        </div>
+        <div class="swiper product-swiper overflow-hidden">
+            <div class="swiper-wrapper d-flex">
+                <div class="swiper-slide">
+                    <div class="product-item image-zoom-effect link-effect">
+                        <div class="image-holder position-relative">
+                            <a href="single-product.html">
+                                <img src="images/product-item7.jpg" alt="categories" class="product-image img-fluid">
+                            </a>
+                            <a href="wishlist.html" class="btn-icon btn-wishlist ">
+                                <svg width="24" height="24" viewBox="0 0 24 24" class="svg-color">
+                                    <use xlink:href="#heart"></use>
+                                </svg>
+                            </a>
+                            <div class="product-content">
+                                <h5 class="text-uppercase fs-5 mt-3">
+                                    <a href="single-product.html">Clear Bioglow</a>
+                                </h5>
+                                <a href="#" class="text-decoration-none" data-after="Thêm vào giỏ hàng"><span>$95.00</span></a>
+                            </div>
                         </div>
 
                         <div class="offcanvas-body">
@@ -720,36 +838,84 @@
         </div>
     </div>
 
-    <script>
-        const searchForm = document.getElementById("search-form");
-        const clearIcon = document.getElementById("clear-icon");
-
-        searchForm.addEventListener("input", function () {
-            if (searchForm.value.length > 0) {
-                clearIcon.style.display = "inline";
-            } else {
-                clearIcon.style.display = "none";
+<script>
+    function removeRoutedFromLoginSession() {
+        fetch('/Home/RemoveRoutedFromLoginSession', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             }
-        });
+        }).then(response => {
+            if (response.ok) {
+                console.log("Session key 'RoutedFromLogin' removed");
+            }
+        }).catch(error => console.error("Error removing session key:", error));
+    }
+</script>
+<script>
+    const sanPhamList2 = @Html.Raw(Json.Serialize(sanPhamList2));
+    const khachHang = @Html.Raw(Json.Serialize(khachHangLogin));
+    const searchForm = document.getElementById("search-form");
+    const clearIcon = document.getElementById("clear-icon");
+    const searchResult = document.getElementById("search-results");
+    const showLog = document.getElementById("BtnLogOut");
+    const abc = document.getElementById("abc");    
+    function formatCurrency(value) {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    if(khachHang==null)
+    {
+        showLog.style.display="none"
+    }
+    else
+    {
+        showLog.style.display="block"
+    }
+    searchForm.addEventListener("input", function () {
+        if (searchForm.value.length > 0) {
+            abc.innerHTML = '';
+            clearIcon.style.display = "inline";
+            searchResult.style.display = "block";
+            let hasResults = false; 
 
-        clearIcon.addEventListener("click", function () {
-            searchForm.value = "";
+            for (let item of sanPhamList2) {
+                if (item.tenSanPham && item.tenSanPham.toLowerCase().includes((searchForm.value.toLowerCase().trim()))) {
+                    console.log(item)
+                    const giaDaGiam = item.giaDaGiam ? formatCurrency(item.giaDaGiam) : 0;
+                    const giaGoc = item.giaGoc ? formatCurrency(item.giaGoc) : 0 ;
+                    const tietKiem = item.tietKiem ? formatCurrency(item.tietKiem): 0;
+                    abc.innerHTML += `
+                                <div class="row" style="padding-top:30px; padding-bottom:30px; border: 1px solid lightgrey">
+                                    <a>
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <img src="${item.ava || 'default-image.jpg'}" style="max-height:75px">
+                                                </div>
+                                                <div class="col-md-8" style="text-align:left; padding-left: 30px">
+                                                    <h6><strong>${item.tenSanPham || 'Tên sản phẩm không xác định'}</strong></h6>
+                                                    <h7><strong>Mô tả:</strong> ${item.moTa || 'Không có mô tả'}</h7><br>
+                                                                    <h7><strong>Giá: &nbsp;</strong><strong style="color:red">${giaDaGiam || 'N/A'} &nbspVND</strong>&nbsp;&nbsp;<del>${giaGoc || 'N/A'} &nbspVND</del> &nbsp / 1 ${item.donVi}</h7><br>
+                                                            <h7><i style="color: darkgreen">Tiết Kiệm: ${tietKiem || '0'} &nbsp VND</i></h7>
+                                                </div>
+                                                <div class="col-md-2" style="text-align:left; padding-left: 30px">
+                                                    <br>
+                                                    <h3>-${Math.round((item.tietKiem || 0) * 100 / (item.giaGoc || 1))}%</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            `;
+                    hasResults = true;
+                }
+            }
+            if (!hasResults) {
+                abc.innerHTML = '<div class="text-center" style="padding: 15px;">Không tìm thấy sản phẩm nào</div>';
+            }
+        } else {
             clearIcon.style.display = "none";
-            searchForm.focus();
-        });
-    </script>
-    <script src="~/js/jquery.min.js"></script>
-    <script src="~/js/plugins.js"></script>
-    <script src="~/js/SmoothScroll.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
-            crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-    <script src="~/js/script.js"></script>
-    <script>
-        function toggleChatBox() {
-            const chatBox = document.getElementById("chat-box");
-            chatBox.style.display = chatBox.style.display === "none" ? "block" : "none";
+            searchResult.style.display = "none"
         }
 
         async function sendMessage() {
@@ -857,7 +1023,47 @@
             recordBtn.innerHTML = '<i class="bi bi-mic"></i>'; // Trở lại biểu tượng micro ban đầu
         }
 
-    </script>
+    recordBtn.addEventListener("click", () => {
+        if (!recording) {
+            speechToText();
+        } else {
+            stopRecording();
+        }
+    });
+
+    function stopRecording() {
+        recognition.stop();
+        recording = false;
+        searchInput.placeholder = "Nhập và nhấn enter";
+        recordBtn.classList.remove("recording");
+        recordBtn.innerHTML = '<i class="bi bi-mic"></i>'; // Trở lại biểu tượng micro ban đầu
+    }
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function checkLoginStatus() {
+        fetch('@Url.Action("CheckLoginStatus", "InformationPersonal")')
+            .then(response => response.json())
+            .then(data => {
+                if (data.isLoggedIn) {
+                    // Nếu đã đăng nhập, chuyển hướng tới trang thông tin cá nhân
+                    window.location.href = '@Url.Action("Index", "InformationPersonal")';
+                } else {
+                    // Nếu chưa đăng nhập, hiển thị thông báo SweetAlert
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Bạn cần đăng nhập',
+                        text: 'Vui lòng đăng nhập để xem thông tin cá nhân của bạn.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://kit.fontawesome.com/5b61887464.js" crossorigin="anonymous"></script>
 </body>
 
 </html>

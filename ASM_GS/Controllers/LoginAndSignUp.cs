@@ -1,7 +1,6 @@
 ﻿//Mã Tài Khoản đăng nhập được lưu trong Session là UserAccount
 //Mã Khách hàng đăng nhập được lưu trong Session là User
 
-
 using ASM_GS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +8,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
+using System.Security.Principal;
+using static System.Net.WebRequestMethods;
 namespace ASM_GS.Controllers
 {
     public class LoginAndSignUp : Controller
@@ -48,13 +49,20 @@ namespace ASM_GS.Controllers
 
 
             return "TK" + newIdNumber.ToString("D3");
-            return "TK" + newIdNumber.ToString("D3");
+            
         }
         public IActionResult Index()
         {
             var clientId = _configuration["Authentication:Google:ClientId"];
             ViewData["GoogleClientId"] = clientId;
-
+            HttpContext.Session.GetString("RoutedPage");
+            if (HttpContext.Session.GetString("UserAccount") != null )
+            {
+                if (HttpContext.Session.GetString("RoutedPage") == null)
+                    return RedirectToAction("Index", "Home");
+                else
+                    return Redirect(HttpContext.Session.GetString("RoutedPage"));
+			};
             return View();
         }
         [HttpPost]
@@ -91,8 +99,13 @@ namespace ASM_GS.Controllers
                 return Json(new { success = false, message = "Sai email, tên tài khoản hoặc mật khẩu" });
             }
             var Kh = _context.KhachHangs.FirstOrDefault(u => (u.MaKhachHang == user.MaKhachHang));
+            HttpContext.Session.SetString("LoginRoute", "true");
             HttpContext.Session.SetString("UserAccount", user.MaTaiKhoan);
-            HttpContext.Session.SetString("User", Kh.MaKhachHang);
+            if (Kh != null)
+            {
+                HttpContext.Session.SetString("User", Kh.MaKhachHang);
+                HttpContext.Session.SetString("UserName", Kh.TenKhachHang);
+            }
             return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
         }
         [HttpPost]
@@ -133,7 +146,7 @@ namespace ASM_GS.Controllers
                 return Json(new { success = false, errors });
             }
 
-            // Check if username or email already exists
+
             if (_context.TaiKhoans.Any(u => u.TenTaiKhoan == model.TenTaiKhoan || u.Email == model.Email))
             {
                 return Json(new { success = false, message = "Tên tài khoản hoặc email đã tồn tại" });
@@ -145,7 +158,7 @@ namespace ASM_GS.Controllers
                 TenTaiKhoan = model.TenTaiKhoan,
                 Email = model.Email,
                 MatKhau = model.Password,
-                VaiTro = "User",
+                VaiTro = "Customer",
                 TinhTrang = 1,
             };
             _context.TaiKhoans.Add(newUser);
@@ -158,7 +171,6 @@ namespace ASM_GS.Controllers
         {
             var errors = new Dictionary<string, string>();
             var KHList = _context.KhachHangs.ToList();
-            // Validate fields manually if required by the business logic
             try
             {
                 if (string.IsNullOrEmpty(customer.TenKhachHang))
@@ -184,18 +196,23 @@ namespace ASM_GS.Controllers
                 {
                     errors.Add("Cccd", "Căn cước công dân không được để trống.");
                 }
-
+                else if (!Regex.IsMatch(customer.Cccd, @"^0\d{11}$"))
+                {
+                    errors.Add("Cccd", "Căn cước công dân phải đủ 12 ký tự và bắt đầu bằng số 0.");
+                }
                 if (string.IsNullOrEmpty(customer.NgaySinh?.ToString()))
                 {
                     errors.Add("NgaySinh", "Ngày sinh không được để trống.");
                 }
-
+                else if (customer.NgaySinh > DateOnly.FromDateTime(DateTime.Now.AddYears(-15)))
+                {
+                    errors.Add("NgaySinh", "Khách hàng phải đủ 15 tuổi.");
+                }
                 if (errors.Any())
                 {
                     return Json(new { success = false, errors = errors });
                 }
 
-                // Handle image upload
                 if (Anh != null && Anh.Length > 0)
                 {
                     string fileName = Guid.NewGuid() + Path.GetExtension(Anh.FileName);
@@ -223,13 +240,13 @@ namespace ASM_GS.Controllers
                 int nextId = 1;
                 if (lastCustomer != null)
                 {
-                    string lastIdStr = lastCustomer.MaKhachHang.Substring(2); // Remove "KH" prefix
+                    string lastIdStr = lastCustomer.MaKhachHang.Substring(2); 
                     if (int.TryParse(lastIdStr, out int lastId))
                     {
                         nextId = lastId + 1;
                     }
                 }
-                customer.MaKhachHang = "KH" + nextId.ToString("D3"); // Format as KH001, KH002, etc.
+                customer.MaKhachHang = "KH" + nextId.ToString("D3"); 
 
                 customer.TrangThai = 1;
 
@@ -251,6 +268,9 @@ namespace ASM_GS.Controllers
                         await _context.SaveChangesAsync();
                     }
                 }
+                HttpContext.Session.SetString("LoginRoute", "true");
+                HttpContext.Session.SetString("UserAccount", maTaiKhoan);
+                HttpContext.Session.SetString("User", customer.MaKhachHang);
                 return Json(new { success = true, message = "Tạo tài khoản và bổ sung thông tin thành công" });
             }
             catch (Exception ex) {
@@ -285,7 +305,14 @@ namespace ASM_GS.Controllers
 
                 // Thêm vào database
                 _context.KhachHangs.Add(newCustomer);
+                string maTaiKhoan = HttpContext.Session.GetString("SignUpAccount");
+                var Account =_context.TaiKhoans.Where(a => (a.MaTaiKhoan == maTaiKhoan)).FirstOrDefault();
+                Account.MaKhachHang = newCustomer.MaKhachHang;
+                _context.TaiKhoans.Update(Account);
                 await _context.SaveChangesAsync();
+                HttpContext.Session.SetString("LoginRoute", "true");
+                HttpContext.Session.SetString("UserAccount", maTaiKhoan);
+                HttpContext.Session.SetString("User", newCustomer.MaKhachHang);
                 return Json(new { success = true, message = "Tài Khoản của bạn đã được đăng ký thành công" });
 
             }
@@ -301,7 +328,7 @@ namespace ASM_GS.Controllers
         public async Task<IActionResult> CreateCustomerFromGoogleLogin([FromBody] GoogleUserModel user)
         {
             // Check if an account with the given email already exists
-            var existingAccount = _context.TaiKhoans.FirstOrDefault(u => u.Email == user.Email);
+            var existingAccount = _context.TaiKhoans.FirstOrDefault(u =>( u.Email == user.Email));
             if (existingAccount == null)
             {
                 // Generate new IDs for MaKhachHang and MaTaiKhoan
@@ -328,13 +355,16 @@ namespace ASM_GS.Controllers
                     MaTaiKhoan = maTaiKhoan,
                     TenTaiKhoan = user.Email,
                     MatKhau = "123456",
-                    VaiTro = "User",
+                    VaiTro = "Customer",
                     Email = user.Email,
                     MaKhachHang = maKhachHang,
                     TinhTrang = 1
                 };
                 _context.TaiKhoans.Add(newAccount);
                 await _context.SaveChangesAsync();
+				HttpContext.Session.SetString("LoginRoute", "true");
+				HttpContext.Session.SetString("UserAccount", newAccount.MaTaiKhoan);
+                HttpContext.Session.SetString("User", newCustomer.MaKhachHang);
                 return Ok("Đã tạo tài khoản và khách hàng mới thành công.");
             }
             else
@@ -356,18 +386,25 @@ namespace ASM_GS.Controllers
                     };
                     _context.KhachHangs.Add(newCustomer);
                     existingAccount.MaKhachHang = maKhachHang;
+                    _context.TaiKhoans.Update(existingAccount);
                     await _context.SaveChangesAsync();
+                    HttpContext.Session.SetString("LoginRoute", "true");
+                    HttpContext.Session.SetString("UserAccount", existingAccount.MaTaiKhoan);
+                    HttpContext.Session.SetString("User", newCustomer.MaKhachHang);
                     return Ok("Đã tạo khách hàng mới và liên kết với tài khoản hiện có.");
                 }
                 else
                 {
                     // Update the existing customer's picture
                     var existingCustomer = _context.KhachHangs.FirstOrDefault(k => k.MaKhachHang == existingAccount.MaKhachHang);
-                    if (existingCustomer != null)
+                    if (string.IsNullOrWhiteSpace(existingCustomer.HinhAnh))
                     {
                         existingCustomer.TenKhachHang = user.Name;
-                        existingCustomer.HinhAnh = user.Picture;
+                        _context.TaiKhoans.Update(existingAccount);
                         await _context.SaveChangesAsync();
+                        HttpContext.Session.SetString("LoginRoute", "true");
+                        HttpContext.Session.SetString("UserAccount", existingAccount.MaTaiKhoan);
+                        HttpContext.Session.SetString("User", existingCustomer.MaKhachHang);
                     }
                     return Json(new { Message = "Cập nhật hình ảnh cho khách hàng hiện có." });
                 }

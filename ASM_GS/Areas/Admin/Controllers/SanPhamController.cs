@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using ASM_GS.Controllers;
 using X.PagedList;
 using X.PagedList.Extensions;
+using Microsoft.AspNetCore.Http.Extensions;
 
 
 namespace ASM_GS.Areas.Admin.Controllers
@@ -30,6 +31,12 @@ namespace ASM_GS.Areas.Admin.Controllers
         // GET: Admin/SanPham
         public async Task<IActionResult> Index(string searchName, int? categoryId, int? status, string sortOrder, int? page, int pageSize = 5)
         {
+            if (HttpContext.Session.GetString("StaffAccount") == null)
+            {
+                HttpContext.Session.SetString("RedirectUrl", HttpContext.Request.GetDisplayUrl());
+				ViewData["RedirectUrl"] = HttpContext.Session.GetString("RedirectUrl");
+			}
+            int defaultPageSize = pageSize ?? 5; // Default to 5 if not specified
             int pageNumber = page ?? 1;
 
             var sanPhams = _context.SanPhams
@@ -73,12 +80,14 @@ namespace ASM_GS.Areas.Admin.Controllers
                     break;
             }
 
+            // Add ViewBag data to preserve filter and sorting values
             ViewBag.SearchName = searchName;
             ViewBag.CategoryId = categoryId;
             ViewBag.Status = status;
             ViewBag.SortOrder = sortOrder;
             ViewBag.PageSize = pageSize;
 
+            // Ensure ViewBag.DanhMucList is populated
             ViewBag.DanhMucList = new SelectList(await _context.DanhMucs.ToListAsync(), "MaDanhMuc", "TenDanhMuc");
 
             var pagedList = sanPhams.ToPagedList(pageNumber, pageSize);

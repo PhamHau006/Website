@@ -1,0 +1,92 @@
+﻿@model ASM_GS.ViewModels.CheckoutViewModel
+
+<section class="checkout-wrap pb-5" style="margin-top: 250px;">
+    <div class="container">
+        <form class="form-group" method="post" action="@Url.Action("Index", "Checkout")">
+            <div class="row g-5">
+                <div class="col-lg-6">
+                    <h4 class="text-dark pb-4">Thông Tin Thanh Toán</h4>
+                    <div class="billing-details">
+                        <label for="fname">Tên Khách Hàng*</label>
+                        <input type="text" id="fname" name="TenKhachHang" value="@Model.TenKhachHang" class="form-control mt-2 mb-4 ps-3">
+
+                        <label for="phone">Số Điện Thoại*</label>
+                        <input type="text" id="phone" name="SoDienThoai" value="@Model.SoDienThoai" class="form-control mt-2 mb-4 ps-3">
+
+                        <label for="email">Địa Chỉ Email *</label>
+                        <input type="text" id="email" name="Email" value="@Model.Email" class="form-control mt-2 mb-4 ps-3">
+
+                        <label for="address">Địa Chỉ*</label>
+                        <input type="text" id="adr" name="DiaChi" value="@Model.DiaChi" class="form-control mt-2 mb-4 ps-3">
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <h4 class="text-dark pb-4">Thông Tin Đơn Hàng</h4>
+                    <div class="your-order">
+                        <h5 class="display-7 text-dark pb-4">Tổng Cộng</h5>
+                        <div class="total-price">
+                            <table cellspacing="0" class="table">
+                                <tbody>
+                                    <tr class="order-total border-bottom pt-2 pb-2 text-uppercase">
+                                        <th>Tổng Cộng</th>
+                                        <td data-title="Total">
+                                            <span class="price-amount amount ps-5">
+                                                <bdi><span class="price-currency-symbol">₫</span> @Model.Total.ToString("N0")</bdi>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h5 class="text-dark pb-2">Phương Thức Thanh Toán</h5>
+                        <div class="list-group mb-4">
+                            <label class="list-group-item d-flex gap-2 border-0">
+                                <input class="form-check-input flex-shrink-0" type="radio" name="PaymentMethod" value="COD" checked>
+                                <span><strong>Thanh toán khi nhận hàng (COD)</strong></span>
+                            </label>
+                            <label class="list-group-item d-flex gap-2 border-0">
+                                <input class="form-check-input flex-shrink-0" type="radio" name="PaymentMethod" value="VNPay">
+                                <span><strong>Thanh toán qua VNPay</strong></span>
+                            </label>
+                        </div>
+
+                        <button type="submit" name="submit" class="btn btn-dark btn-lg text-uppercase btn-rounded-none w-100">Đặt Hàng</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <text>
+                        Swal.fire({
+                            icon: 'success',
+                        title: 'Thành công',
+                        text: '@Html.Raw(TempData["SuccessMessage"])',
+                        confirmButtonText: 'OK'
+                                });
+            </text>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <text>
+                        Swal.fire({
+                            icon: 'error',
+                        title: 'Lỗi',
+                        text: '@Html.Raw(TempData["ErrorMessage"])',
+                        confirmButtonText: 'OK'
+                                });
+            </text>
+        }
+                });
+    </script>
+}
+
+

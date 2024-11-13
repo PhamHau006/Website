@@ -71,7 +71,31 @@ namespace ASM_GS.Controllers
                 .WithMany(g => g.MaNhapGiamGias) // Một GiamGia có nhiều MaNhapGiamGias
                 .HasForeignKey(m => m.MaGiamGia) // Khóa ngoại là MaGiamGia
                 .OnDelete(DeleteBehavior.Cascade); // Xóa mã giảm giá sẽ xóa cả mã nhập liên quan
+            modelBuilder.Entity<ChiTietGioHang>()
+        .HasOne(c => c.GioHang)
+        .WithMany(g => g.ChiTietGioHangs)
+        .HasForeignKey(c => c.MaGioHang);
+            base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<ChiTietHoaDon>()
+                .HasOne(c => c.SanPham)
+                .WithMany()
+                .HasForeignKey(c => c.MaSanPham)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ChiTietHoaDon>()
+                .HasOne(c => c.Combo)
+                .WithMany()
+                .HasForeignKey(c => c.MaCombo)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ChiTietHoaDon>()
+                .HasOne(c => c.HoaDon)
+                .WithMany(h => h.ChiTietHoaDons)
+                .HasForeignKey(c => c.MaHoaDon);
+            base.OnModelCreating(modelBuilder);
             // Seed Data cho DanhMuc
             modelBuilder.Entity<DanhMuc>().HasData(
                 new DanhMuc { MaDanhMuc = "DM001", TenDanhMuc = "Dưỡng da", TrangThai = 1 },

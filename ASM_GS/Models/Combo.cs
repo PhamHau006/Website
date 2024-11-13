@@ -9,24 +9,24 @@ namespace ASM_GS.Models
     public partial class Combo
     {
         [Key]
-        [Required(ErrorMessage = "Mã Combo không được để trống")]
+        //[Required(ErrorMessage = "Mã Combo không được để trống")]
         public string MaCombo { get; set; } = null!;
 
-        [Required(ErrorMessage = "Tên Combo không được để trống.")]
-        [StringLength(100, ErrorMessage = "Tên Combo không được vượt quá 100 ký tự.")]
+        //[Required(ErrorMessage = "Tên Combo không được để trống.")]
+        //[StringLength(100, ErrorMessage = "Tên Combo không được vượt quá 100 ký tự.")]
         public string TenCombo { get; set; } = null!;
 
         public string? MoTa { get; set; } // Không bắt buộc, có thể để trống
 
-        [Required(ErrorMessage = "Giá không được để trống.")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Giá phải là một số dương lớn hơn 0.")]
+        //[Required(ErrorMessage = "Giá không được để trống.")]
+        //[Range(0.01, double.MaxValue, ErrorMessage = "Giá phải là một số dương lớn hơn 0.")]
         public decimal Gia { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng chọn trạng thái.")]
-        [Range(0, 1, ErrorMessage = "Trạng thái phải là Không áp dụng hoặc Đang áp dụng.")]
+        //[Required(ErrorMessage = "Vui lòng chọn trạng thái.")]
+        //[Range(0, 1, ErrorMessage = "Trạng thái phải là Không áp dụng hoặc Đang áp dụng.")]
         public int TrangThai { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng chọn ảnh!")]
+        //[Required(ErrorMessage = "Vui lòng chọn ảnh!")]
         public string? Anh { get; set; }
 
         [NotMapped] // Không lưu thuộc tính này vào CSDL

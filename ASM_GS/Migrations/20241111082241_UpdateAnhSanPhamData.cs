@@ -8,7 +8,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ASM_GS.Migrations
 {
     /// <inheritdoc />
+<<<<<<<< HEAD:ASM_GS/Migrations/20241113035523_DLS.cs
+    public partial class DLS : Migration
+========
     public partial class UpdateAnhSanPhamData : Migration
+>>>>>>>> main:ASM_GS/Migrations/20241111082241_UpdateAnhSanPhamData.cs
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,11 +22,11 @@ namespace ASM_GS.Migrations
                 columns: table => new
                 {
                     MaCombo = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TenCombo = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    TenCombo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MoTa = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Gia = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
-                    Anh = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Anh = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -175,16 +179,15 @@ namespace ASM_GS.Migrations
                 columns: table => new
                 {
                     MaGioHang = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    MaKhachHang = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NgayTao = table.Column<DateOnly>(type: "date", nullable: false),
-                    MaKhachHangNavigationMaKhachHang = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    MaKhachHang = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    NgayTao = table.Column<DateOnly>(type: "date", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_GioHangs", x => x.MaGioHang);
                     table.ForeignKey(
-                        name: "FK_GioHangs_KhachHangs_MaKhachHangNavigationMaKhachHang",
-                        column: x => x.MaKhachHangNavigationMaKhachHang,
+                        name: "FK_GioHangs_KhachHangs_MaKhachHang",
+                        column: x => x.MaKhachHang,
                         principalTable: "KhachHangs",
                         principalColumn: "MaKhachHang");
                 });
@@ -194,12 +197,11 @@ namespace ASM_GS.Migrations
                 columns: table => new
                 {
                     MaHoaDon = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    MaKhachHang = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MaKhachHang = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     NgayXuatHoaDon = table.Column<DateOnly>(type: "date", nullable: false),
                     TongTien = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TrangThai = table.Column<int>(type: "int", nullable: true),
-                    MaGiamGia = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    MaKhachHangNavigationMaKhachHang = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    MaGiamGia = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -211,8 +213,8 @@ namespace ASM_GS.Migrations
                         principalColumn: "MaGiamGia",
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
-                        name: "FK_HoaDons_KhachHangs_MaKhachHangNavigationMaKhachHang",
-                        column: x => x.MaKhachHangNavigationMaKhachHang,
+                        name: "FK_HoaDons_KhachHangs_MaKhachHang",
+                        column: x => x.MaKhachHang,
                         principalTable: "KhachHangs",
                         principalColumn: "MaKhachHang");
                 });
@@ -364,31 +366,28 @@ namespace ASM_GS.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    MaGioHang = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MaSanPham = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MaCombo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SoLuong = table.Column<int>(type: "int", nullable: false),
-                    MaComboNavigationMaCombo = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    MaGioHangNavigationMaGioHang = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    MaSanPhamNavigationMaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    MaGioHang = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    MaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    MaCombo = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    SoLuong = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ChiTietGioHangs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ChiTietGioHangs_Combos_MaComboNavigationMaCombo",
-                        column: x => x.MaComboNavigationMaCombo,
+                        name: "FK_ChiTietGioHangs_Combos_MaCombo",
+                        column: x => x.MaCombo,
                         principalTable: "Combos",
                         principalColumn: "MaCombo");
                     table.ForeignKey(
-                        name: "FK_ChiTietGioHangs_GioHangs_MaGioHangNavigationMaGioHang",
-                        column: x => x.MaGioHangNavigationMaGioHang,
+                        name: "FK_ChiTietGioHangs_GioHangs_MaGioHang",
+                        column: x => x.MaGioHang,
                         principalTable: "GioHangs",
                         principalColumn: "MaGioHang",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ChiTietGioHangs_SanPhams_MaSanPhamNavigationMaSanPham",
-                        column: x => x.MaSanPhamNavigationMaSanPham,
+                        name: "FK_ChiTietGioHangs_SanPhams_MaSanPham",
+                        column: x => x.MaSanPham,
                         principalTable: "SanPhams",
                         principalColumn: "MaSanPham",
                         onDelete: ReferentialAction.Cascade);
@@ -400,32 +399,43 @@ namespace ASM_GS.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    MaHoaDon = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MaSanPham = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MaCombo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MaHoaDon = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    MaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    MaCombo = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     SoLuong = table.Column<int>(type: "int", nullable: false),
                     Gia = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    MaComboNavigationMaCombo = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    MaHoaDonNavigationMaHoaDon = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    MaSanPhamNavigationMaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    ComboMaCombo = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    SanPhamMaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ChiTietHoaDons", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ChiTietHoaDons_Combos_MaComboNavigationMaCombo",
-                        column: x => x.MaComboNavigationMaCombo,
+                        name: "FK_ChiTietHoaDons_Combos_ComboMaCombo",
+                        column: x => x.ComboMaCombo,
                         principalTable: "Combos",
                         principalColumn: "MaCombo");
                     table.ForeignKey(
-                        name: "FK_ChiTietHoaDons_HoaDons_MaHoaDonNavigationMaHoaDon",
-                        column: x => x.MaHoaDonNavigationMaHoaDon,
+                        name: "FK_ChiTietHoaDons_Combos_MaCombo",
+                        column: x => x.MaCombo,
+                        principalTable: "Combos",
+                        principalColumn: "MaCombo",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ChiTietHoaDons_HoaDons_MaHoaDon",
+                        column: x => x.MaHoaDon,
                         principalTable: "HoaDons",
                         principalColumn: "MaHoaDon",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ChiTietHoaDons_SanPhams_MaSanPhamNavigationMaSanPham",
-                        column: x => x.MaSanPhamNavigationMaSanPham,
+                        name: "FK_ChiTietHoaDons_SanPhams_MaSanPham",
+                        column: x => x.MaSanPham,
+                        principalTable: "SanPhams",
+                        principalColumn: "MaSanPham",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ChiTietHoaDons_SanPhams_SanPhamMaSanPham",
+                        column: x => x.SanPhamMaSanPham,
                         principalTable: "SanPhams",
                         principalColumn: "MaSanPham");
                 });
@@ -589,34 +599,44 @@ namespace ASM_GS.Migrations
                 column: "MaSanPhamNavigationMaSanPham");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChiTietGioHangs_MaComboNavigationMaCombo",
+                name: "IX_ChiTietGioHangs_MaCombo",
                 table: "ChiTietGioHangs",
-                column: "MaComboNavigationMaCombo");
+                column: "MaCombo");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChiTietGioHangs_MaGioHangNavigationMaGioHang",
+                name: "IX_ChiTietGioHangs_MaGioHang",
                 table: "ChiTietGioHangs",
-                column: "MaGioHangNavigationMaGioHang");
+                column: "MaGioHang");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChiTietGioHangs_MaSanPhamNavigationMaSanPham",
+                name: "IX_ChiTietGioHangs_MaSanPham",
                 table: "ChiTietGioHangs",
-                column: "MaSanPhamNavigationMaSanPham");
+                column: "MaSanPham");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChiTietHoaDons_MaComboNavigationMaCombo",
+                name: "IX_ChiTietHoaDons_ComboMaCombo",
                 table: "ChiTietHoaDons",
-                column: "MaComboNavigationMaCombo");
+                column: "ComboMaCombo");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChiTietHoaDons_MaHoaDonNavigationMaHoaDon",
+                name: "IX_ChiTietHoaDons_MaCombo",
                 table: "ChiTietHoaDons",
-                column: "MaHoaDonNavigationMaHoaDon");
+                column: "MaCombo");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChiTietHoaDons_MaSanPhamNavigationMaSanPham",
+                name: "IX_ChiTietHoaDons_MaHoaDon",
                 table: "ChiTietHoaDons",
-                column: "MaSanPhamNavigationMaSanPham");
+                column: "MaHoaDon");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChiTietHoaDons_MaSanPham",
+                table: "ChiTietHoaDons",
+                column: "MaSanPham");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChiTietHoaDons_SanPhamMaSanPham",
+                table: "ChiTietHoaDons",
+                column: "SanPhamMaSanPham");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DanhGia_MaKhachHangNavigationMaKhachHang",
@@ -634,9 +654,9 @@ namespace ASM_GS.Migrations
                 column: "MaKhachHangNavigationMaKhachHang");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GioHangs_MaKhachHangNavigationMaKhachHang",
+                name: "IX_GioHangs_MaKhachHang",
                 table: "GioHangs",
-                column: "MaKhachHangNavigationMaKhachHang");
+                column: "MaKhachHang");
 
             migrationBuilder.CreateIndex(
                 name: "IX_HoaDons_MaGiamGia",
@@ -644,9 +664,9 @@ namespace ASM_GS.Migrations
                 column: "MaGiamGia");
 
             migrationBuilder.CreateIndex(
-                name: "IX_HoaDons_MaKhachHangNavigationMaKhachHang",
+                name: "IX_HoaDons_MaKhachHang",
                 table: "HoaDons",
-                column: "MaKhachHangNavigationMaKhachHang");
+                column: "MaKhachHang");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MaNhapGiamGia_MaGiamGia",

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ASM_GS.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-
-namespace ASM_GS.Models;
 
 public partial class GioHang
 {
@@ -13,7 +11,8 @@ public partial class GioHang
 
     public DateOnly NgayTao { get; set; }
 
-    public virtual ICollection<ChiTietGioHang> ChiTietGioHangs { get; set; } = new List<ChiTietGioHang>();
+    [ForeignKey("MaKhachHang")]
+    public virtual KhachHang? KhachHang { get; set; }
 
-    public virtual KhachHang? MaKhachHangNavigation { get; set; }
+    public virtual ICollection<ChiTietGioHang> ChiTietGioHangs { get; set; } = new List<ChiTietGioHang>();
 }

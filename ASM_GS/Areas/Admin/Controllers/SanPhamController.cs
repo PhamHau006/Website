@@ -101,6 +101,7 @@ namespace ASM_GS.Areas.Admin.Controllers
 
 
 
+
         // GET: Admin/SanPham/CreatePartial
         public IActionResult CreatePartial()
         {
@@ -112,53 +113,49 @@ namespace ASM_GS.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(SanPham sanPham)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var errors = ModelState
-                    .Where(ms => ms.Value.Errors.Any())
-                    .ToDictionary(
-                        ms => ms.Key, // Match keys to field names in form
-                        ms => ms.Value.Errors.First().ErrorMessage
-                    );
-
-                return Json(new { success = false, errors });
-            }
-
-            string randomMaSanPham;
-            do
-            {
-                Random random = new Random();
-                int randomNumber = random.Next(1, 1000);
-                randomMaSanPham = "SP" + randomNumber.ToString("D3");
-            } while (SanPhamExists(randomMaSanPham));
-
-            sanPham.MaSanPham = randomMaSanPham;
-
-            sanPham.TrangThai = sanPham.SoLuong == 0 ? 0 : 1;
-
-            if (sanPham.UploadImages != null && sanPham.UploadImages.Count > 0)
-            {
-                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "img/AnhSanPham");
-
-                foreach (var image in sanPham.UploadImages)
+                // Generate unique product code and other processing logic
+                string randomMaSanPham;
+                do
                 {
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + image.FileName;
-                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    var random = new Random();
+                    int randomNumber = random.Next(1, 1000);
+                    randomMaSanPham = "SP" + randomNumber.ToString("D3");
+                } while (SanPhamExists(randomMaSanPham));
 
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                sanPham.MaSanPham = randomMaSanPham;
+                sanPham.TrangThai = sanPham.SoLuong == 0 ? 0 : 1;
+
+                if (sanPham.UploadImages != null && sanPham.UploadImages.Count > 0)
+                {
+                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "img/AnhSanPham");
+
+                    foreach (var image in sanPham.UploadImages)
                     {
-                        await image.CopyToAsync(fileStream);
+                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + image.FileName;
+                        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await image.CopyToAsync(fileStream);
+                        }
+
+                        sanPham.AnhSanPhams.Add(new AnhSanPham { UrlAnh = $"/img/AnhSanPham/{uniqueFileName}" });
                     }
-
-                    sanPham.AnhSanPhams.Add(new AnhSanPham { UrlAnh = $"/img/AnhSanPham/{uniqueFileName}" });
                 }
+
+                _context.Add(sanPham);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Sản phẩm đã được thêm thành công!" });
             }
-
-            _context.Add(sanPham);
-            await _context.SaveChangesAsync();
-
-            return Json(new { success = true, message = "Sản phẩm đã được thêm thành công!" });
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Đã xảy ra lỗi khi thêm sản phẩm. Vui lòng thử lại!" });
+            }
         }
+
 
 
 
@@ -216,7 +213,7 @@ namespace ASM_GS.Areas.Admin.Controllers
                     return NotFound();
                 }
 
-                // Update product details
+                // Cập nhật các trường thông tin của sản phẩm
                 existingSanPham.TenSanPham = sanPham.TenSanPham;
                 existingSanPham.Gia = sanPham.Gia;
                 existingSanPham.MoTa = sanPham.MoTa;
@@ -226,24 +223,23 @@ namespace ASM_GS.Areas.Admin.Controllers
                 existingSanPham.DonVi = sanPham.DonVi;
                 existingSanPham.Nsx = sanPham.Nsx;
                 existingSanPham.Hsd = sanPham.Hsd;
-
-                // Check stock quantity and update status
                 existingSanPham.TrangThai = sanPham.SoLuong == 0 ? 0 : 1;
 
-                if (Request.Form.ContainsKey("ReplaceAllImages") && sanPham.UploadImages != null && sanPham.UploadImages.Count > 0)
+                // Kiểm tra nếu có chọn "ReplaceAllImages" và có tải lên ảnh mới
+                // Xóa tất cả các ảnh cũ từ hệ thống tệp và cơ sở dữ liệu
+                foreach (var image in existingSanPham.AnhSanPhams)
                 {
-                    // Delete all old images
-                    foreach (var image in existingSanPham.AnhSanPhams)
+                    string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, image.UrlAnh.TrimStart('/'));
+                    if (System.IO.File.Exists(imagePath))
                     {
-                        string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, image.UrlAnh.TrimStart('/'));
-                        if (System.IO.File.Exists(imagePath))
-                        {
-                            System.IO.File.Delete(imagePath);
-                        }
+                        System.IO.File.Delete(imagePath); // Xóa ảnh cũ từ hệ thống tệp
                     }
-                    existingSanPham.AnhSanPhams.Clear();
                 }
-                // Handle new images
+
+                _context.AnhSanPhams.RemoveRange(existingSanPham.AnhSanPhams); // Xóa ảnh cũ từ cơ sở dữ liệu
+                await _context.SaveChangesAsync(); // Lưu ngay để đảm bảo ảnh cũ bị xóa
+
+                // Bước 3: Thêm các ảnh mới vào cơ sở dữ liệu và hệ thống tệp
                 if (sanPham.UploadImages != null && sanPham.UploadImages.Count > 0)
                 {
                     string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "img/AnhSanPham");
@@ -262,8 +258,10 @@ namespace ASM_GS.Areas.Admin.Controllers
                     }
                 }
 
+                // Bước 4: Cập nhật sản phẩm trong cơ sở dữ liệu
                 _context.Update(existingSanPham);
                 await _context.SaveChangesAsync();
+
                 return Json(new { success = true, message = "Sản phẩm đã được cập nhật thành công!" });
             }
             catch (Exception ex)
@@ -271,6 +269,8 @@ namespace ASM_GS.Areas.Admin.Controllers
                 return Json(new { success = false, errors = new List<string> { ex.Message } });
             }
         }
+
+
 
 
 

@@ -180,7 +180,7 @@
                                 <th>Ảnh Sản Phẩm</th>
                                 <th>Giá</th>
                                 <th>Mô Tả</th>
-                                <th>Tên Danh Mục</th> 
+                                <th>Tên Danh Mục</th>
                                 <th>Số Lượng</th>
                                 <th>Ngày Thêm</th>
                                 <th>Đơn Vị</th>
@@ -235,7 +235,7 @@
                                                 <i class="bx bx-dots-vertical-rounded"></i>
                                             </button>
                                             <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editProductModal" onclick="loadEditProduct('@item.MaSanPham')">
+                                                <a class="dropdown-item" href="#" data-bs-toggle="modal" onclick="loadEditProduct('@item.MaSanPham')">
                                                     <i class="bi bi-pencil-square"></i> Sửa
                                                 </a>
 
@@ -251,12 +251,12 @@
                         </tbody>
 
                     </table>
-                  </div>
+                </div>
             </div>
         </div>
     </div>
     <!--/ Bordered Table -->
-    
+
     <div>
         <div class="d-flex justify-content-center mt-4">
             @Html.PagedListPager(Model, page => Url.Action("Index", new { page, pageSize = ViewBag.PageSize, searchTerm = ViewBag.SearchTerm }),
@@ -283,8 +283,7 @@
           <p style="color: red; font-size: 2rem">Vui lòng đăng nhập</p>
       </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <!-- AJAX Script -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
       <script>
@@ -303,29 +302,102 @@
     <!-- AJAX Script -->
 
     <script>
-        $(document).ready(function() {
-            $('#modalAddProduct').on('show.bs.modal', function() {
-                $.ajax({
-                    url: '/Admin/SanPham/CreatePartial', // URL to your action method
-                    type: 'GET',
-                    success: function(data) {
-                        $('#modalAddProduct .modal-content').html(data); // Load content into modal
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Error loading partial view:", error);
-                    }
-                });
+        function loadAddProductModal() {
+            $.ajax({
+                url: '/Admin/SanPham/CreatePartial', // URL to the CreatePartial view
+                type: 'GET',
+                success: function (data) {
+                    $('#modalAddProduct .modal-content').html(data); // Insert content into modal
+                    $('#modalAddProduct').modal('show'); // Show modal
+
+                    // After form submission inside the modal
+                    $('#modalAddProduct form').on('submit', function (event) {
+                        event.preventDefault(); // Prevent default form submission
+                        $.ajax({
+                            url: '/Admin/SanPham/Create',
+                            type: 'POST',
+                            data: new FormData(this),
+                            processData: false,
+                            contentType: false,
+                            success: function (response) {
+                                $('#modalAddProduct').modal('hide'); // Close the modal
+                                Swal.fire({
+                                    icon: response.success ? 'success' : 'error',
+                                    title: response.success ? 'Thành công!' : 'Lỗi!',
+                                    text: response.message,
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    if (response.success) {
+                                        location.reload(); // Reload page if successful
+                                    }
+                                });
+                            },
+                            error: function () {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Lỗi!',
+                                    text: 'Không thể thêm sản phẩm. Vui lòng thử lại!',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        });
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error loading partial view:", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: 'Không thể tải nội dung. Vui lòng thử lại!',
+                        confirmButtonText: 'OK'
+                    });
+                }
             });
-        });
+        }
+
+
         function loadEditProduct(maSanPham) {
             $.ajax({
-                url: '/Admin/SanPham/EditPartial', // Đường dẫn đến action EditPartial
+                url: '/Admin/SanPham/EditPartial',
                 type: 'GET',
                 data: { maSanPham: maSanPham },
                 success: function (response) {
-                    // Chèn nội dung vào modal và hiển thị modal
-                    $('#editProductModal .modal-content').html(response);
-                    $('#editProductModal').modal('show'); // Hiển thị modal
+                    $('#editProductModal .modal-content').html(response); // Insert response content
+                    $('#editProductModal').modal('show'); // Show modal
+
+                    // Handle form submission for updating product
+                    $('#editProductModal form').on('submit', function (event) {
+                        event.preventDefault(); // Prevent default form submission
+
+                        $.ajax({
+                            url: '/Admin/SanPham/Edit',
+                            type: 'POST',
+                            data: new FormData(this),
+                            processData: false,
+                            contentType: false,
+                            success: function (response) {
+                                $('#editProductModal').modal('hide'); // Close the modal
+                                Swal.fire({
+                                    icon: response.success ? 'success' : 'error',
+                                    title: response.success ? 'Cập nhật thành công!' : 'Lỗi cập nhật!',
+                                    text: response.message || (response.errors ? response.errors.join(", ") : "Đã xảy ra lỗi."),
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    if (response.success) {
+                                        location.reload(); // Reload page on successful update
+                                    }
+                                });
+                            },
+                            error: function () {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Lỗi!',
+                                    text: 'Không thể cập nhật sản phẩm. Vui lòng thử lại!',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        });
+                    });
                 },
                 error: function () {
                     $('#editProductModal .modal-content').html('<p class="text-danger">Không thể tải thông tin sản phẩm. Vui lòng thử lại sau.</p>');
@@ -336,9 +408,10 @@
 
 
 
-        $(document).ready(function() {
+
+        $(document).ready(function () {
             // Trigger tìm kiếm mỗi khi thay đổi đầu vào hoặc sắp xếp
-            $('#filterForm input, #filterForm select').on('input change', function() {
+            $('#filterForm input, #filterForm select').on('input change', function () {
                 performSearch();
             });
 
@@ -348,11 +421,11 @@
                     url: '/Admin/SanPham/Index',
                     type: 'GET',
                     data: $('#filterForm').serialize(), // Serialize form data
-                    success: function(data) {
+                    success: function (data) {
                         var $data = $(data);
                         $('#productListContainer').html($data.find('#productListContainer').html());
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         console.error("Lỗi tìm kiếm:", error);
                     }
                 });
@@ -361,7 +434,7 @@
     </script>
     <script>
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
         })
     </script>
@@ -385,7 +458,7 @@
                         data: {
                             id: maSanPham
                         },
-                        success: function(response) {
+                        success: function (response) {
                             Swal.fire(
                                 'Đã xóa!',
                                 'Sản phẩm đã được xóa thành công.',
@@ -394,7 +467,7 @@
                                 location.reload(); // Reload the page to reflect changes
                             });
                         },
-                        error: function() {
+                        error: function () {
                             Swal.fire(
                                 'Lỗi!',
                                 'Không thể xóa sản phẩm. Vui lòng thử lại.',
@@ -427,7 +500,6 @@
         margin-left: 0; /* Không áp dụng trùng lặp cho ảnh đầu tiên */
     }
 </style>
-
-
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 

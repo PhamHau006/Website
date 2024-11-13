@@ -1,4 +1,4 @@
-﻿@{
+﻿﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="text-center">
@@ -119,18 +119,13 @@
         <div class="icon-arrow no-outline icon-arrow-left bg-light bg-opacity-10"></div>
         <div class="icon-arrow no-outline icon-arrow-right bg-light bg-opacity-10"></div>
     </div>
-    
+
 </section>
 <section id="new-arrival" class="new-arrival product-carousel product-element swiper-menu py-5 position-relative open-up" data-aos="zoom-out">
     <div class="container">
-        <div class="d-flex flex-wrap justify-content-between align-items-center mt-5 mb-3">
-            <h4 class="text-uppercase">Hàng Mới Về</h4>
-            <a href="@Url.Action("Index", "Shop")" class="btn-link">Xem Tất Cả Sản Phẩm</a>
-        </div>
-        @await Component.InvokeAsync("SanPham")
+        @await Component.InvokeAsync("Combo")
         <div class="icon-arrow no-outline icon-arrow-left bg-light bg-opacity-10"></div>
         <div class="icon-arrow no-outline icon-arrow-right bg-light bg-opacity-10"></div>
     </div>
 
 </section>
-

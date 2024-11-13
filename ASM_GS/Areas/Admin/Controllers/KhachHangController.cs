@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using X.PagedList.Extensions;
 using X.PagedList;
 using X.PagedList.Mvc.Core;
-using ASM_GS.Migrations;
+//using ASM_GS.Migrations;
 
 namespace ASM_GS.Areas.Admin.Controllers
 {

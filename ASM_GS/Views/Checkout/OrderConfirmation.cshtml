@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "Xác nhận đặt hàng";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        Swal.fire({
+            title: 'Thành công!',
+            text: '@Html.Raw(TempData["SuccessMessage"])', // Sử dụng Html.Raw để giữ nguyên định dạng tiếng Việt
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+    </script>
+}
+else if (TempData["ErrorMessage"] != null)
+{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        Swal.fire({
+            title: 'Thất bại!',
+            text: '@Html.Raw(TempData["ErrorMessage"])', // Sử dụng Html.Raw để giữ nguyên định dạng tiếng Việt
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    </script>
+}
+
+<div style="margin-top: 200px;">
+    <h2>Xác nhận đặt hàng</h2>
+    <p>Mã đơn hàng: @ViewBag.OrderId</p>
+</div>

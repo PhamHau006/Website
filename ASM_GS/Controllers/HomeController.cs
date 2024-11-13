@@ -37,7 +37,6 @@ namespace ASM_GS.Controllers
             }
 
             ViewBag.TenKhachHang = tenKhachHang;
-
             return View();
         }
         public IActionResult Privacy()
@@ -95,5 +94,20 @@ namespace ASM_GS.Controllers
                 return Json(new { response = answer });
             }
         }
+        [HttpPost]
+        public IActionResult KiemTraDangNhap()
+        {
+            var userAccount = HttpContext.Session.GetString("UserAccount");
+            var user = HttpContext.Session.GetString("User");
+
+            if (string.IsNullOrEmpty(userAccount) || string.IsNullOrEmpty(user))
+            {
+                return Json(new { isLoggedIn = false });
+            }
+
+            return Json(new { isLoggedIn = true });
+        }
+    
+
     }
 }

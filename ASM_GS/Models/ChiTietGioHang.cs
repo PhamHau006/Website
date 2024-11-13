@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ASM_GS.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-
-namespace ASM_GS.Models;
 
 public partial class ChiTietGioHang
 {
@@ -11,15 +9,18 @@ public partial class ChiTietGioHang
 
     public string MaGioHang { get; set; } = null!;
 
+    [ForeignKey("MaGioHang")]
+    public virtual GioHang GioHang { get; set; }
+
     public string MaSanPham { get; set; } = null!;
+
+    [ForeignKey("MaSanPham")]
+    public virtual SanPham SanPham { get; set; }
 
     public string? MaCombo { get; set; }
 
+    [ForeignKey("MaCombo")]
+    public virtual Combo? Combo { get; set; }
+
     public int SoLuong { get; set; }
-
-    public virtual Combo? MaComboNavigation { get; set; }
-
-    public virtual GioHang MaGioHangNavigation { get; set; } = null!;
-
-    public virtual SanPham MaSanPhamNavigation { get; set; } = null!;
 }

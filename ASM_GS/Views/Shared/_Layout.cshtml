@@ -25,11 +25,16 @@ integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJ
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 </head>
 
 <body class="homepage">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
     <defs>
@@ -260,7 +265,7 @@ integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJ
                         </a>
                     </li> *@
                     <li>
-                        <a href="cart.html" class="text-uppercase mx-3">
+                            <a href="@Url.Action("Index", "Cart")" class="text-uppercase mx-3">
                             <svg width="24" height="24" viewBox="0 0 24 24">
                                 <use xlink:href="#cart"></use>
                             </svg>
@@ -857,6 +862,7 @@ integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJ
     }
 
 </script>
+    @RenderSection("Scripts", required: false)
 </body>
 
 </html>

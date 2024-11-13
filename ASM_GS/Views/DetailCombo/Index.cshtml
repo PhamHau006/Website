@@ -1,0 +1,116 @@
+﻿@model ASM_GS.Models.Combo
+
+<main class="main-content mt-5" style="padding-top: 200px">
+    <section id="combo-detail" class="single-product py-5 no-padding-top">
+        <div class="container">
+            <div class="row g-5">
+                <!-- Combo Main Image and Info -->
+                <div class="col-md-7">
+                    <div class="swiper product-large-slider">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                @if (!string.IsNullOrEmpty(@Model.Anh))
+                                {
+                                    <img src="@Url.Content($"~/img/AnhCombo/{System.IO.Path.GetFileName(Model.Anh)}")" alt="categories" class="product-image img-fluid" style="max-width: 100%; max-height: 100%; object-fit: cover;" />
+                                }
+                                else
+                                {
+                                    <img src="~/img/default-product.jpg" alt="hình ảnh mặc định" class="product-image img-fluid" style="max-width: 100%; max-height: 100%; object-fit: cover;" />
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="combo-info mt-4">
+                        <h2 itemprop="name" class="product-title text-uppercase text-black">
+                            @Model.TenCombo
+                        </h2>
+                        <div class="product-price my-3">
+                            <span class="fs-2 text-black">@Model.Gia.ToString("N0") VND</span>
+                        </div>
+                        <p>@Model.MoTa</p>
+                        <div class="product-action mt-4">
+                            <button type="submit" class="btn btn-dark btn-lg text-uppercase me-3">
+                                Thêm vào giỏ hàng
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products in Combo -->
+            <div class="row mt-5">
+                <h4 class="text-uppercase">Sản phẩm trong combo</h4>
+                <div class="col-12">
+                    <div class="row">
+                        @foreach (var chiTiet in Model.ChiTietCombos)
+                        {
+                            var hinhAnh = chiTiet.MaSanPhamNavigation.AnhSanPhams?.FirstOrDefault()?.UrlAnh;
+                            string imagePath = !string.IsNullOrEmpty(hinhAnh) ? Url.Content($"~/img/AnhSanPham/{System.IO.Path.GetFileName(hinhAnh)}") : null;
+
+                            <div class="col-md-4 mb-4">
+                                <div class="product-item border p-3 text-center">
+                                    <!-- Display image for each product in the combo -->
+                                    <div class="product-image-gallery mb-2">
+                                        @if (!string.IsNullOrEmpty(imagePath))
+                                        {
+                                            <img src="@imagePath" alt="Hình ảnh sản phẩm" class="product-image img-fluid" />
+                                        }
+                                        else
+                                        {
+                                            <span>Không có ảnh</span>
+                                        }
+                                    </div>
+                                    <h6 class="text-uppercase">@chiTiet.MaSanPhamNavigation.TenSanPham</h6>
+                                    <span>Số lượng: @chiTiet.SoLuong</span>
+                                    <p class="price mt-2">@chiTiet.MaSanPhamNavigation.Gia.ToString("N0") VND</p>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+<script>
+    var swiper = new Swiper('.product-large-slider', {
+        slidesPerView: 1,
+        spaceBetween: 10,
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        loop: true,
+        autoplay: {
+            delay: 2000,
+            disableOnInteraction: false,
+        }
+    });
+</script>
+
+<style>
+    .product-image-gallery img {
+        width: 100%; /* Ensures image takes up full width of its container */
+        height: 500px; /* Set a fixed height; adjust as needed */
+        object-fit: cover; /* Ensures the image covers the container without distortion */
+        border-radius: 8px; /* Optional: adds rounded corners */
+    }
+
+    .product-item h6 {
+        font-weight: bold;
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    .price {
+        font-weight: bold;
+        color: #333;
+    }
+</style>

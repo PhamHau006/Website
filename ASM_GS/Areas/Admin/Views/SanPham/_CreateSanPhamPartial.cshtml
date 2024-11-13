@@ -89,53 +89,5 @@
 
 </div>
 
-<script>
-    $(document).ready(function() {
-        $('#createForm').on('submit', function(e) {
-            e.preventDefault(); // Prevent default form submission
-
-            var formData = new FormData(this);
-
-            // Clear previous error messages
-            $('.text-danger').text('');
-
-            $.ajax({
-                url: '/Admin/SanPham/Create', // URL to your Create action
-                type: 'POST',
-                data: formData,
-                contentType: false,
-                processData: false,
-                success: function(response) {
-                    if (response.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Thành công!',
-                            text: response.message,
-                            confirmButtonText: 'OK'
-                        }).then(() => {
-                            location.reload();
-                            $('#modalAddProduct').modal('hide'); 
-                            
-                        });
-                    } else {
-                        // Display validation errors below each field
-                        $.each(response.errors, function(field, message) {
-                            $('#error' + field).text(message); // Display error message
-                        });
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error:", error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi!',
-                        text: 'Đã xảy ra lỗi trong khi lưu sản phẩm. Vui lòng thử lại!',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            });
-        });
-    });
-</script>
 
 

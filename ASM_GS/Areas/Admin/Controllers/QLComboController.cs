@@ -1,5 +1,6 @@
 ﻿using ASM_GS.Controllers;
 using ASM_GS.Models;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
@@ -23,6 +24,11 @@ namespace ASM_GS.Areas.Admin.Controllers
         // Index - Hiển thị danh sách Combo
         public IActionResult Index(string searchTerm, int? page, int pageSize = 5, int? trangThai = null, string sortBy = "TenCombo")
         {
+            if (HttpContext.Session.GetString("StaffAccount") == null)
+            {
+                HttpContext.Session.SetString("RedirectUrl", HttpContext.Request.GetDisplayUrl());
+				ViewData["RedirectUrl"] = HttpContext.Session.GetString("RedirectUrl");
+			}
             var combos = _context.Combos
                                  .Include(c => c.ChiTietCombos)
                                  .AsQueryable();

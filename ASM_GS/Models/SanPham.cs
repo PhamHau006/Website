@@ -11,40 +11,40 @@ namespace ASM_GS.Models
         [Key]
         public string MaSanPham { get; set; } = null!;
 
-        [Required(ErrorMessage = "Tên sản phẩm là bắt buộc.")]
-        [StringLength(100, ErrorMessage = "Tên sản phẩm không được vượt quá 100 ký tự.")]
+        //[Required(ErrorMessage = "Tên sản phẩm là bắt buộc.")]
+        //[StringLength(100, ErrorMessage = "Tên sản phẩm không được vượt quá 100 ký tự.")]
         public string TenSanPham { get; set; } = null!;
 
-        [Required(ErrorMessage = "Giá sản phẩm là bắt buộc.")]
-        [Range(0.01, (double)decimal.MaxValue, ErrorMessage = "Giá sản phẩm phải lớn hơn 0.")]
+        //[Required(ErrorMessage = "Giá sản phẩm là bắt buộc.")]
+        //[Range(0.01, (double)decimal.MaxValue, ErrorMessage = "Giá sản phẩm phải lớn hơn 0.")]
         public decimal Gia { get; set; }
 
-        [StringLength(1000, ErrorMessage = "Mô tả không được vượt quá 1000 ký tự.")]
+        //[StringLength(1000, ErrorMessage = "Mô tả không được vượt quá 1000 ký tự.")]
         public string? MoTa { get; set; }
 
-        [Required(ErrorMessage = "Danh mục là bắt buộc.")]
+        //[Required(ErrorMessage = "Danh mục là bắt buộc.")]
         public string? MaDanhMuc { get; set; }
 
-        [Range(0, int.MaxValue, ErrorMessage = "Số lượng phải là một số không âm.")]
+        //[Range(0, int.MaxValue, ErrorMessage = "Số lượng phải là một số không âm.")]
         public int SoLuong { get; set; }
 
-        [DataType(DataType.Date)]
-        [Display(Name = "Ngày Thêm")]
+        //[DataType(DataType.Date)]
+        //[Display(Name = "Ngày Thêm")]
         public DateOnly? NgayThem { get; set; }
 
         
-        [StringLength(50, ErrorMessage = "Đơn vị không được vượt quá 50 ký tự.")]
+        //[StringLength(50, ErrorMessage = "Đơn vị không được vượt quá 50 ký tự.")]
         public string? DonVi { get; set; }
 
-        [DataType(DataType.Date)]
-        [Display(Name = "Ngày sản xuất")]
+        //[DataType(DataType.Date)]
+        //[Display(Name = "Ngày sản xuất")]
         public DateOnly? Nsx { get; set; }
 
-        [DataType(DataType.Date)]
-        [Display(Name = "Hạn sử dụng")]
+        //[DataType(DataType.Date)]
+        //[Display(Name = "Hạn sử dụng")]
         public DateOnly? Hsd { get; set; }
 
-        [Range(0, 1, ErrorMessage = "Trạng thái phải là 0 hoặc 1.")]
+        //[Range(0, 1, ErrorMessage = "Trạng thái phải là 0 hoặc 1.")]
         public int? TrangThai { get; set; }
 
         // Attribute to upload images from the system

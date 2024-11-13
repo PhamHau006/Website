@@ -639,7 +639,7 @@ a {
   height: 100%;
   opacity: 0;
   visibility: hidden;
-  z-index: 9999;
+  z-index: 4000;
   -webkit-transition: opacity 0.3s 0s, visibility 0s 0.3s;
   -moz-transition: opacity 0.3s 0s, visibility 0s 0.3s;
   transition: opacity 0.3s 0s, visibility 0s 0.3s;

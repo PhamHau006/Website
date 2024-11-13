@@ -6,6 +6,7 @@ using X.PagedList;
 using X.PagedList.Extensions;
 using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.Extensions;
 namespace ASM_GS.Areas.Admin.Controllers
 {
     [Area("Admin")]
@@ -20,6 +21,11 @@ namespace ASM_GS.Areas.Admin.Controllers
 
         public IActionResult Index(string searchTerm, int? trangThai, string sortOrder, int? page, int pageSize = 10)
         {
+            if (HttpContext.Session.GetString("StaffAccount") == null)
+            {
+                HttpContext.Session.SetString("RedirectUrl", HttpContext.Request.GetDisplayUrl());
+				ViewData["RedirectUrl"] = HttpContext.Session.GetString("RedirectUrl");
+			}
             // Truy vấn tất cả các giảm giá, bao gồm các mã nhập chi tiết
             var discounts = _context.GiamGia
                 .Include(d => d.MaNhapGiamGias) // Bao gồm mã nhập chi tiết nếu cần

@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Danh Sách Khách Hàng";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var Direct = ViewData["RedirectUrl"] as string;
 }
 <style>
     .btn-success {
@@ -58,7 +59,7 @@
         </select>
     </form>
 </div>
-        <a href="#" class="btn btn-success btn-sm" style="margin-left: 60px;padding: 10px 20px; font-size: 14px;" data-bs-toggle="modal" data-bs-target="#createCreateModal" onclick="loadCreateModal()">
+        <a href="#" class="btn btn-primary" style="margin-left: 60px;padding: 10px 20px; font-size: 14px;" data-bs-toggle="modal" data-bs-target="#createCreateModal" onclick="loadCreateModal()">
             <i class="bi bi-plus"></i> Thêm khách hàng
         </a>
 
@@ -222,7 +223,23 @@
         PageClasses = new[] { "page-link" }
     })
 </div>
+<div id="loginMessage" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);width: 500px; height:300px; text-align:center; align-items: center">
+    <p style="color: red; font-size: 2rem">Vui lòng đăng nhập</p>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var directUrl = '@Direct';
 
+        if (directUrl) {
+            const ThongBao = document.getElementById('loginMessage')
+            ThongBao.style.display = "block";
+            setTimeout(function () {
+                window.location.href = '/LoginAdmin';
+            }, 3000);
+        }
+    });
+</script>
 
 <script>
     function loadCreateModal() {

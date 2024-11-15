@@ -5,7 +5,7 @@
 }
 <!-- Add SweetAlert CSS and JavaScript files -->
 
-<h2>@ViewData["Title"]</h2>
+<h2 style="text-align:center">@ViewData["Title"]</h2>
 
 
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
@@ -113,3 +113,91 @@
         });
     </script>
 }
+<style>
+    /* Overall layout */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f7f7f7;
+    padding: 20px;
+}
+
+/* Form container */
+form {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Form title */
+h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Input fields */
+.form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 8px;
+    display: block;
+}
+
+/* Styling for input fields */
+.form-control {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+}
+
+/* Input field focus state */
+.form-control:focus {
+    border-color: #0056b3;
+    outline: none;
+    background-color: #fff;
+}
+
+/* Select fields */
+select.form-control {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+
+/* Avatar image */
+img.mt-2 {
+    border-radius: 50%;
+    border: 2px solid #ddd;
+}
+
+/* Error messages */
+.text-danger {
+    font-size: 12px;
+    color: #e74c3c;
+}
+
+/* Success message styling */
+    /* Avatar image */
+    img.mt-2 {
+        border-radius: 50%;
+        border: 2px solid #ddd;
+        width: 120px; /* Increase width */
+        height: 120px; /* Increase height */
+        object-fit: cover; /* Ensures the image fills the container without distortion */
+    }
+
+
+</style>

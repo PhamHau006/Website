@@ -1,5 +1,9 @@
 ﻿@model IEnumerable<ASM_GS.ViewModels.DonHangViewModel>
 
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var Direct = ViewData["RedirectUrl"] as string;
+}
 <h2>Danh sách đơn hàng</h2>
 
 <head>
@@ -140,5 +144,22 @@
                 }
             });
         });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var directUrl = '@Direct';
+
+        if (directUrl) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Thông báo',
+                text: 'Bạn sẽ được chuyển đến trang đăng nhập.',
+                showConfirmButton: false,
+                timer: 3000
+            }).then(() => {
+                window.location.href = '/LoginAdmin';
+            });
+        }
     });
 </script>

@@ -27,73 +27,73 @@
     *@
     <div class="d-flex justify-content-between align-items-center mb-3" style="gap: 10px; padding: 10px;">
         <!-- Control Buttons -->
-        <div class="mb-3 d-flex justify-content-between">
-            <div>
-                <label for="pageSize" class="mr-2 mb-0" style="margin-left: 10px;">Hiển thị:</label>
-                <form method="get" class="d-inline">
-                    <select id="pageSize" name="pageSize" class="form-select d-inline-block w-auto" onchange="this.form.submit()" style="width: 60px; margin-left: 10px;">
-                        @if (ViewBag.PageSize == 5)
-                        {
-                            <option value="5" selected>5</option>
-                        }
-                        else
-                        {
-                            <option value="5">5</option>
-                        }
+        <form method="get" class="d-inline">
+            <label for="pageSize" class="mr-2 mb-0" style="margin-left: 10px;">Hiển thị:</label>
 
-                        @if (ViewBag.PageSize == 10)
-                        {
-                            <option value="10" selected>10</option>
-                        }
-                        else
-                        {
-                            <option value="10">10</option>
-                        }
+            <select id="pageSize" name="pageSize" class="form-select d-inline-block w-auto" onchange="this.form.submit()" style="width: 60px; margin-left: 10px;">
+                @if (ViewBag.PageSize == 5)
+                {
+                    <option value="5" selected>5</option>
+                }
+                else
+                {
+                    <option value="5">5</option>
+                }
 
-                        @if (ViewBag.PageSize == 15)
-                        {
-                            <option value="15" selected>15</option>
-                        }
-                        else
-                        {
-                            <option value="15">15</option>
-                        }
-                    </select>
-                </form>
-            </div>
-            <button class="btn btn-success btn-sm" style="margin-left: 60px;padding: 10px 20px; font-size: 14px;" data-bs-toggle="modal" data-bs-target="#myModal">
-                <i class="bi bi-plus"></i> Thêm khách hàng
-            </button>
+                @if (ViewBag.PageSize == 10)
+                {
+                    <option value="10" selected>10</option>
+                }
+                else
+                {
+                    <option value="10">10</option>
+                }
+
+                @if (ViewBag.PageSize == 15)
+                {
+                    <option value="15" selected>15</option>
+                }
+                else
+                {
+                    <option value="15">15</option>
+                }
+            </select>
+        </form>
+        
+        <button class="btn btn-primary" style="margin-left: 60px;padding: 10px 20px; font-size: 14px;" data-bs-toggle="modal" data-bs-target="#myModal">
+            <i class="bi bi-plus"></i> Thêm khách hàng
+        </button>
 
             @*  <a href="javascript:void(0);" class="btn btn-primary" onclick="loadCreateModal()">
             Thêm Khách Hàng
             </a> *@
-        </div>
+        <form id="searchForm" asp-action="Index" method="get" class="form-inline d-flex align-items-center" style="flex-wrap: nowrap; margin-left: auto;">
+            <input type="text" id="searchInput" name="searchTerm" value="@ViewBag.SearchTerm"
+                   placeholder="Tìm kiếm khách hàng..."
+                   class="form-control form-control-sm"
+                   style="margin-right: 10px; width: 200px;" />
+            <select name="status" id="status" class="form-control" onchange="this.form.submit()">
+                <option value="">-- Trạng thái --</option>
+                <option value="1">Hoạt Động</option>
+                <option value="0">Không Hoạt Động</option>
+            </select>
+        </form>
         <!-- Form tìm kiếm -->
-        <input type="text" id="searchInput" name="searchTerm" value="@ViewBag.SearchTerm"
-               placeholder="Tìm kiếm khách hàng..."
-               class="form-control form-control-sm"
-               style="margin-right: 10px; width: 200px;" />
-        <select name="status" id="status" class="form-control" onchange="this.form.submit()">
-            <option value="">-- Trạng thái --</option>
-            <option value="1">Hoạt Động</option>
-            <option value="0">Không Hoạt Động</option>
-        </select>
-    </form>
+        
     
-    @if (TempData["successMessage"] != null)
-    {
-        <script>
-            // Sử dụng SweetAlert để hiển thị thông báo thành công
-            document.addEventListener('DOMContentLoaded', function () {
-                Swal.fire({
-                    icon: 'success',
-                    title: '@TempData["successMessage"]',
-                    //text: '@TempData["successMessage"]',
-                    //showConfirmButton: false,
-                    //timer: 2000 // Thông báo tự động ẩn sau 2 giây
-                });
-            </script>
+        @if (TempData["successMessage"] != null)
+        {
+            <script>
+                // Sử dụng SweetAlert để hiển thị thông báo thành công
+                document.addEventListener('DOMContentLoaded', function () {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '@TempData["successMessage"]',
+                        //text: '@TempData["successMessage"]',
+                        //showConfirmButton: false,
+                        //timer: 2000 // Thông báo tự động ẩn sau 2 giây
+                    });
+                </script>
         }
     </div>
 

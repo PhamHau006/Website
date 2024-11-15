@@ -70,7 +70,7 @@ namespace ASM_GS.Areas.Admin.Controllers
             }
 
             // If any validation errors exist, return the model to the view
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 return View("Index", model);
             }
@@ -85,7 +85,7 @@ namespace ASM_GS.Areas.Admin.Controllers
             if (imageFile != null && imageFile.Length > 0)
             {
                 // Define the path to save the image
-                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "img", "AnhNhanVien");
                 Directory.CreateDirectory(uploadsFolder); // Ensure the folder exists
 
                 // Generate a unique filename
@@ -99,7 +99,7 @@ namespace ASM_GS.Areas.Admin.Controllers
                 }
 
                 // Update the image path in the database
-                nhanVien.HinhAnh = $"/uploads/{uniqueFileName}";
+                nhanVien.HinhAnh = $"/img/AnhNhanVien/{uniqueFileName}";
             }
 
             // Update other fields

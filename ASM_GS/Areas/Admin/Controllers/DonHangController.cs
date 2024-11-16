@@ -1,6 +1,7 @@
 ﻿using ASM_GS.Controllers;
 using ASM_GS.Models;
 using ASM_GS.ViewModels;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -21,6 +22,11 @@ namespace ASM_GS.Areas.Admin.Controllers
         // Action hiển thị danh sách đơn hàng
         public async Task<IActionResult> Index(string trangThai = "all")
         {
+            if (HttpContext.Session.GetString("StaffAccount") == null)
+            {
+                HttpContext.Session.SetString("RedirectUrl", HttpContext.Request.GetDisplayUrl());
+                ViewData["RedirectUrl"] = HttpContext.Session.GetString("RedirectUrl");
+            }
             IQueryable<DonHang> ordersQuery = _context.DonHangs
                 .Include(dh => dh.ChiTietDonHangs)
                 .ThenInclude(ct => ct.MaSanPhamNavigation);

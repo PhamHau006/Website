@@ -61,7 +61,7 @@
                     </select>
                 </form>
             </div>
-            <button class="btn btn-success btn-sm" style="margin-left: 60px;padding: 10px 20px; font-size: 14px;" data-bs-toggle="modal" data-bs-target="#myModal">
+            <button class="btn btn-primary" style="margin-left: 60px;padding: 10px 20px; font-size: 14px;" data-bs-toggle="modal" data-bs-target="#myModal">
                 <i class="bi bi-plus"></i> Thêm Nhân Viên
             </button>
 
@@ -95,78 +95,75 @@
     </div>
 
     <!-- Customer Table -->
-    <div class="card" style="margin: 10px 10px">
+    <div class="card" >
         <h5 class="card-header">@ViewData["Title"]</h5>
         <div class="card-body">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Hình ảnh</th>
-                        <th>Tên Nhân Viên</th>
-                        <th>Số Điện Thoại</th>
-                        <th>Địa chỉ</th>
-                        <th>Ngày đăng ký</th>
-                        <th>Vai Trò</th>
-                       
-                        <th>CCCD</th>
-                        <th>Ngày Sinh</th>
-                        <th>Giới tính</th>
-                        <th>Trạng Thái</th>
-                        <th>Hành Động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var nhanVien in Model)
-                    {
-                        <tr>
-                            <td>@(Model.ToList().IndexOf(nhanVien) + 1)</td>
-                            <td>
-                                @if (!string.IsNullOrEmpty(nhanVien.HinhAnh))
-                                {
-                                    <img src="@Url.Content($"~/img/AnhnhanVien/{System.IO.Path.GetFileName(nhanVien.HinhAnh)}")" alt="Ảnh Khách Hàng" style="width: 120px; height: 120px; object-fit: cover; border-radius: 10%" />
-                                }
-                                else
-                                {
-                                    <span>Không có ảnh</span>
-                                }
-                            </td>
-                            <td>@nhanVien.TenNhanVien</td>
-                            <td>@nhanVien.SoDienThoai</td>
-                            <td>@nhanVien.DiaChi</td>
-                            <td>
-                                @(nhanVien.NgayBatDau?.ToString("MM/dd/yyyy") ?? "N/A")
-                            </td>
-                            <td>@nhanVien.VaiTro</td>
-                                                    
-                            <td>@nhanVien.Cccd</td>
-                            <td>@(nhanVien.NgaySinh?.ToShortDateString() ?? "N/A")</td>
-                            <td>@(nhanVien.GioiTinh.HasValue ? (nhanVien.GioiTinh.Value ? "Nam" : "Nữ") : "N/A")</td>
-                            <td>@(nhanVien.TrangThai == 0 ? "Ngừng hoạt động" : "Hoạt động")</td>
-                            <td>
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: transparent; border: none; color: inherit; font-size: 20px;">
-                                        :
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a class="dropdown-item" id="editCustomerBtn" data-bs-toggle="modal" data-bs-target="#myModal1" onclick="LoadData('@nhanVien.MaNhanVien')">
-                                                <i class="bi bi-pencil-square"></i> Sửa
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item text-danger" href="#" onclick="showDeleteModal('@Url.Action("Delete", "NhanVien", new { id = nhanVien.MaNhanVien })')">
-                                                <i class="bi bi-trash"></i> Xóa
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </td>
+            <div class="table-responsive">
 
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Tên Nhân Viên</th>
+                            <th>Số Điện Thoại</th>
+                            <th>Địa chỉ</th>
+                            <th>Ngày đăng ký</th>
+                            <th>Vai Trò</th>
+                            <th>Hình ảnh</th>
+                            <th>CCCD</th>
+                            <th>Ngày Sinh</th>
+                            <th>Giới tính</th>
+                            <th>Trạng Thái</th>
+                            <th>Hành Động</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var nhanVien in Model)
+                        {
+                            <tr>
+                                <td>@nhanVien.TenNhanVien</td>
+                                <td>@nhanVien.SoDienThoai</td>
+                                <td>@nhanVien.DiaChi</td>
+                                <td>@(nhanVien.NgayBatDau?.ToShortDateString() ?? "N/A")</td>
+                                <td>@nhanVien.VaiTro</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(nhanVien.HinhAnh))
+                                    {
+                                        <img src="@Url.Content($"~/img/AnhnhanVien/{System.IO.Path.GetFileName(nhanVien.HinhAnh)}")" alt="Ảnh Khách Hàng" style="width: 120px; height: 120px; object-fit: cover; border-radius: 10%" />
+                                    }
+                                    else
+                                    {
+                                        <span>Không có ảnh</span>
+                                    }
+                                </td>                          
+                                <td>@nhanVien.Cccd</td>
+                                <td>@(nhanVien.NgaySinh?.ToShortDateString() ?? "N/A")</td>
+                                <td>@(nhanVien.GioiTinh.HasValue ? (nhanVien.GioiTinh.Value ? "Nam" : "Nữ") : "N/A")</td>
+                                <td>@(nhanVien.TrangThai == 0 ? "Ngừng hoạt động" : "Hoạt động")</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: transparent; border: none; color: inherit; font-size: 20px;">
+                                            :
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" id="editCustomerBtn" data-bs-toggle="modal" onclick="LoadData('@nhanVien.MaNhanVien')">
+                                                    <i class="bi bi-pencil-square"></i> Sửa
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="#" onclick="showDeleteModal('@Url.Action("Delete", "NhanVien", new { id = nhanVien.MaNhanVien })')">
+                                                    <i class="bi bi-trash"></i> Xóa
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -311,7 +308,7 @@
                     </select>
                     <span id="errorGioiTinh1" class="text-danger"></span>
                 </div>
-                <button id="btnSua" class="btn btn-primary">Sửa</button>
+                <button id="btnSua" class="btn btn-primary">Cập nhật</button>
             </div>
         </div>
     </div>
@@ -383,11 +380,15 @@
         var directUrl = '@Direct';
 
         if (directUrl) {
-            const ThongBao = document.getElementById('loginMessage')
-            ThongBao.style.display = "block";
-            setTimeout(function () {
+            Swal.fire({
+                icon: 'info',
+                title: 'Thông báo',
+                text: 'Bạn sẽ được chuyển đến trang đăng nhập.',
+                showConfirmButton: false,
+                timer: 3000
+            }).then(() => {
                 window.location.href = '/LoginAdmin';
-            }, 3000);
+            });
         }
     });
 </script>
@@ -506,11 +507,16 @@
                 processData: false,
                 success: function (response) {
                     if (response.success) {
-                        alert("Nhân viên đã được thêm thành công!");
-
-                        // Close the modal
-                        $("#myModal").modal('hide');
-                        location.reload();
+                        // Use SweetAlert for success
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: 'Nhân viên đã được thêm thành công!',
+                        }).then(() => {
+                            // Close the modal
+                            $("#myModal").modal('hide');
+                            location.reload();
+                        });
                     } else {
                         $(".text-danger").text("");
 
@@ -520,14 +526,27 @@
                                 $("#error" + key).text(response.errors[key]);
                             }
                         }
+
+                        // Use SweetAlert for error
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Có lỗi xảy ra!',
+                            text: 'Vui lòng kiểm tra lại các thông tin và thử lại.',
+                        });
                     }
                 },
                 error: function (xhr, status, error) {
-                    alert("Có lỗi xảy ra. Vui lòng thử lại.");
+                    // Use SweetAlert for error
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Có lỗi xảy ra!',
+                        text: 'Vui lòng thử lại.',
+                    });
                 }
             });
         });
     });
+
 
 </script>
 <script>
@@ -536,8 +555,8 @@
             url: `NhanVien/EditStaff?id=${id}`,
             type: 'GET',
             success: function (staff) {
-                $('#MaNhanVien1').val(staff.maNhanVien)
-                $('#TenNhanVien1').val(staff.tenNhanVien)
+                $('#MaNhanVien1').val(staff.maNhanVien);
+                $('#TenNhanVien1').val(staff.tenNhanVien);
                 $('#SoDienThoai1').val(staff.soDienThoai);
                 $('#VaiTro1').val(staff.vaiTro);
                 $('#DiaChi1').val(staff.diaChi);
@@ -570,20 +589,40 @@
             contentType: false,
             success: function (response) {
                 if (response.success) {
-                    alert(response.message);
-                    $('#myModal1').modal('hide');
-                    location.reload();
+                    // SweetAlert for success
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: response.message,
+                    }).then(() => {
+                        $('#myModal1').modal('hide');
+                        location.reload();
+                    });
                 } else {
+                    // Show validation errors using SweetAlert
                     for (var key in response.errors) {
                         if (response.errors.hasOwnProperty(key)) {
                             $("#error" + key + "1").text(response.errors[key]);
                         }
                     }
+
+                    // SweetAlert for errors
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Có lỗi xảy ra!',
+                        text: 'Vui lòng kiểm tra lại các thông tin và thử lại.',
+                    });
                 }
             },
             error: function () {
-                alert("Failed to update customer.");
+                // SweetAlert for AJAX error
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Có lỗi xảy ra!',
+                    text: 'Vui lòng thử lại.',
+                });
             }
         });
     });
+
 </script>

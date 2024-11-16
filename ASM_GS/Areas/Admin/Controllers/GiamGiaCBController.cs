@@ -79,7 +79,7 @@ namespace ASM_GS.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(GiamGia giamGia)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 return PartialView("_DiscountCreatePartial", giamGia); // Trả về partial view nếu có lỗi
             }

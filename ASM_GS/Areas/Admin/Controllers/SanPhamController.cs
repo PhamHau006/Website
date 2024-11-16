@@ -96,12 +96,6 @@ namespace ASM_GS.Areas.Admin.Controllers
 
 
 
-
-
-
-
-
-
         // GET: Admin/SanPham/CreatePartial
         public IActionResult CreatePartial()
         {
@@ -155,18 +149,6 @@ namespace ASM_GS.Areas.Admin.Controllers
                 return Json(new { success = false, message = "Đã xảy ra lỗi khi thêm sản phẩm. Vui lòng thử lại!" });
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         // GET: Admin/SanPham/EditPartial
@@ -274,17 +256,6 @@ namespace ASM_GS.Areas.Admin.Controllers
 
 
 
-
-
-
-
-
-
-
-
-
-
-
         // POST: Admin/SanPham/Delete/5
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed(string id)
@@ -313,6 +284,30 @@ namespace ASM_GS.Areas.Admin.Controllers
 
             return Json(new { success = true });
         }
+
+
+        // GET: Admin/SanPham/DetailsPartial
+        public async Task<IActionResult> DetailsPartial(string maSanPham)
+        {
+            if (string.IsNullOrEmpty(maSanPham))
+            {
+                return NotFound();
+            }
+
+            var sanPham = await _context.SanPhams
+                .Include(s => s.AnhSanPhams)
+                .Include(s => s.MaDanhMucNavigation)
+                .FirstOrDefaultAsync(s => s.MaSanPham == maSanPham);
+
+            if (sanPham == null)
+            {
+                return NotFound();
+            }
+
+            return PartialView("_DetailsSanPhamPartial", sanPham);
+        }
+
+
 
         private bool SanPhamExists(string id)
         {

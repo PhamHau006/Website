@@ -1,0 +1,49 @@
+﻿@model ASM_GS.Models.SanPham
+
+<div class="modal-header">
+    <h5 class="modal-title">Chi tiết sản phẩm</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-md-6">
+            <h5>@Model.TenSanPham</h5>
+            <p><strong>Giá:</strong> @Model.Gia.ToString("N0") đ</p>
+            <p><strong>Mô tả:</strong> @Model.MoTa</p>
+            <p><strong>Danh mục:</strong> @Model.MaDanhMucNavigation?.TenDanhMuc</p>
+            <p>
+                <strong>Trạng thái:</strong>
+                @if (Model.TrangThai == 1)
+                {
+                    <span class="badge bg-success">Còn Hàng</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Hết Hàng</span>
+                }
+            </p>
+        </div>
+        <div class="col-md-6">
+            <h6>Hình ảnh sản phẩm:</h6>
+            <div class="image-stack">
+                @if (Model.AnhSanPhams != null && Model.AnhSanPhams.Any())
+                {
+                    @foreach (var image in Model.AnhSanPhams)
+                    {
+                        <img src="@image.UrlAnh" alt="Ảnh sản phẩm" class="stacked-image" />
+                    }
+                }
+                else
+                {
+                    <p>Không có ảnh</p>
+                }
+            </div>
+        </div>
+    </div>
+    <hr />
+    <p><strong>Ngày thêm:</strong> @Model.NgayThem?.ToString("dd-MM-yyyy")</p>
+    <p><strong>NSX:</strong> @Model.Nsx?.ToString("dd-MM-yyyy")</p>r
+    <p><strong>HSD:</strong> @Model.Hsd?.ToString("dd-MM-yyyy")</p>
+</div>
+
+

@@ -778,7 +778,7 @@ namespace ASM_GS.Migrations
                     b.Property<string>("HinhAnh")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly>("NgayBatDau")
+                    b.Property<DateOnly?>("NgayBatDau")
                         .HasColumnType("date");
 
                     b.Property<DateOnly?>("NgaySinh")
@@ -801,6 +801,21 @@ namespace ASM_GS.Migrations
                     b.HasKey("MaNhanVien");
 
                     b.ToTable("NhanViens");
+
+                    b.HasData(
+                        new
+                        {
+                            MaNhanVien = "NV001",
+                            Cccd = "123456789",
+                            DiaChi = "123 Main St",
+                            GioiTinh = true,
+                            NgayBatDau = new DateOnly(2023, 1, 15),
+                            NgaySinh = new DateOnly(1990, 1, 1),
+                            SoDienThoai = "0123456789",
+                            TenNhanVien = "Admin",
+                            TrangThai = 1,
+                            VaiTro = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("ASM_GS.Models.SanPham", b =>
@@ -978,6 +993,16 @@ namespace ASM_GS.Migrations
                     b.ToTable("TaiKhoans");
 
                     b.HasData(
+                        new
+                        {
+                            MaTaiKhoan = "TK003",
+                            Email = "admin@example.com",
+                            MaNhanVien = "NV001",
+                            MatKhau = "123456",
+                            TenTaiKhoan = "admin",
+                            TinhTrang = 0,
+                            VaiTro = "Admin"
+                        },
                         new
                         {
                             MaTaiKhoan = "TK001",

@@ -70,7 +70,7 @@ namespace ASM_GS.Areas.Admin.Controllers
             }
 
             // If any validation errors exist, return the model to the view
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 return View("Index", model);
             }

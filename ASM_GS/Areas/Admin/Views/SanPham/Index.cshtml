@@ -8,9 +8,6 @@
     var Direct = ViewData["RedirectUrl"] as string;
     
 }
-
-
-@* <h1 class="card-header">@ViewData["Title"]</h1> *@
 <style>
     .custom-alert {
         background-color: #28a745; /* Màu nền xanh đậm hơn */
@@ -45,7 +42,6 @@
 
 <body>
     <!-- Modal Thêm Sản Phẩm -->
-    <!-- Modal Thêm Sản Phẩm -->
 <div class="modal fade" id="modalAddProductAlt" tabindex="-1" aria-labelledby="modalAddProductLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -77,6 +73,13 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <!-- Nội dung sẽ được tải qua AJAX -->
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="detailsProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <!-- Nội dung chi tiết sản phẩm sẽ được tải động -->
             </div>
         </div>
     </div>
@@ -235,6 +238,12 @@
                                                 <i class="bx bx-dots-vertical-rounded"></i>
                                             </button>
                                             <div class="dropdown-menu">
+
+                                                <a href="javascript:void(0)" class="dropdown-item" onclick="loadProductDetails('@item.MaSanPham')">
+                                                    <i class="bi bi-eye"></i> Xem Chi Tiết
+                                                </a>
+
+
                                                 <a class="dropdown-item" href="#" data-bs-toggle="modal" onclick="loadEditProduct('@item.MaSanPham')">
                                                     <i class="bi bi-pencil-square"></i> Sửa
                                                 </a>
@@ -478,6 +487,27 @@
                                 'error'
                             );
                         }
+                    });
+                }
+            });
+        }
+    </script>
+    <script>
+        function loadProductDetails(maSanPham) {
+            $.ajax({
+                url: '/Admin/SanPham/DetailsPartial',
+                type: 'GET',
+                data: { maSanPham: maSanPham },
+                success: function (response) {
+                    $('#detailsProductModal .modal-content').html(response); // Insert response content
+                    $('#detailsProductModal').modal('show'); // Show modal
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: 'Không thể tải chi tiết sản phẩm. Vui lòng thử lại!',
+                        confirmButtonText: 'OK'
                     });
                 }
             });

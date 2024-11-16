@@ -75,6 +75,13 @@ namespace ASM_GS.Controllers
                 khachHang.HinhAnh = $"/Avatar/{Anh.FileName}";
             }
 
+            khachHang.TenKhachHang = updatedKhachHang.TenKhachHang;
+            khachHang.SoDienThoai = updatedKhachHang.SoDienThoai;
+            khachHang.DiaChi = updatedKhachHang.DiaChi;
+            khachHang.Cccd = updatedKhachHang.Cccd;
+            khachHang.NgaySinh = updatedKhachHang.NgaySinh;
+            khachHang.GioiTinh = updatedKhachHang.GioiTinh;
+
             _context.KhachHangs.Update(khachHang);
             await _context.SaveChangesAsync();
 

@@ -8,11 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ASM_GS.Migrations
 {
     /// <inheritdoc />
-<<<<<<<< HEAD:ASM_GS/Migrations/20241114030754_ll.cs
-    public partial class ll : Migration
-========
     public partial class UpdateAnhSanPhamData : Migration
->>>>>>>> origin/Chinh-sua-thong-tin-ca-nhan-Admin:ASM_GS/Migrations/20241114080721_UpdateAnhSanPhamData.cs
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -91,7 +87,7 @@ namespace ASM_GS.Migrations
                     TenNhanVien = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     VaiTro = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SoDienThoai = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NgayBatDau = table.Column<DateOnly>(type: "date", nullable: false),
+                    NgayBatDau = table.Column<DateOnly>(type: "date", nullable: true),
                     HinhAnh = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NgaySinh = table.Column<DateOnly>(type: "date", nullable: true),
                     DiaChi = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -462,6 +458,16 @@ namespace ASM_GS.Migrations
                     { "KH001", "123456789", "123 Main St", true, null, new DateOnly(2023, 1, 15), new DateOnly(1990, 1, 1), "0123456789", "Embo", 1 },
                     { "KH002", "987654321", "456 Elm St", false, null, new DateOnly(2023, 1, 16), new DateOnly(1992, 2, 2), "0987654321", "Ember", 1 }
                 });
+
+            migrationBuilder.InsertData(
+                table: "NhanViens",
+                columns: new[] { "MaNhanVien", "Cccd", "DiaChi", "GioiTinh", "HinhAnh", "NgayBatDau", "NgaySinh", "SoDienThoai", "TenNhanVien", "TrangThai", "VaiTro" },
+                values: new object[] { "NV001", "123456789", "123 Main St", true, null, new DateOnly(2023, 1, 15), new DateOnly(1990, 1, 1), "0123456789", "Admin", 1, "Admin" });
+
+            migrationBuilder.InsertData(
+                table: "TaiKhoans",
+                columns: new[] { "MaTaiKhoan", "Email", "MaKhachHang", "MaNhanVien", "MaNhanVienNavigationMaNhanVien", "MatKhau", "TenTaiKhoan", "TinhTrang", "VaiTro" },
+                values: new object[] { "TK003", "admin@example.com", null, "NV001", null, "123456", "admin", 0, "Admin" });
 
             migrationBuilder.InsertData(
                 table: "SanPhams",

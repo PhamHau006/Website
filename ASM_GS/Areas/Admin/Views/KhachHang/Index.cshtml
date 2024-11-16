@@ -70,6 +70,7 @@
             </a> *@
         </div>
         <!-- Form tìm kiếm -->
+        <form>
         <input type="text" id="searchInput" name="searchTerm" value="@ViewBag.SearchTerm"
                placeholder="Tìm kiếm khách hàng..."
                class="form-control form-control-sm"
@@ -79,8 +80,8 @@
             <option value="1">Hoạt Động</option>
             <option value="0">Không Hoạt Động</option>
         </select>
-    </form>
-    
+
+ </form>   
     @if (TempData["successMessage"] != null)
     {
         <script>
@@ -105,11 +106,12 @@
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th>Hình ảnh</th>
                         <th>Tên khách hàng</th>
                         <th>Số Điện Thoại</th>
                         <th>Địa chỉ</th>
                         <th>Ngày đăng ký</th>
-                        <th>Hình ảnh</th>
+                        
                         <th>CCCD</th>
                         <th>Ngày Sinh</th>
                         <th>Giới tính</th>
@@ -122,10 +124,6 @@
                     {
                         <tr>
                             <td>@(Model.ToList().IndexOf(khachHang) + 1)</td>
-                            <td>@khachHang.TenKhachHang</td>
-                            <td>@khachHang.SoDienThoai</td>
-                            <td>@khachHang.DiaChi</td>
-                            <td>@khachHang.NgayDangKy.ToShortDateString()</td>
                             <td>
                                 @if (!string.IsNullOrEmpty(khachHang.HinhAnh))
                                 {
@@ -136,6 +134,11 @@
                                     <span>Không có ảnh</span>
                                 }
                             </td>
+                            <td>@khachHang.TenKhachHang</td>
+                            <td>@khachHang.SoDienThoai</td>
+                            <td>@khachHang.DiaChi</td>
+                            <td>@khachHang.NgayDangKy.ToShortDateString()</td>
+                           
                             <td>@khachHang.Cccd</td>
                             <td>@(khachHang.NgaySinh?.ToShortDateString() ?? "N/A")</td>
                             <td>@(khachHang.GioiTinh.HasValue ? (khachHang.GioiTinh.Value ? "Nam" : "Nữ") : "N/A")</td>
@@ -469,20 +472,16 @@
         $("#btnThem").click(function (e) {
             e.preventDefault();
 
-            var customerData = {
-                TenKhachHang: $("#TenKhachHang").val(),
-                SoDienThoai: $("#SoDienThoai").val(),
-                DiaChi: $("#DiaChi").val(),
-                Anh: $("#Anh")[0].files[0], // Lấy file ảnh
-                Cccd: $("#Cccd").val(),
-                NgaySinh: $("#NgaySinh").val(),
-                GioiTinh: $("#GioiTinh").val()
-            };
+            var formData = new FormData();
+            formData.append("TenKhachHang", $("#TenKhachHang").val());
+            formData.append("SoDienThoai", $("#SoDienThoai").val());
+            formData.append("DiaChi", $("#DiaChi").val());
+            formData.append("Cccd", $("#Cccd").val());
+            formData.append("NgaySinh", $("#NgaySinh").val());
+            formData.append("GioiTinh", $("#GioiTinh").val());
+            formData.append("Anh", $("#Anh")[0].files[0]); // Gửi file ảnh
 
             // Tạo đối tượng FormData để gửi dữ liệu bao gồm cả file
-            var formData = new FormData();
-            formData.append("customer", JSON.stringify(customerData));
-            formData.append("Anh", customerData.Anh);
 
             // Gửi AJAX POST request đến controller
             $.ajax({
@@ -494,7 +493,8 @@
                 success: function (response) {
                     if (response.success) {
                         alert("Khách hàng đã được thêm thành công!");
-                        $("#myModal").modal('hide');  // Đóng modal
+                        $("#myModal").modal('hide');
+                        location.reload();// Đóng modal
                     } else {
                         // Clear any previous error messages
                         $(".text-danger").text("");
@@ -513,7 +513,6 @@
             });
         });
     });
-
 </script>
 <script>
     function LoadData(id) {

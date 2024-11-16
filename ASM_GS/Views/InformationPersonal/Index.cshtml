@@ -83,8 +83,9 @@
         </div>
 
         <div class="item-info row">
-            <label>Ngày sinh:</label>
-            <input type="date" id="NgaySinh" class="form-control" value="@Model.NgaySinh?.ToString("dd-MM-yyyy")" />
+            <label for="NgaySinh">Ngày Sinh</label>
+            <input type="date" id="NgaySinh" name="NgaySinh" class="form-control" value="@(Model.NgaySinh?.ToString("yyyy-MM-dd") ?? "")" />
+            <span asp-validation-for="NgaySinh" class="text-danger"></span>
         </div>
 
         <div class="item-info row">

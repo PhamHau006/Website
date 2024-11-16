@@ -404,7 +404,14 @@ namespace ASM_GS.Controllers
                         HttpContext.Session.SetString("LoginRoute", "true");
                         HttpContext.Session.SetString("UserAccount", existingAccount.MaTaiKhoan);
                         HttpContext.Session.SetString("User", existingCustomer.MaKhachHang);
+                        return Json(new { Message = "Cập nhật tên cho khách hàng hiện có." });
                     }
+                    existingCustomer.TenKhachHang = user.Name;
+                    _context.TaiKhoans.Update(existingAccount);
+                    await _context.SaveChangesAsync();
+                    HttpContext.Session.SetString("LoginRoute", "true");
+                    HttpContext.Session.SetString("UserAccount", existingAccount.MaTaiKhoan);
+                    HttpContext.Session.SetString("User", existingCustomer.MaKhachHang);
                     return Json(new { Message = "Cập nhật tên cho khách hàng hiện có." });
                 }
             }

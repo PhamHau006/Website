@@ -11,7 +11,8 @@
                         <a href="@Url.Action("Index", "DetailCombo", new { id = item.MaCombo })">
                             @if (!string.IsNullOrEmpty(item.Anh))
                             {
-                                <img src="@Url.Content(item.Anh)" alt="categories" class="product-image img-fluid" style="max-width: 100%; max-height: 100%; object-fit: cover;" />
+                               <img src="@Url.Content($"~/img/AnhCombo/{System.IO.Path.GetFileName(item.Anh)}")" alt="categories" class="product-image img-fluid" style="max-width: 100%; max-height: 100%; object-fit: cover; border: 1px solid #ccc; border-radius: 5px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);" />
+
                             }
                             else
                             {

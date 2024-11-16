@@ -28,41 +28,35 @@ namespace ASM_GS.Controllers
             }
 
             var customer = await _context.KhachHangs
-                .Where(kh => kh.MaKhachHang == maKhachHang)
-                .Select(kh => new CheckoutViewModel
-                {
-                    MaKhachHang = kh.MaKhachHang,
-                    TenKhachHang = kh.TenKhachHang,
-                    SoDienThoai = kh.SoDienThoai,
-                    DiaChi = kh.DiaChi,
-                    Email = _context.TaiKhoans
-                        .Where(tk => tk.MaKhachHang == maKhachHang)
-                        .Select(tk => tk.Email)
-                        .FirstOrDefault(),
-                    CartItems = _context.GioHangs
-                        .Where(g => g.MaKhachHang == maKhachHang)
-                        .SelectMany(g => g.ChiTietGioHangs)
-                        .Select(item => new CartItemViewModel
-                        {
-                            ItemId = item.Id,
-                            ProductId = item.MaSanPham,
-                            Quantity = item.SoLuong,
-                            Price = _context.SanPhams
-                                .Where(p => p.MaSanPham == item.MaSanPham)
-                                .Select(p => (decimal?)p.Gia)
-                                .FirstOrDefault() ?? 0m,
-                            ProductName = _context.SanPhams
-                                .Where(p => p.MaSanPham == item.MaSanPham)
-                                .Select(p => p.TenSanPham)
-                                .FirstOrDefault() ?? "Sản phẩm không xác định",
-                            ImageUrl = _context.SanPhams
-                                .Where(p => p.MaSanPham == item.MaSanPham)
-                                .SelectMany(p => p.AnhSanPhams)
-                                .Select(a => a.UrlAnh)
-                                .FirstOrDefault() ?? "/images/default-product.jpg"
-                        }).ToList()
-                })
-                .FirstOrDefaultAsync();
+    .Where(kh => kh.MaKhachHang == maKhachHang)
+    .Select(kh => new CheckoutViewModel
+    {
+        MaKhachHang = kh.MaKhachHang,
+        TenKhachHang = kh.TenKhachHang,
+        SoDienThoai = kh.SoDienThoai,
+        DiaChi = kh.DiaChi,
+        Email = _context.TaiKhoans
+            .Where(tk => tk.MaKhachHang == maKhachHang)
+            .Select(tk => tk.Email)
+            .FirstOrDefault(),
+        CartItems = _context.GioHangs
+            .Where(g => g.MaKhachHang == maKhachHang)
+            .SelectMany(g => g.ChiTietGioHangs)
+            .Include(item => item.SanPham) // Liên kết trực tiếp với SanPham
+            .Select(item => new CartItemViewModel
+            {
+                ItemId = item.Id,
+                ProductId = item.MaSanPham,
+                Quantity = item.SoLuong,
+                Price = item.SanPham.Gia, // Lấy giá từ bảng SanPham
+                ProductName = item.SanPham.TenSanPham,
+                ImageUrl = item.SanPham.AnhSanPhams.FirstOrDefault() != null
+                    ? item.SanPham.AnhSanPhams.FirstOrDefault().UrlAnh
+                    : "/images/default-product.jpg"
+            }).ToList()
+    })
+    .FirstOrDefaultAsync();
+
 
             if (customer == null || customer.CartItems.Count == 0)
             {
@@ -70,77 +64,99 @@ namespace ASM_GS.Controllers
                 return View(customer);
             }
 
-            customer.Total = customer.CartItems.Sum(i => i.Price * i.Quantity);
             return View(customer);
         }
 
         [HttpPost]
         public async Task<IActionResult> Index(CheckoutViewModel model)
         {
-            if (!ModelState.IsValid)
+            var maKhachHang = HttpContext.Session.GetString("User");
+            if (string.IsNullOrEmpty(maKhachHang))
             {
-                try
-                {
-                    var maKhachHang = HttpContext.Session.GetString("User");
-                    if (string.IsNullOrEmpty(maKhachHang))
-                    {
-                        TempData["ErrorMessage"] = "Vui lòng đăng nhập để tiếp tục.";
-                        return RedirectToAction("Index", "Cart");
-                    }
-
-                    // Create new invoice ID
-                    var lastInvoice = _context.HoaDons.OrderByDescending(h => h.MaHoaDon).FirstOrDefault();
-                    string newInvoiceId = "HD" + ((lastInvoice != null ? int.Parse(lastInvoice.MaHoaDon.Substring(2)) : 0) + 1).ToString("D3");
-
-                    // Insert new invoice
-                    var hoaDon = new HoaDon
-                    {
-                        MaHoaDon = newInvoiceId,
-                        MaKhachHang = maKhachHang,
-                        NgayXuatHoaDon = DateOnly.FromDateTime(DateTime.Now),
-                        TongTien = model.Total,
-                        TrangThai = model.PaymentMethod == "COD" ? 0 : 1 // 0: Pending, 1: Paid
-                    };
-                    _context.HoaDons.Add(hoaDon);
-
-                    // Insert invoice details
-                    foreach (var item in model.CartItems)
-                    {
-                        var chiTietHoaDon = new ChiTietHoaDon
-                        {
-                            MaHoaDon = newInvoiceId,
-                            MaSanPham = item.ProductId,
-                            SoLuong = item.Quantity,
-                            Gia = item.Price
-                        };
-                        _context.ChiTietHoaDons.Add(chiTietHoaDon);
-                    }
-
-                    await _context.SaveChangesAsync();
-
-                    // Redirect to VNPay if selected
-                    if (model.PaymentMethod == "VNPay")
-                    {
-                        string callbackUrl = Url.Action("VNPayPaymentConfirmation", "Checkout", new { orderId = newInvoiceId, success = true }, Request.Scheme);
-                        return Redirect(callbackUrl);
-                    }
-
-                    // Clear cart after successful order
-                    await ClearCart(maKhachHang);
-
-                    TempData["SuccessMessage"] = "Đặt hàng thành công! Đơn hàng của bạn đang được xử lý.";
-                    return RedirectToAction("OrderConfirmation", "Checkout", new { orderId = newInvoiceId });
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                    TempData["ErrorMessage"] = "Có lỗi xảy ra trong quá trình đặt hàng. Vui lòng thử lại sau.";
-                    return RedirectToAction("Index", "Cart");
-                }
+                TempData["ErrorMessage"] = "Vui lòng đăng nhập để tiếp tục.";
+                return RedirectToAction("Index", "Cart");
             }
 
-            return View(model);
+            // Lấy lại CartItems từ cơ sở dữ liệu nếu không có dữ liệu trong model.CartItems
+            if (model.CartItems == null || !model.CartItems.Any())
+            {
+                model.CartItems = await _context.GioHangs
+                    .Where(g => g.MaKhachHang == maKhachHang)
+                    .SelectMany(g => g.ChiTietGioHangs)
+                    .Include(item => item.SanPham)
+                    .Select(item => new CartItemViewModel
+                    {
+                        ItemId = item.Id,
+                        ProductId = item.MaSanPham,
+                        Quantity = item.SoLuong,
+                        Price = item.SanPham.Gia,
+                        ProductName = item.SanPham.TenSanPham,
+                        ImageUrl = item.SanPham.AnhSanPhams.Any()
+                            ? item.SanPham.AnhSanPhams.FirstOrDefault().UrlAnh
+                            : "/images/default-product.jpg"
+                    }).ToListAsync();
+            }
+
+            // Tính lại Total dựa trên CartItems trong POST
+            decimal totalAmount = model.CartItems.Sum(i => i.Price * i.Quantity);
+
+            // Tạo mã hóa đơn mới
+            var lastInvoice = await _context.HoaDons.OrderByDescending(h => h.MaHoaDon).FirstOrDefaultAsync();
+            string newInvoiceId = "HD" + ((lastInvoice != null ? int.Parse(lastInvoice.MaHoaDon.Substring(2)) : 0) + 1).ToString("D3");
+
+            // Tạo mã đơn hàng mới
+            var lastOrder = await _context.DonHangs.OrderByDescending(d => d.MaDonHang).FirstOrDefaultAsync();
+            string newOrderId = "DH" + ((lastOrder != null ? int.Parse(lastOrder.MaDonHang.Substring(2)) : 0) + 1).ToString("D3");
+
+            // Tạo hóa đơn và đơn hàng với `totalAmount`
+            var hoaDon = new HoaDon
+            {
+                MaHoaDon = newInvoiceId,
+                MaKhachHang = maKhachHang,
+                NgayXuatHoaDon = DateOnly.FromDateTime(DateTime.Now),
+                TongTien = totalAmount,
+                TrangThai = model.PaymentMethod == "COD" ? 0 : 1
+            };
+            _context.HoaDons.Add(hoaDon);
+
+            var donHang = new DonHang
+            {
+                MaDonHang = newOrderId,
+                MaKhachHang = maKhachHang,
+                NgayDatHang = DateOnly.FromDateTime(DateTime.Now),
+                TrangThai = 0,
+                TongTien = totalAmount
+            };
+            _context.DonHangs.Add(donHang);
+
+            // Lưu chi tiết hóa đơn và đơn hàng
+            foreach (var item in model.CartItems)
+            {
+                _context.ChiTietHoaDons.Add(new ChiTietHoaDon
+                {
+                    MaHoaDon = hoaDon.MaHoaDon,
+                    MaSanPham = item.ProductId,
+                    SoLuong = item.Quantity,
+                    Gia = item.Price
+                });
+
+                _context.ChiTietDonHangs.Add(new ChiTietDonHang
+                {
+                    MaDonHang = donHang.MaDonHang,
+                    MaSanPham = item.ProductId,
+                    SoLuong = item.Quantity,
+                    Gia = item.Price
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Đặt hàng thành công!";
+            return RedirectToAction("OrderConfirmation", new { orderId = donHang.MaDonHang });
         }
+
+
+
 
         [HttpGet]
         public async Task<IActionResult> VNPayPaymentConfirmation(string orderId, bool success)

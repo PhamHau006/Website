@@ -1,0 +1,33 @@
+﻿@model ASM_GS.ViewModels.DonHang_LSViewModel
+
+<h2>Chi tiết Đơn Hàng @Model.MaHoaDon</h2>
+
+<div>
+    <strong>Mã khách hàng:</strong> @Model.MaKhachHang <br />
+    <strong>Ngày xuất hóa đơn:</strong> @Model.NgayXuatHoaDon <br />
+    <strong>Tổng tiền:</strong> @Model.TongTien <br />
+    <strong>Trạng thái:</strong> @Model.TrangThai <br />
+</div>
+
+<h3>Chi tiết sản phẩm</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Mã sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Giá</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ChiTietHoaDons)
+        {
+            <tr>
+                <td>@item.MaSanPham</td>
+                <td>@item.SoLuong</td>
+                <td>@item.Gia</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("Index", "DonHangLS")">Quay lại danh sách đơn hàng</a>

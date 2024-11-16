@@ -33,7 +33,11 @@ namespace ASM_GS.Controllers
                 .HasOne(a => a.MaSanPhamNavigation)
                 .WithMany(s => s.AnhSanPhams)
                 .HasForeignKey(a => a.MaSanPham);
-
+            modelBuilder.Entity<ChiTietDonHang>()
+        .HasOne(ctdh => ctdh.DonHang)
+        .WithMany(dh => dh.ChiTietDonHangs)
+        .HasForeignKey(ctdh => ctdh.MaDonHang)
+        .OnDelete(DeleteBehavior.Cascade);
             // Cấu hình quan hệ giữa SanPham và DanhMuc
             modelBuilder.Entity<SanPham>()
                 .HasOne(s => s.MaDanhMucNavigation)

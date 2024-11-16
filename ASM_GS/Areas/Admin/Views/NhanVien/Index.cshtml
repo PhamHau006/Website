@@ -102,12 +102,13 @@
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th>Hình ảnh</th>
                         <th>Tên Nhân Viên</th>
                         <th>Số Điện Thoại</th>
                         <th>Địa chỉ</th>
                         <th>Ngày đăng ký</th>
                         <th>Vai Trò</th>
-                        <th>Hình ảnh</th>
+                       
                         <th>CCCD</th>
                         <th>Ngày Sinh</th>
                         <th>Giới tính</th>
@@ -120,11 +121,6 @@
                     {
                         <tr>
                             <td>@(Model.ToList().IndexOf(nhanVien) + 1)</td>
-                            <td>@nhanVien.TenNhanVien</td>
-                            <td>@nhanVien.SoDienThoai</td>
-                            <td>@nhanVien.DiaChi</td>
-                            <td>@nhanVien.NgayBatDau.ToShortDateString()</td>
-                            <td>@nhanVien.VaiTro</td>
                             <td>
                                 @if (!string.IsNullOrEmpty(nhanVien.HinhAnh))
                                 {
@@ -134,7 +130,15 @@
                                 {
                                     <span>Không có ảnh</span>
                                 }
-                            </td>                          
+                            </td>
+                            <td>@nhanVien.TenNhanVien</td>
+                            <td>@nhanVien.SoDienThoai</td>
+                            <td>@nhanVien.DiaChi</td>
+                            <td>
+                                @(nhanVien.NgayBatDau?.ToString("MM/dd/yyyy") ?? "N/A")
+                            </td>
+                            <td>@nhanVien.VaiTro</td>
+                                                    
                             <td>@nhanVien.Cccd</td>
                             <td>@(nhanVien.NgaySinh?.ToShortDateString() ?? "N/A")</td>
                             <td>@(nhanVien.GioiTinh.HasValue ? (nhanVien.GioiTinh.Value ? "Nam" : "Nữ") : "N/A")</td>

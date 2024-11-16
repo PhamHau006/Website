@@ -57,7 +57,8 @@
             <tr>
                 <td>@order.MaDonHang</td>
                 <td>@order.NgayDatHang</td>
-                <td>@order.TongTien</td>
+                <td>@order.TongTien.ToString("N0") VND</td>
+
                 <td>
                     @if (order.TrangThai == 0)
                     {

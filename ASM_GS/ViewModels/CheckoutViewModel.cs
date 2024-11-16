@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-
-namespace ASM_GS.ViewModels
+﻿namespace ASM_GS.ViewModels
 {
     public class CheckoutViewModel
     {
@@ -11,13 +8,10 @@ namespace ASM_GS.ViewModels
         public string DiaChi { get; set; }
         public string Email { get; set; }
 
-        // Tổng số tiền
-        public decimal Total { get; set; }
+        public decimal Total => CartItems.Sum(i => i.Price * i.Quantity);
 
-        // Phương thức thanh toán (COD hoặc VNPay)
         public string PaymentMethod { get; set; }
 
-        // Danh sách sản phẩm trong giỏ hàng
         public List<CartItemViewModel> CartItems { get; set; } = new List<CartItemViewModel>();
     }
 }

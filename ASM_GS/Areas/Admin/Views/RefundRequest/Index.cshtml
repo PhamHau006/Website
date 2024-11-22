@@ -1,0 +1,232 @@
+﻿@model IPagedList<ASM_GS.Models.RefundRequest>
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+
+@{
+    ViewData["Title"] = "Quản lý yêu cầu hoàn trả";
+    var selectedTrangThai = ViewBag.TrangThai as string;
+    var selectedSortBy = ViewBag.SortBy as string;
+    var selectedPageSize = ViewBag.PageSize as int?;
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<!-- Thanh tìm kiếm và lọc -->
+<form asp-action="Index" method="get" class="form-inline mb-3">
+    <div class="form-group mr-2">
+        <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control" placeholder="Tìm kiếm mã đơn hàng..." />
+    </div>
+
+    <div class="form-group mr-2">
+        <select name="trangThai" class="form-control">
+            @if (string.IsNullOrEmpty(selectedTrangThai))
+            {
+                <option value="" selected>Tất cả trạng thái</option>
+            }
+            else
+            {
+                <option value="">Tất cả trạng thái</option>
+            }
+
+            @if (selectedTrangThai == "Đang chờ")
+            {
+                <option value="Đang chờ" selected>Đang chờ</option>
+            }
+            else
+            {
+                <option value="Đang chờ">Đang chờ</option>
+            }
+
+            @if (selectedTrangThai == "Đã duyệt")
+            {
+                <option value="Đã duyệt" selected>Đã duyệt</option>
+            }
+            else
+            {
+                <option value="Đã duyệt">Đã duyệt</option>
+            }
+
+            @if (selectedTrangThai == "Không duyệt")
+            {
+                <option value="Không duyệt" selected>Không duyệt</option>
+            }
+            else
+            {
+                <option value="Không duyệt">Không duyệt</option>
+            }
+        </select>
+    </div>
+
+
+    <div class="form-group mr-2">
+        <select name="sortBy" class="form-control">
+            @if (selectedSortBy == "NgayTao")
+            {
+                <option value="NgayTao" selected>Sắp xếp theo ngày</option>
+            }
+            else
+            {
+                <option value="NgayTao">Sắp xếp theo ngày</option>
+            }
+
+            @if (selectedSortBy == "MaDonHang")
+            {
+                <option value="MaDonHang" selected>Sắp xếp theo mã đơn</option>
+            }
+            else
+            {
+                <option value="MaDonHang">Sắp xếp theo mã đơn</option>
+            }
+
+            @if (selectedSortBy == "TrangThai")
+            {
+                <option value="TrangThai" selected>Sắp xếp theo trạng thái</option>
+            }
+            else
+            {
+                <option value="TrangThai">Sắp xếp theo trạng thái</option>
+            }
+        </select>
+    </div>
+
+
+    <div class="form-group mr-2">
+        <select name="pageSize" class="form-control">
+            @if (selectedPageSize == 5)
+            {
+                <option value="5" selected>5</option>
+            }
+            else
+            {
+                <option value="5">5</option>
+            }
+
+            @if (selectedPageSize == 10)
+            {
+                <option value="10" selected>10</option>
+            }
+            else
+            {
+                <option value="10">10</option>
+            }
+
+            @if (selectedPageSize == 20)
+            {
+                <option value="20" selected>20</option>
+            }
+            else
+            {
+                <option value="20">20</option>
+            }
+        </select>
+    </div>
+
+
+
+    <button type="submit" class="btn btn-primary">Lọc & Tìm kiếm</button>
+</form>
+
+<!-- Bảng hiển thị -->
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Mã đơn hàng</th>
+            <th>Lý do hoàn trả</th>
+            <th>Trạng thái</th>
+            <th>Ngày tạo</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.MaDonHang</td>
+                    <td>@item.LyDo</td>
+                    <td>@item.TrangThai</td>
+                    <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#refundRequestModal" data-id="@item.Id">
+                            Xem chi tiết
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-center">Không tìm thấy yêu cầu hoàn trả nào.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Phân trang -->
+<div class="d-flex justify-content-center">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new
+    {
+        page,
+        searchTerm = ViewBag.SearchTerm,
+        trangThai = ViewBag.TrangThai,
+        sortBy = ViewBag.SortBy,
+        pageSize = ViewBag.PageSize
+    }),
+    new PagedListRenderOptions
+    {
+        DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+        DisplayLinkToLastPage = PagedListDisplayMode.Always,
+        DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+        DisplayLinkToNextPage = PagedListDisplayMode.Always,
+        LinkToFirstPageFormat = "Trang đầu",
+        LinkToLastPageFormat = "Trang cuối",
+        LinkToPreviousPageFormat = "«",
+        LinkToNextPageFormat = "»",
+        MaximumPageNumbersToDisplay = 5,
+        ContainerDivClasses = new[] { "pagination" },
+        UlElementClasses = new[] { "pagination" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" }
+    })
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="refundRequestModal" tabindex="-1" aria-labelledby="refundRequestModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="refundRequestModalLabel">Chi tiết yêu cầu hoàn trả</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="refundRequestDetails"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $('#refundRequestModal').on('show.bs.modal', function (e) {
+            var button = $(e.relatedTarget);
+            var refundRequestId = button.data('id');
+
+            $.ajax({
+                url: '@Url.Action("Details", "RefundRequest")/' + refundRequestId,
+                type: 'GET',
+                success: function (data) {
+                    $('#refundRequestDetails').html(data);
+                },
+                error: function () {
+                    $('#refundRequestDetails').html('<p class="text-danger">Không thể tải chi tiết yêu cầu hoàn trả.</p>');
+                }
+            });
+        });
+    </script>
+}

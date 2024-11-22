@@ -22,5 +22,6 @@ public partial class DonHang
     public virtual KhachHang KhachHang { get; set; }
 
     public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; } = new List<ChiTietDonHang>();
+    public virtual ICollection<RefundRequest> RefundRequests { get; set; } = new List<RefundRequest>();
 }
 

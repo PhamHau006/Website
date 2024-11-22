@@ -24,6 +24,7 @@ namespace ASM_GS.Controllers
         public virtual DbSet<SanPham> SanPhams { get; set; }
         public virtual DbSet<TaiKhoan> TaiKhoans { get; set; }
         public virtual DbSet<MaNhapGiamGia> MaNhapGiamGias { get; set; } 
+        public DbSet<RefundRequest> RefundRequests { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -34,10 +35,10 @@ namespace ASM_GS.Controllers
                 .WithMany(s => s.AnhSanPhams)
                 .HasForeignKey(a => a.MaSanPham);
             modelBuilder.Entity<ChiTietDonHang>()
-        .HasOne(ctdh => ctdh.DonHang)
-        .WithMany(dh => dh.ChiTietDonHangs)
-        .HasForeignKey(ctdh => ctdh.MaDonHang)
-        .OnDelete(DeleteBehavior.Cascade);
+                .HasOne(ctdh => ctdh.DonHang)
+                .WithMany(dh => dh.ChiTietDonHangs)
+                .HasForeignKey(ctdh => ctdh.MaDonHang)
+                .OnDelete(DeleteBehavior.Cascade);
             // Cấu hình quan hệ giữa SanPham và DanhMuc
             modelBuilder.Entity<SanPham>()
                 .HasOne(s => s.MaDanhMucNavigation)

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ASM_GS.Migrations
 {
     /// <inheritdoc />
-    public partial class DLLS : Migration
+    public partial class DLSS : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -352,6 +352,28 @@ namespace ASM_GS.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RefundRequests",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MaDonHang = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LyDo = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    TrangThai = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefundRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefundRequests_DonHangs_MaDonHang",
+                        column: x => x.MaDonHang,
+                        principalTable: "DonHangs",
+                        principalColumn: "MaDonHang",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ChiTietGioHangs",
                 columns: table => new
                 {
@@ -651,6 +673,11 @@ namespace ASM_GS.Migrations
                 column: "MaGiamGia");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RefundRequests_MaDonHang",
+                table: "RefundRequests",
+                column: "MaDonHang");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SanPhams_MaDanhMuc",
                 table: "SanPhams",
                 column: "MaDanhMuc");
@@ -691,10 +718,10 @@ namespace ASM_GS.Migrations
                 name: "MaNhapGiamGia");
 
             migrationBuilder.DropTable(
-                name: "TaiKhoans");
+                name: "RefundRequests");
 
             migrationBuilder.DropTable(
-                name: "DonHangs");
+                name: "TaiKhoans");
 
             migrationBuilder.DropTable(
                 name: "GioHangs");
@@ -709,16 +736,19 @@ namespace ASM_GS.Migrations
                 name: "SanPhams");
 
             migrationBuilder.DropTable(
+                name: "DonHangs");
+
+            migrationBuilder.DropTable(
                 name: "NhanViens");
 
             migrationBuilder.DropTable(
                 name: "GiamGia");
 
             migrationBuilder.DropTable(
-                name: "KhachHangs");
+                name: "DanhMucs");
 
             migrationBuilder.DropTable(
-                name: "DanhMucs");
+                name: "KhachHangs");
         }
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ASM_GS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241115103709_DLLS")]
-    partial class DLLS
+    [Migration("20241119041518_DLSS")]
+    partial class DLSS
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -772,6 +772,38 @@ namespace ASM_GS.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ASM_GS.Models.RefundRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("LyDo")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("MaDonHang")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TrangThai")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaDonHang");
+
+                    b.ToTable("RefundRequests");
+                });
+
             modelBuilder.Entity("ASM_GS.Models.SanPham", b =>
                 {
                     b.Property<string>("MaSanPham")
@@ -1187,6 +1219,17 @@ namespace ASM_GS.Migrations
                     b.Navigation("GiamGia");
                 });
 
+            modelBuilder.Entity("ASM_GS.Models.RefundRequest", b =>
+                {
+                    b.HasOne("ASM_GS.Models.DonHang", "DonHang")
+                        .WithMany("RefundRequests")
+                        .HasForeignKey("MaDonHang")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DonHang");
+                });
+
             modelBuilder.Entity("ASM_GS.Models.SanPham", b =>
                 {
                     b.HasOne("ASM_GS.Models.DanhMuc", "MaDanhMucNavigation")
@@ -1310,6 +1353,8 @@ namespace ASM_GS.Migrations
             modelBuilder.Entity("ASM_GS.Models.DonHang", b =>
                 {
                     b.Navigation("ChiTietDonHangs");
+
+                    b.Navigation("RefundRequests");
                 });
 
             modelBuilder.Entity("ASM_GS.Models.GiamGia", b =>

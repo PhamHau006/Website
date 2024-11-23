@@ -59,6 +59,6 @@ namespace ASM_GS.Models
         public virtual ICollection<DanhGia> DanhGia { get; set; } = new List<DanhGia>();
 
         public virtual DanhMuc? MaDanhMucNavigation { get; set; }
-
+  
     }
 }

@@ -28,5 +28,6 @@ namespace ASM_GS.Models
         // Thiết lập mối quan hệ với KhachHang
         [ForeignKey("MaKhachHang")]
         public virtual KhachHang? KhachHang { get; set; }
+        
     }
 }

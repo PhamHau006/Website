@@ -1,0 +1,306 @@
+﻿@model IPagedList<ASM_GS.Models.HoaDon>
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+
+@{
+    ViewData["Title"] = "Danh sách hóa đơn";
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<h2 class="mb-4 text-center"><i class="bi bi-file-earmark-earmark"></i> Danh sách hóa đơn</h2>
+
+<!-- Tìm kiếm và lọc -->
+<form method="get" action="/Admin/HoaDon/Index" class="mb-4">
+    <div class="row">
+        <div class="col-md-8">
+            <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm kiếm mã hóa đơn hoặc khách hàng" />
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+
+                <div class="col-md-4">
+                    <select name="trangThai" id="trangThai" class="form-control">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="1">Đã thanh toán</option>
+                        <option value="0">Chưa thanh toán</option>
+                    </select>
+                </div>
+                <div class="col-md-12 mt-3 text-end">
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                </div>
+            </div>
+            <select id="pageSize" name="pageSize" class="form-select d-inline-block w-auto" onchange="this.form.submit()" style="width: 45px; margin-left: 10px;">
+                @if (ViewBag.PageSize == 5)
+                {
+                    <option value="5" selected>5</option>
+                }
+                else
+                {
+                    <option value="5">5</option>
+                }
+
+                @if (ViewBag.PageSize == 10)
+                {
+                    <option value="10" selected>10</option>
+                }
+                else
+                {
+                    <option value="10">10</option>
+                }
+
+                @if (ViewBag.PageSize == 15)
+                {
+                    <option value="15" selected>15</option>
+                }
+                else
+                {
+                    <option value="15">15</option>
+                }
+            </select>
+        </div>
+    </div>
+</form>
+
+<!-- Danh sách hóa đơn -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Mã hóa đơn</th>
+            <th>Mã khách hàng</th>
+            <th>Ngày xuất</th>
+            <th>Tổng tiền</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var hoaDon in Model)
+        {
+            <tr>
+                <td>@hoaDon.MaHoaDon</td>
+                <td>@hoaDon.MaKhachHang</td>
+                <td>@hoaDon.NgayXuatHoaDon.ToShortDateString()</td>
+                <td>@hoaDon.TongTien.ToString("N0") VND</td>
+                <td>
+                    @if (hoaDon.TrangThai == 1)
+                    {
+                        <span class="text-success">Đã thanh toán</span>
+                    }
+                    else
+                    {
+                        <span class="text-warning">Chưa thanh toán</span>
+                    }
+                </td>
+                <td>
+                    <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#chiTietModal"
+                            onclick="loadChiTietHoaDon('@hoaDon.MaHoaDon')">
+                        Xem chi tiết
+                    </button>
+                    <button class="btn btn-warning btn-sm" onclick="xacNhanDoiTrangThai('@hoaDon.MaHoaDon', @hoaDon.TrangThai)">
+                        Sửa trạng thái
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<!-- Hiển thị phân trang -->
+<div class="d-flex justify-content-center">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, pageSize = ViewBag.PageSize, search = ViewBag.Search, trangThai = ViewData["CurrentTrangThai"] }),
+        new PagedListRenderOptions
+        {
+            DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+            DisplayLinkToLastPage = PagedListDisplayMode.Always,
+            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+            DisplayLinkToNextPage = PagedListDisplayMode.Always,
+            LinkToFirstPageFormat = "Trang đầu",
+            LinkToLastPageFormat = "Trang cuối",
+            LinkToPreviousPageFormat = "«",
+            LinkToNextPageFormat = "»",
+            MaximumPageNumbersToDisplay = 5,
+            ContainerDivClasses = new[] { "pagination" },
+            UlElementClasses = new[] { "pagination" },
+            LiElementClasses = new[] { "page-item" },
+            PageClasses = new[] { "page-link" }
+        })
+</div>
+
+<!-- Modal chi tiết hóa đơn -->
+<div class="modal fade" id="chiTietModal" tabindex="-1" aria-labelledby="chiTietModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="chiTietModalLabel">Chi tiết hóa đơn</h5>
+                <span class="ms-3">Mã hóa đơn: <strong id="maHoaDon"></strong></span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Ảnh sản phẩm</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Giá</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody id="chiTietContent">
+                        <!-- Nội dung chi tiết sẽ được tải động -->
+                    </tbody>
+                </table>
+                <div class="d-flex justify-content-end">
+                    <h5>Tổng tiền: <span id="tongTien"></span> VND</h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="inHoaDon()">In hóa đơn</button>
+                    <button type="button" class="btn btn-success" onclick="exportToWord()">Xuất Word</button>
+
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function inHoaDon() {
+        // Lấy mã hóa đơn từ modal
+        const maHoaDon = $('#maHoaDon').text().trim();
+
+        if (!maHoaDon) {
+            Swal.fire('Lỗi', 'Không tìm thấy mã hóa đơn để in.', 'error');
+            return;
+        }
+
+        // URL chính xác cho khu vực Admin
+        const url = `/Admin/iHoaDon/Print?maHoaDon=${maHoaDon}`;
+
+        // Mở cửa sổ mới để tải hóa đơn
+        const newWindow = window.open(url, '_blank');
+
+        // Kiểm tra nếu trình duyệt chặn cửa sổ bật lên
+        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+            Swal.fire('Lỗi', 'Trình duyệt của bạn đã chặn cửa sổ bật lên. Hãy bật lại và thử lại.', 'error');
+        }
+    }
+    function exportToWord() {
+        const maHoaDon = document.getElementById('maHoaDon').innerText.trim(); // Lấy giá trị của maHoaDon từ HTML
+
+        if (!maHoaDon) {
+            Swal.fire('Lỗi', 'Không tìm thấy mã hóa đơn để xuất Word.', 'error');
+            return;
+        }
+
+        // Tạo URL động
+        const url = `/Admin/iHoaDon/ExportToWord?maHoaDon=${encodeURIComponent(maHoaDon)}`;
+
+        // Mở URL trong tab mới
+        window.open(url, '_blank');
+    }
+
+
+
+    function loadChiTietHoaDon(maHoaDon) {
+        $.get('/Admin/HoaDon/GetChiTietHoaDon', { maHoaDon: maHoaDon }, function (data) {
+            let content = '';
+            let total = 0;
+
+            data.forEach(item => {
+                const hinhAnh = item.sanPham ? item.sanPham.hinhAnh : item.combo?.hinhAnh || '/images/default-image.jpg';
+                const tenSanPham = item.sanPham ? item.sanPham.tenSanPham : 'Combo: ' + item.combo.tenCombo;
+                const soLuong = item.soLuong || 0; // Số lượng sản phẩm
+                const gia = item.gia || 0; // Giá sản phẩm
+                const thanhTien = soLuong * gia; // Thành tiền
+                total += thanhTien;
+
+                content += `
+                    <tr>
+                        <td>
+                            <img src="${hinhAnh}" alt="Hình ảnh sản phẩm" style="width: 80px; height: 80px; object-fit: cover;">
+                            </td>
+                        <td>${tenSanPham}</td>
+                        <td>${soLuong}</td>
+                        <td>${gia.toLocaleString()} VND</td>
+                        <td>${thanhTien.toLocaleString()} VND</td>
+                    </tr>`;
+            });
+
+            // Hiển thị chi tiết hóa đơn
+            $('#chiTietContent').html(content);
+            // Hiển thị tổng tiền
+            $('#tongTien').text(total.toLocaleString() + ' VND');
+            // Gán mã hóa đơn vào modal
+            $('#maHoaDon').text(maHoaDon);
+        }).fail(function () {
+            Swal.fire('Lỗi', 'Không thể tải chi tiết hóa đơn. Vui lòng thử lại.', 'error');
+        });
+    }
+
+
+
+
+    // Gọi lại khi trang được tải
+    $(document).ready(function () {
+        loadHoaDonList();
+    });
+    // Hàm mở modal sửa trạng thái
+    function xacNhanDoiTrangThai(maHoaDon, trangThaiHienTai) {
+        // Xác định trạng thái mới
+        const trangThaiMoi = trangThaiHienTai === 1 ? 0 : 1;
+        const trangThaiText = trangThaiMoi === 1 ? "Đã thanh toán" : "Chưa thanh toán";
+
+        // Hiển thị hộp thoại xác nhận bằng SweetAlert
+        Swal.fire({
+            title: 'Xác nhận thay đổi trạng thái',
+            text: `Bạn có chắc chắn muốn đổi trạng thái hóa đơn sang "${trangThaiText}" không?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Hủy',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Gửi yêu cầu cập nhật trạng thái
+                $.post('/Admin/HoaDon/UpdateTrangThai', { maHoaDon: maHoaDon, trangThai: trangThaiMoi }, function (response) {
+                    Swal.fire({
+                        title: response.success ? 'Thành công' : 'Thất bại',
+                        text: response.message,
+                        icon: response.success ? 'success' : 'error',
+                    }).then(() => {
+                        if (response.success) {
+                            location.reload(); // Tải lại trang sau khi cập nhật thành công
+                        }
+                    });
+                }).fail(function () {
+                    Swal.fire('Lỗi', 'Không thể cập nhật trạng thái. Vui lòng thử lại.', 'error');
+                });
+            }
+        });
+    }
+
+
+
+    function capNhatTrangThai() {
+        const maHoaDon = $('#maHoaDonSua').val();
+        const trangThai = $('#trangThaiSua').val();
+
+        $.post('/Admin/HoaDon/CapNhatTrangThai', { maHoaDon: maHoaDon, trangThai: trangThai }, function (response) {
+            if (response.success) {
+                alert(response.message);
+                location.reload(); // Tải lại trang sau khi cập nhật
+            } else {
+                alert(response.message);
+            }
+        }).fail(function () {
+            alert("Có lỗi xảy ra. Vui lòng thử lại.");
+        });
+    }
+
+</script>

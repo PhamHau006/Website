@@ -27,7 +27,7 @@ namespace ASM_GS.Controllers
             var today = DateOnly.FromDateTime(DateTime.Now);
 
             // Lấy danh sách sản phẩm
-            var sanPhamList = _context.SanPhams
+            List<SanPham> sanPhamList = _context.SanPhams
                 .Where(h => h.SoLuong > 0 && h.TrangThai == 1)
                 .AsNoTracking() // thêm AsNoTracking
                 .ToList();

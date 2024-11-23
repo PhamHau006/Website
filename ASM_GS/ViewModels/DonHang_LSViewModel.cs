@@ -4,6 +4,7 @@
     {
         public string MaHoaDon { get; set; }
         public string MaKhachHang { get; set; }
+        public string TenKhachHang { get; set; }
         public DateOnly NgayXuatHoaDon { get; set; }
         public decimal TongTien { get; set; }
         public int? TrangThai { get; set; }

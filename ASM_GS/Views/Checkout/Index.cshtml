@@ -2,7 +2,7 @@
 @{
     Layout = "~/Views/Shared/_LayoutPhu.cshtml";
 }
-<section class="checkout-wrap pb-5" style="margin-top: 250px;">
+<section class="checkout-wrap pb-5" style="margin-top: 10px">
     <div class="container">
         <form class="form-group" method="post" action="@Url.Action("Index", "Checkout")">
             <div class="row g-5">
@@ -20,27 +20,36 @@
 
                         <label for="address">Địa Chỉ*</label>
                         <input type="text" id="adr" name="DiaChi" value="@Model.DiaChi" class="form-control mt-2 mb-4 ps-3">
+
+                        <label for="DiscountCode">Mã giảm giá:</label>
+                        <div class="input-group">
+                            <input type="text" id="DiscountCode" name="DiscountCode" class="form-control" placeholder="Nhập mã giảm giá">
+                            <button type="button" id="ApplyDiscountBtn" class="btn btn-dark">Áp dụng</button>
+                        </div>
+                        <div id="DiscountMessage" class="text-danger mt-2"></div>   
                     </div>
                 </div>
-
+                
                 <div class="col-lg-6">
                     <h4 class="text-dark pb-4">Thông Tin Đơn Hàng</h4>
                     <div class="your-order">
-                        <h5 class="display-7 text-dark pb-4">Tổng Cộng</h5>
-                        <div class="total-price">
-                            <table cellspacing="0" class="table">
-                                <tbody>
-                                    <tr class="order-total border-bottom pt-2 pb-2 text-uppercase">
-                                        <th>Tổng Cộng</th>
-                                        <td data-title="Total">
-                                            <span class="price-amount amount ps-5">
-                                                <bdi><span class="price-currency-symbol">₫</span> @Model.Total.ToString("N0")</bdi>
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <h5 class="display-7 text-dark pb-4">Chi Tiết Đơn Hàng</h5>
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th>Tổng tiền hàng:</th>
+                                    <td id="TotalAmountDisplay">₫ @Model.CartItems.Sum(i => i.Price * i.Quantity).ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</td>
+                                </tr>
+                                <tr>
+                                    <th>Giảm giá:</th>
+                                    <td id="DiscountAmountDisplay" class="text-danger">- ₫ 0</td>
+                                </tr>
+                                <tr>
+                                    <th>Tổng thanh toán:</th>
+                                    <td id="FinalTotalDisplay">₫ @Model.CartItems.Sum(i => i.Price * i.Quantity).ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</td>
+                                </tr>
+                            </tbody>
+                        </table>
 
                         <h5 class="text-dark pb-2">Phương Thức Thanh Toán</h5>
                         <div class="list-group mb-4">
@@ -58,36 +67,43 @@
                     </div>
                 </div>
             </div>
+          
+            <!-- Hiển thị thông báo -->
+            
         </form>
     </div>
 </section>
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="text/javascript">
+    <script>
         $(document).ready(function () {
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <text>
-                            Swal.fire({
-                                icon: 'success',
-                            title: 'Thành công',
-                            text: '@Html.Raw(TempData["SuccessMessage"])',
-                            confirmButtonText: 'OK'
-                                    });
-            </text>
-        }
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <text>
-                            Swal.fire({
-                                icon: 'error',
-                            title: 'Lỗi',
-                            text: '@Html.Raw(TempData["ErrorMessage"])',
-                            confirmButtonText: 'OK'
-                                    });
-            </text>
-        }
+            $('#ApplyDiscountBtn').click(function () {
+                let discountCode = $('#DiscountCode').val().trim();
+                let totalAmount = parseFloat('@Model.CartItems.Sum(i => i.Price * i.Quantity)');
+
+                if (discountCode === "") {
+                    $('#DiscountMessage').text("Vui lòng nhập mã giảm giá.");
+                    return;
+                }
+
+                $.ajax({
+                    url: '@Url.Action("ApplyDiscount", "Checkout")',
+                    method: 'POST',
+                    data: { discountCode, totalAmount },
+                    success: function (response) {
+                        if (response.success) {
+                            $('#DiscountMessage').text("").removeClass("text-danger").addClass("text-success").text("Áp dụng mã giảm giá thành công!");
+                            $('#DiscountAmountDisplay').text("- ₫ " + response.discountAmount.toLocaleString('vi-VN'));
+                            $('#FinalTotalDisplay').text("₫ " + response.finalTotal.toLocaleString('vi-VN'));
+                        } else {
+                            $('#DiscountMessage').removeClass("text-success").addClass("text-danger").text(response.message);
+                        }
+                    },
+                    error: function () {
+                        $('#DiscountMessage').removeClass("text-success").addClass("text-danger").text("Có lỗi xảy ra. Vui lòng thử lại.");
+                    }
                 });
+            });
+        });
     </script>
 }
-

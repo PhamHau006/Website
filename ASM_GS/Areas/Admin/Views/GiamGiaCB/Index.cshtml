@@ -205,7 +205,7 @@
                             <td>
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#detailsDiscountModal" onclick="loadDetailsDiscountForm('@discount.MaGiamGia')" style="text-decoration: none; color: inherit;">@discount.TenGiamGia</a>
                             </td>
-                            <td>@($"{discount.GiaTri:P0}")</td> <!-- Display as percentage -->
+                            <td>@String.Format("{0:0}%", discount.GiaTri)</td> <!-- Display as percentage with no decimals -->
                             <td>@discount.NgayBatDau.ToShortDateString()</td>
                             <td>@discount.NgayKetThuc.ToShortDateString()</td>
                             <td>@discount.SoLuongMaNhapToiDa</td>

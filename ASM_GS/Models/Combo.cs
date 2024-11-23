@@ -26,7 +26,7 @@ namespace ASM_GS.Models
         [Range(0, 1, ErrorMessage = "Trạng thái phải là Không áp dụng hoặc Đang áp dụng.")]
         public int TrangThai { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng chọn ảnh!")]
+        //[Required(ErrorMessage = "Vui lòng chọn ảnh!")]
         public string? Anh { get; set; }
 
         [NotMapped] // Không lưu thuộc tính này vào CSDL

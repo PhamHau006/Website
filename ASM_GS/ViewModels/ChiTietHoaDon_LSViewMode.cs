@@ -17,5 +17,7 @@
         // Optionally, you can add navigation properties if needed
         public string SanPhamName { get; set; }
         public string ComboName { get; set; }
+        public string HinhAnhSanPham { get; set; }
+        public string HinhAnhCombo { get; set; }
     }
 }

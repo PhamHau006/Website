@@ -8,111 +8,159 @@
 <h2 style="text-align:center">@ViewData["Title"]</h2>
 
 
-<form asp-action="Edit" method="post" enctype="multipart/form-data">
-    
+<form id="editForm" enctype="multipart/form-data">
     <div class="form-group">
         <label for="HinhAnh">Ảnh Đại Diện</label>
         <input type="file" id="HinhAnh" name="imageFile" class="form-control" />
         @if (!string.IsNullOrEmpty(Model.HinhAnh))
         {
-            <img src="@Model.HinhAnh" alt="Current Avatar" width="100" class="mt-2" />
+            <img src="@Model.HinhAnh" alt="Current Avatar" width="120" height="120" class="mt-2" />
         }
     </div>
-    
+
+
     <div class="form-group" style="display: none;">
         <label for="MaNhanVien">Mã Nhân Viên</label>
-        <input type="text" id="MaNhanVien" name="MaNhanVien" class="form-control" value="@Model.MaNhanVien" readonly />
+        <input type="text" id="MaNhanVien" name="MaNhanVien" class="form-control" value="@Model.MaNhanVien" hidden />
     </div>
 
+    <!-- Tên Nhân Viên -->
     <div class="form-group">
         <label for="TenNhanVien">Tên Nhân Viên</label>
         <input type="text" id="TenNhanVien" name="TenNhanVien" class="form-control" value="@Model.TenNhanVien" />
+        <span id="error-TenNhanVien" class="text-danger"></span>
     </div>
 
+    <!-- Vai Trò -->
     <div class="form-group">
         <label for="VaiTro">Vai Trò</label>
         <input type="text" id="VaiTro" name="VaiTro" class="form-control" value="@Model.VaiTro" readonly />
     </div>
 
+    <!-- Số Điện Thoại -->
     <div class="form-group">
         <label for="SoDienThoai">Số Điện Thoại</label>
         <input type="text" id="SoDienThoai" name="SoDienThoai" class="form-control" value="@Model.SoDienThoai" />
-        <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+        <span id="error-SoDienThoai" class="text-danger"></span>
     </div>
 
+    <!-- Ngày Bắt Đầu -->
     <div class="form-group">
         <label for="NgayBatDau">Ngày Bắt Đầu</label>
         <input type="date" id="NgayBatDau" name="NgayBatDau" class="form-control"
                value="@(Model.NgayBatDau.HasValue ? Model.NgayBatDau.Value.ToString("yyyy-MM-dd") : "")" readonly />
-        <span asp-validation-for="NgayBatDau" class="text-danger"></span>
     </div>
 
+    <!-- Ngày Sinh -->
     <div class="form-group">
         <label for="NgaySinh">Ngày Sinh</label>
         <input type="date" id="NgaySinh" name="NgaySinh" class="form-control" value="@(Model.NgaySinh?.ToString("yyyy-MM-dd") ?? "")" />
         <span asp-validation-for="NgaySinh" class="text-danger"></span>
     </div>
 
+    <!-- Địa Chỉ -->
     <div class="form-group">
         <label for="DiaChi">Địa Chỉ</label>
         <input type="text" id="DiaChi" name="DiaChi" class="form-control" value="@Model.DiaChi" />
     </div>
 
+    <!-- Trạng Thái -->
     <div class="form-group">
-        <label for="TrangThai">Trạng Thái</label>
-        <select id="TrangThai" name="TrangThai" class="form-control">
-            @if (Model.TrangThai == 1)
-            {
-                <option value="1" selected>Hoạt Động</option>
-                <option value="0">Không Hoạt Động</option>
-            }
-            else
-            {
-                <option value="1">Hoạt Động</option>
-                <option value="0" selected>Không Hoạt Động</option>
-            }
-        </select>
+        <label for="TrangThai">Trạng Thái</label><br />
+        <div>
+            <label>
+                <input type="radio" name="TrangThai" value="1" @(Model.TrangThai == 1 ? "checked" : "") /> Hoạt Động
+            </label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" name="TrangThai" value="0" @(Model.TrangThai == 0 ? "checked" : "") /> Không Hoạt Động
+            </label>
+        </div>
     </div>
 
+    <!-- CCCD -->
     <div class="form-group">
         <label for="Cccd">CCCD</label>
         <input type="text" id="Cccd" name="Cccd" class="form-control" value="@Model.Cccd" />
-        <span asp-validation-for="Cccd" class="text-danger"></span>
+        <span id="error-Cccd" class="text-danger"></span>
     </div>
 
+    <!-- Giới Tính -->
     <div class="form-group">
-        <label for="GioiTinh">Giới Tính</label>
-        <select id="GioiTinh" name="GioiTinh" class="form-control">
-            @if (Model.GioiTinh == true)
-            {
-                <option value="true" selected>Nam</option>
-                <option value="false">Nữ</option>
-            }
-            else
-            {
-                <option value="true">Nam</option>
-                <option value="false" selected>Nữ</option>
-            }
-        </select>
+        <label for="GioiTinh">Giới Tính</label><br />
+        <div>
+            <label>
+                <input type="radio" name="GioiTinh" value="true" @(Model.GioiTinh == true ? "checked" : "") /> Nam
+            </label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" name="GioiTinh" value="false" @(Model.GioiTinh == false ? "checked" : "") /> Nữ
+            </label>
+        </div>
     </div>
-    <button type="submit" class="btn btn-primary mt-3">Cập nhật</button>
+
+    <!-- Nút cập nhật -->
+    <button type="button" id="submitForm" class="btn btn-primary mt-3">Cập nhật</button>
 </form>
+
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-@if (TempData["Message"] != null)
-{
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            Swal.fire({
-                icon: 'success',
-                title: 'Thành Công',
-                text: "@Html.Raw(TempData["Message"])",
-                confirmButtonText: 'OK'
-            });
+
+
+<script>
+    document.getElementById("submitForm").addEventListener("click", function() {
+        let formData = new FormData(document.getElementById("editForm"));
+
+        // Clear previous errors
+        document.querySelectorAll(".text-danger").forEach(el => el.textContent = "");
+
+        // Gửi AJAX
+        $.ajax({
+            url: '/Admin/ThongTinCaNhan/Edit', // URL tới action Edit
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    // Hiển thị SweetAlert nếu thành công
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành Công',
+                        text: response.message,
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        location.reload(); // Reload lại trang
+                    });
+                } else if (response.errors) {
+                    // Hiển thị lỗi dưới các trường input
+                    for (const [key, message] of Object.entries(response.errors)) {
+                        document.getElementById(`error-${key}`).textContent = message;
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: response.message || 'Đã xảy ra lỗi không xác định.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            },
+            error: function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể gửi yêu cầu. Vui lòng thử lại.',
+                    confirmButtonText: 'OK'
+                });
+            }
         });
-    </script>
-}
+    });
+</script>
+
 <style>
     /* Overall layout */
 body {

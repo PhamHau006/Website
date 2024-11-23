@@ -47,62 +47,71 @@ namespace ASM_GS.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(NhanVien model, IFormFile imageFile)
         {
-            // Validate phone number (assuming 10 digits for Vietnam)
-            if (!System.Text.RegularExpressions.Regex.IsMatch(model.SoDienThoai, @"^\d{10}$"))
+            var errors = new Dictionary<string, string>();
+
+            // Validate số điện thoại
+            if (!System.Text.RegularExpressions.Regex.IsMatch(model.SoDienThoai, @"^0\d{9,11}$"))
             {
-                ModelState.AddModelError("SoDienThoai", "Số điện thoại phải là 10 chữ số.");
+                errors.Add("SoDienThoai", "Số điện thoại không hợp lệ.");
             }
 
-            // Validate date of birth and start date
-            if (model.NgaySinh != null && model.NgayBatDau != null)
+            // Validate ngày sinh và ngày bắt đầu
+            if (model.NgaySinh.HasValue && model.NgayBatDau.HasValue)
             {
-                int ageDifference = model.NgayBatDau.Value.Year - model.NgaySinh.Value.Year;
-                if (ageDifference < 18 || (ageDifference == 18 && model.NgayBatDau.Value < model.NgaySinh.Value.AddYears(18)))
+                int age = model.NgayBatDau.Value.Year - model.NgaySinh.Value.Year;
+                if (age < 18 || (age == 18 && model.NgayBatDau.Value < model.NgaySinh.Value.AddYears(18)))
                 {
-                    ModelState.AddModelError("NgaySinh", "Ngày bắt đầu phải cách ngày sinh ít nhất 18 năm.");
+                    errors.Add("NgaySinh", "Bạn chưa đủ 18 tuổi.");
                 }
             }
 
-            // Validate CCCD (12 digits for Vietnamese Citizen ID)
+            // Validate CCCD
             if (!System.Text.RegularExpressions.Regex.IsMatch(model.Cccd, @"^\d{12}$"))
             {
-                ModelState.AddModelError("Cccd", "CCCD phải là 12 chữ số.");
+                errors.Add("Cccd", "CCCD không hợp lệ.");
             }
 
-            // If any validation errors exist, return the model to the view
-            if (ModelState.IsValid)
+            // Nếu có lỗi, trả về lỗi
+            if (errors.Count > 0)
             {
-                return View("Index", model);
+                return Json(new { success = false, errors });
             }
 
             var nhanVien = await _context.NhanViens.FindAsync(model.MaNhanVien);
             if (nhanVien == null)
             {
-                return NotFound();
+                return Json(new { success = false, message = "Nhân viên không tồn tại." });
             }
 
-            // Process image upload
+            // Xử lý upload ảnh mới
             if (imageFile != null && imageFile.Length > 0)
             {
-                // Define the path to save the image
                 var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "img", "AnhNhanVien");
-                Directory.CreateDirectory(uploadsFolder); // Ensure the folder exists
+                Directory.CreateDirectory(uploadsFolder);
 
-                // Generate a unique filename
+                // Xóa ảnh cũ nếu có
+                if (!string.IsNullOrEmpty(nhanVien.HinhAnh))
+                {
+                    var oldFilePath = Path.Combine(_webHostEnvironment.WebRootPath, nhanVien.HinhAnh.TrimStart('/'));
+                    if (System.IO.File.Exists(oldFilePath))
+                    {
+                        System.IO.File.Delete(oldFilePath);
+                    }
+                }
+
+                // Tạo tên tệp mới và lưu
                 var uniqueFileName = $"{model.MaNhanVien}_{Path.GetFileName(imageFile.FileName)}";
                 var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-                // Save the file
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     await imageFile.CopyToAsync(fileStream);
                 }
 
-                // Update the image path in the database
                 nhanVien.HinhAnh = $"/img/AnhNhanVien/{uniqueFileName}";
             }
 
-            // Update other fields
+            // Cập nhật thông tin nhân viên
             nhanVien.TenNhanVien = model.TenNhanVien;
             nhanVien.VaiTro = model.VaiTro;
             nhanVien.SoDienThoai = model.SoDienThoai;
@@ -116,9 +125,12 @@ namespace ASM_GS.Areas.Admin.Controllers
             _context.Update(nhanVien);
             await _context.SaveChangesAsync();
 
-            TempData["Message"] = "Thông tin cá nhân đã được cập nhật thành công!";
-            return RedirectToAction("Index");
+            return Json(new { success = true, message = "Thông tin cá nhân đã được cập nhật thành công!" });
         }
+
+
+
+
 
     }
 }

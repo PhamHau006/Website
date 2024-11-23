@@ -37,21 +37,50 @@
 </div>
 
 <script>
-    $('#editForm').on('submit', function(e) {
-        e.preventDefault();
-        $.ajax({
-            url: '/Admin/DanhMuc/Edit',
-            type: 'POST',
-            data: $(this).serialize(),
-            success: function(response) {
-                if (response.success) {
-                    Swal.fire('Thành công!', response.message, 'success').then(() => {
-                        location.reload();
+    $(document).ready(function() {
+        $('#editForm').on('submit', function(e) {
+            e.preventDefault(); // Ngăn chặn hành động gửi form mặc định
+
+            var formData = new FormData(this);
+
+            // Xóa thông báo lỗi trước đó
+            $('.text-danger').text('');
+
+            $.ajax({
+                url: '/Admin/DanhMuc/Edit', // Đường dẫn đến action Create
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: response.message,
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            // Đóng modal
+                            location.reload(); // Tải lại trang
+                        });
+                        $('#modalEditCategory').modal('hide');
+                    } else {
+                        // Hiển thị lỗi xác thực dưới mỗi trường
+                        $.each(response.errors, function(field, message) {
+                            $('#error' + field).text(message); // Hiển thị thông báo lỗi
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: 'Đã xảy ra lỗi trong khi lưu sản phẩm. Vui lòng thử lại!',
+                        confirmButtonText: 'OK'
                     });
-                } else {
-                    Swal.fire('Lỗi!', 'Có lỗi xảy ra. Vui lòng thử lại.', 'error');
                 }
-            }
+            });
         });
     });
 </script>

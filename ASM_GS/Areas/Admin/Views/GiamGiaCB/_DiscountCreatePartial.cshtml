@@ -12,10 +12,10 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="GiaTri">Giá trị giảm giá (%)</label>
-        <input asp-for="GiaTri" class="form-control" type="number" step="0.01" required />
-        <span asp-validation-for="GiaTri" class="text-danger"></span>
+        <label for="GiaTri">Giảm giá (%)</label>
+        <input type="number" class="form-control" id="GiaTri" name="GiaTri" value="@Model.GiaTri" min="0" max="100" />
     </div>
+
 
     <div class="form-group">
         <label asp-for="NgayBatDau">Ngày bắt đầu</label>
@@ -33,7 +33,7 @@
         <label asp-for="SoLuongMaNhapToiDa">Số lượng mã nhập tối đa</label>
         <input asp-for="SoLuongMaNhapToiDa" class="form-control" type="number" min="1" required />
         <span asp-validation-for="SoLuongMaNhapToiDa" class="text-danger"></span>
-   </div>
+    </div>
     <div class="form-group">
         <label asp-for="TrangThai">Trạng thái</label>
         <select asp-for="TrangThai" class="form-control">
@@ -43,7 +43,7 @@
         <span asp-validation-for="TrangThai" class="text-danger"></span>
     </div>
 
-    
+
 
     <br />
     <button type="submit" class="btn btn-primary">Thêm giảm giá</button>

@@ -64,27 +64,43 @@ namespace ASM_GS.Controllers
 
             var khachHang = account.MaKhachHangNavigation;
 
+            // Validate số điện thoại
+            if (!System.Text.RegularExpressions.Regex.IsMatch(updatedKhachHang.SoDienThoai ?? "", @"^0\d{9,11}$"))
+            {
+                return Json(new { success = false, message = "Số điện thoại không hợp lệ." });
+            }
+
+            // Validate căn cước công dân (CCCD)
+            if (!System.Text.RegularExpressions.Regex.IsMatch(updatedKhachHang.Cccd ?? "", @"^\d{12}$"))
+            {
+                return Json(new { success = false, message = "CCCD không hợp lệ." });
+            }
+
             // Chỉ cập nhật ảnh nếu có tệp mới được tải lên
             if (Anh != null && Anh.Length > 0)
             {
-                var filePath = Path.Combine("wwwroot/Avatar", Anh.FileName);
+                var filePath = Path.Combine("wwwroot/AnhKhachHang", Anh.FileName);
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await Anh.CopyToAsync(stream);
                 }
-                khachHang.HinhAnh = $"/Avatar/{Anh.FileName}";
+                khachHang.HinhAnh = $"/AnhKhachHang/{Anh.FileName}";
             }
+
+            // Cập nhật các thông tin khác
             khachHang.TenKhachHang = updatedKhachHang.TenKhachHang;
             khachHang.SoDienThoai = updatedKhachHang.SoDienThoai;
             khachHang.DiaChi = updatedKhachHang.DiaChi;
             khachHang.Cccd = updatedKhachHang.Cccd;
             khachHang.NgaySinh = updatedKhachHang.NgaySinh;
             khachHang.GioiTinh = updatedKhachHang.GioiTinh;
+
             _context.KhachHangs.Update(khachHang);
             await _context.SaveChangesAsync();
 
-            return Json(new { success = true });
+            return Json(new { success = true, message = "Thông tin cá nhân đã được cập nhật thành công!" });
         }
+
 
 
         [HttpGet]

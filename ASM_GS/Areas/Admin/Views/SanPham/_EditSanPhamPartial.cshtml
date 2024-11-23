@@ -10,32 +10,45 @@
 
         <div class="mb-3">
             <label for="TenSanPham" class="form-label">Tên Sản Phẩm</label>
-            <input type="text" id="TenSanPham" name="TenSanPham" class="form-control" value="@Model.TenSanPham"  />
+            <input type="text" id="TenSanPham" name="TenSanPham" class="form-control" value="@Model.TenSanPham" required />
+            <span class="text-danger" id="errorTenSanPham"></span>
         </div>
+
         <div class="mb-3">
             <label for="UploadImages" class="form-label">Ảnh Sản Phẩm (có thể chọn nhiều ảnh)</label>
             <input type="file" id="UploadImages" name="UploadImages" class="form-control" multiple />
+            <span class="text-danger" id="errorUploadImages"></span>
 
-            <!-- Hiển thị tất cả ảnh sản phẩm hiện có -->
+            <!-- Display existing product images -->
             @if (Model.AnhSanPhams != null && Model.AnhSanPhams.Any())
             {
-                <div class="image-stack">
+                <div class="image-stack mt-3">
                     @foreach (var image in Model.AnhSanPhams)
                     {
-                        <img src="@image.UrlAnh" alt="Ảnh sản phẩm" class="stacked-image" />
+                        <div class="position-relative">
+                            <img src="@image.UrlAnh" alt="Ảnh sản phẩm" class="stacked-image" />
+                            <button type="button" class="btn btn-sm btn-danger delete-image-btn" 
+                                    data-image-id="@image.Id" title="Xóa ảnh">
+                                &times;
+                            </button>
+                        </div>
                     }
                 </div>
-
             }
         </div>
+
         <div class="mb-3">
             <label for="Gia" class="form-label">Giá</label>
             <input type="number" id="Gia" name="Gia" class="form-control" value="@Model.Gia" required />
+            <span class="text-danger" id="errorGia"></span>
         </div>
+
         <div class="mb-3">
             <label for="MoTa" class="form-label">Mô Tả</label>
-            <textarea id="MoTa" name="MoTa" class="form-control" >@Model.MoTa</textarea>
+            <textarea id="MoTa" name="MoTa" class="form-control">@Model.MoTa</textarea>
+            <span class="text-danger" id="errorMoTa"></span>
         </div>
+
         <div class="mb-3">
             <label for="MaDanhMuc" class="form-label">Danh mục</label>
             <select id="MaDanhMuc" name="MaDanhMuc" class="form-select d-inline-block w-auto" required style="width: 150px; margin-left: 10px;">
@@ -52,28 +65,38 @@
                     }
                 }
             </select>
-
+            <span class="text-danger" id="errorMaDanhMuc"></span>
         </div>
+        
         <div class="mb-3">
             <label for="SoLuong" class="form-label">Số Lượng</label>
-            <input type="number" id="SoLuong" name="SoLuong" class="form-control" value="@Model.SoLuong"  />
+            <input type="number" id="SoLuong" name="SoLuong" class="form-control" value="@Model.SoLuong" required />
+            <span class="text-danger" id="errorSoLuong"></span>
         </div>
+
         <div class="mb-3">
             <label for="NgayThem" class="form-label">Ngày Thêm</label>
             <input type="date" id="NgayThem" name="NgayThem" class="form-control" value="@Model.NgayThem?.ToString("yyyy-MM-dd")" />
         </div>
+
         <div class="mb-3">
             <label for="DonVi" class="form-label">Đơn Vị</label>
             <input type="text" id="DonVi" name="DonVi" class="form-control" value="@Model.DonVi" />
+            <span class="text-danger" id="errorDonVi"></span>
         </div>
+
         <div class="mb-3">
             <label for="Nsx" class="form-label">NSX</label>
-            <input type="date" id="Nsx" name="Nsx" class="form-control" value="@Model.Nsx?.ToString("yyyy-MM-dd")" />
+            <input type="date" id="Nsx" name="Nsx" class="form-control" value="@Model.Nsx?.ToString("yyyy-MM-dd")" required />
+            <span class="text-danger" id="errorNsx"></span>
         </div>
+
         <div class="mb-3">
             <label for="Hsd" class="form-label">HSD</label>
-            <input type="date" id="Hsd" name="Hsd" class="form-control" value="@Model.Hsd?.ToString("yyyy-MM-dd")" />
+            <input type="date" id="Hsd" name="Hsd" class="form-control" value="@Model.Hsd?.ToString("yyyy-MM-dd")" required />
+            <span class="text-danger" id="errorHsd"></span>
         </div>
+
         <div class="mb-3">
             <label for="TrangThai" class="form-label">Trạng Thái</label>
             <select id="TrangThai" name="TrangThai" class="form-select d-inline-block w-auto" style="width: 120px; margin-left: 10px;">
@@ -88,8 +111,9 @@
                     <option value="0" selected>Không Hoạt Động</option>
                 }
             </select>
-
+            <span class="text-danger" id="errorTrangThai"></span>
         </div>
+
         <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Đóng</button>
             <button type="submit" class="btn btn-primary">Cập Nhật Sản Phẩm</button>
@@ -97,24 +121,35 @@
     </form>
 </div>
 
-
 <style>
     .image-stack {
         display: flex;
-        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
     }
-
+    .position-relative {
+        position: relative;
+    }
     .stacked-image {
-        width: 40px; /* Adjust the size as needed */
-        height: 40px;
-        border-radius: 50%; /* Make the image round */
-        border: 2px solid white; /* White border for separation */
-        margin-left: -10px; /* Overlap images */
-        object-fit: cover; /* Ensure the image covers the circle */
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border: 1px solid #ddd;
+        border-radius: 5px;
     }
-
-    .image-stack .stacked-image:first-child {
-        margin-left: 0; /* No margin for the first image */
+    .delete-image-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background-color: red;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
     }
-
 </style>

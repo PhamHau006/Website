@@ -12,10 +12,10 @@
             <input asp-for="TenGiamGia" class="form-control" />
             <span asp-validation-for="TenGiamGia" class="text-danger"></span>
         </div>
-        <div class="mb-3">
-            <label asp-for="GiaTri" class="form-label"></label>
-            <input asp-for="GiaTri" class="form-control" />
-            <span asp-validation-for="GiaTri" class="text-danger"></span>
+        <div class="form-group">
+            <label for="GiaTri">Giảm giá (%)</label>
+            <input type="number" class="form-control" id="GiaTri" name="GiaTri" value="@Model.GiaTri" min="0" max="100" required />
+            <small class="form-text text-muted">Nhập tỷ lệ phần trăm giảm giá (0-100).</small>
         </div>
         <div class="mb-3">
             <label asp-for="NgayBatDau" class="form-label"></label>

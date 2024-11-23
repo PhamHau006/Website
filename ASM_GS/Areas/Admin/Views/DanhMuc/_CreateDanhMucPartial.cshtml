@@ -42,9 +42,10 @@
                             text: response.message,
                             confirmButtonText: 'OK'
                         }).then(() => {
-                            $('#modalAddCategory').modal('hide'); // Đóng modal
+                             // Đóng modal
                             location.reload(); // Tải lại trang
                         });
+                        $('#modalAddCategory').modal('hide');
                     } else {
                         // Hiển thị lỗi xác thực dưới mỗi trường
                         $.each(response.errors, function (field, message) {

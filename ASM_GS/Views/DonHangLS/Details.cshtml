@@ -6,7 +6,19 @@
     <strong>Mã khách hàng:</strong> @Model.MaKhachHang <br />
     <strong>Ngày xuất hóa đơn:</strong> @Model.NgayXuatHoaDon <br />
     <strong>Tổng tiền:</strong> @Model.TongTien <br />
-    <strong>Trạng thái:</strong> @Model.TrangThai <br />
+    <strong>Trạng thái:</strong>
+    @if (Model.TrangThai == 0)
+    {
+        <span>Đang xử lý</span>
+    }
+    else if (Model.TrangThai == 1)
+    {
+        <span>Hoàn thành</span>
+    }
+    else
+    {
+        <span>Đã hủy</span>
+    }
 </div>
 
 <h3>Chi tiết sản phẩm</h3>
@@ -30,4 +42,109 @@
     </tbody>
 </table>
 
+@if ((DateTime.Now - Model.NgayXuatHoaDon.ToDateTime(new TimeOnly(0, 0))).TotalDays <= 3)
+{
+    @if (Model.IsRefunded)
+    {
+        <p class="text-success">Đã gửi yêu cầu hoàn trả trước đó.</p>
+
+        <h5>Ảnh đính kèm:</h5>
+        <div class="row">
+            @foreach (var image in Model.RefundRequestImages)
+            {
+                <div class="col-md-3">
+                    <img src="@image.ImageUrl" class="img-thumbnail" alt="Ảnh hoàn trả" />
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div id="refundSection">
+            <h4>Hoàn trả hóa đơn</h4>
+            <form id="refundForm" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="MaDonHang" value="@Model.MaHoaDon" />
+                <div class="form-group">
+                    <label for="LyDo">Lý do hoàn trả:</label>
+                    <textarea id="LyDo" name="LyDo" class="form-control" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="Images">Tải lên ảnh:</label>
+                    <input type="file" id="Images" name="Images" class="form-control" multiple accept="image/*" />
+                </div>
+                <div id="imagePreview" class="row mt-3"></div>
+                <button type="button" class="btn btn-danger mt-3" id="submitRefund">Yêu cầu hoàn trả</button>
+            </form>
+        </div>
+    }
+}
+else
+{
+    <p class="text-muted">Thời hạn yêu cầu hoàn trả đã hết.</p>
+}
+
 <a href="@Url.Action("Index", "DonHangLS")">Quay lại danh sách đơn hàng</a>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.getElementById('Images').addEventListener('change', function (event) {
+        const files = event.target.files;
+        const previewContainer = document.getElementById('imagePreview');
+        previewContainer.innerHTML = '';
+
+        Array.from(files).forEach(file => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'img-thumbnail col-md-3 m-2';
+                    img.style.maxWidth = '150px';
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+
+    document.getElementById('submitRefund').addEventListener('click', function () {
+        const form = document.getElementById('refundForm');
+        const formData = new FormData(form);
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+        fetch('@Url.Action("CreateRefundRequest", "RefundRequest", new { area = "Admin" })', {
+            method: 'POST',
+            headers: {
+                'RequestVerificationToken': token
+            },
+            body: formData,
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(errorMessage => {
+                        throw new Error(errorMessage || 'Đã xảy ra lỗi không xác định.');
+                    });
+                }
+                return response.text();
+            })
+            .then(result => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: result,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    document.getElementById('refundSection').style.display = 'none';
+                });
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Thất bại!',
+                    text: error.message,
+                    confirmButtonText: 'OK'
+                });
+            });
+    });
+</script>

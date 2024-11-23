@@ -44,31 +44,45 @@ namespace ASM_GS.Controllers
         // Hiển thị chi tiết một đơn hàng
         public IActionResult Details(string id)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest("Mã hóa đơn không hợp lệ.");
+            }
+
             var order = _context.DonHangs
-                .Include(h => h.ChiTietDonHangs) // Eager loading các chi tiết đơn hàng
+                .Include(h => h.ChiTietDonHangs) // Load chi tiết đơn hàng
+                .Include(h => h.RefundRequests) // Load các yêu cầu hoàn trả
+                    .ThenInclude(r => r.RefundRequestImages) // Load ảnh liên quan đến yêu cầu hoàn trả
                 .Where(h => h.MaDonHang == id) // Lọc theo mã đơn hàng
                 .Select(h => new DonHang_LSViewModel
                 {
                     MaHoaDon = h.MaDonHang,
                     MaKhachHang = h.MaKhachHang,
-                    NgayXuatHoaDon = h.NgayDatHang, // Sử dụng NgayDatHang (Ngày đặt hàng)
+                    NgayXuatHoaDon = h.NgayDatHang,
                     TongTien = h.TongTien,
                     TrangThai = h.TrangThai,
+                    IsRefunded = h.RefundRequests.Any(), // Kiểm tra có yêu cầu hoàn trả nào không
+                    RefundRequestImages = h.RefundRequests
+                        .SelectMany(r => r.RefundRequestImages) // Lấy tất cả hình ảnh liên quan đến yêu cầu hoàn trả
+                        .ToList(),
                     ChiTietHoaDons = h.ChiTietDonHangs.Select(ct => new ChiTietHoaDon_LSViewMode
                     {
                         MaSanPham = ct.MaSanPham,
                         SoLuong = ct.SoLuong,
                         Gia = ct.Gia
-                    }).ToList() // Không sử dụng null-conditional operator
+                    }).ToList()
                 })
-                .SingleOrDefault(); // Trả về một đối tượng duy nhất hoặc null nếu không tìm thấy
+                .SingleOrDefault();
 
             if (order == null)
             {
-                return NotFound(); // Nếu không tìm thấy đơn hàng, trả về lỗi 404
+                return NotFound("Không tìm thấy hóa đơn.");
             }
 
-            return View(order); // Truyền chi tiết đơn hàng vào view
+            return View(order);
         }
+
+
+
     }
 }

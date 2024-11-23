@@ -14,8 +14,7 @@
 
         public decimal Gia { get; set; }
 
-        // Optionally, you can add navigation properties if needed
-        public string SanPhamName { get; set; }
         public string ComboName { get; set; }
+        public bool IsRefunded { get; set; } = false;
     }
 }

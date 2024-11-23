@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ASM_GS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241119041518_DLSS")]
+    [Migration("20241122042241_DLSS")]
     partial class DLSS
     {
         /// <inheritdoc />
@@ -804,6 +804,28 @@ namespace ASM_GS.Migrations
                     b.ToTable("RefundRequests");
                 });
 
+            modelBuilder.Entity("ASM_GS.Models.RefundRequestImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RefundRequestId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RefundRequestId");
+
+                    b.ToTable("RefundRequestImage");
+                });
+
             modelBuilder.Entity("ASM_GS.Models.SanPham", b =>
                 {
                     b.Property<string>("MaSanPham")
@@ -1230,6 +1252,17 @@ namespace ASM_GS.Migrations
                     b.Navigation("DonHang");
                 });
 
+            modelBuilder.Entity("ASM_GS.Models.RefundRequestImage", b =>
+                {
+                    b.HasOne("ASM_GS.Models.RefundRequest", "RefundRequest")
+                        .WithMany("RefundRequestImages")
+                        .HasForeignKey("RefundRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RefundRequest");
+                });
+
             modelBuilder.Entity("ASM_GS.Models.SanPham", b =>
                 {
                     b.HasOne("ASM_GS.Models.DanhMuc", "MaDanhMucNavigation")
@@ -1385,6 +1418,11 @@ namespace ASM_GS.Migrations
             modelBuilder.Entity("ASM_GS.Models.NhanVien", b =>
                 {
                     b.Navigation("TaiKhoans");
+                });
+
+            modelBuilder.Entity("ASM_GS.Models.RefundRequest", b =>
+                {
+                    b.Navigation("RefundRequestImages");
                 });
 
             modelBuilder.Entity("ASM_GS.Models.SanPham", b =>

@@ -60,13 +60,12 @@ namespace ASM_GS.Areas.Admin.Controllers
             return View(pagedRefundRequests);
         }
 
-
-        // AJAX: Hiển thị chi tiết yêu cầu hoàn trả
+        // Hiển thị chi tiết yêu cầu hoàn trả (cho AJAX modal)
         [HttpGet]
         public IActionResult Details(int id)
         {
             var refundRequest = _context.RefundRequests
-                .Include(r => r.DonHang)  // Lấy thông tin đơn hàng đi kèm
+                .Include(r => r.DonHang) // Lấy thông tin đơn hàng đi kèm
                 .FirstOrDefault(r => r.Id == id);
 
             if (refundRequest == null)
@@ -78,6 +77,62 @@ namespace ASM_GS.Areas.Admin.Controllers
             return PartialView("_RefundRequestDetails", refundRequest);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateRefundRequest(string MaDonHang, string LyDo)
+        {
+            try
+            {
+                // Kiểm tra dữ liệu đầu vào
+                if (string.IsNullOrEmpty(MaDonHang) || string.IsNullOrEmpty(LyDo))
+                {
+                    return StatusCode(400, "Thông tin không hợp lệ.");
+                }
+
+                // Kiểm tra xem yêu cầu hoàn trả đã được gửi trước đó chưa
+                var existingRequest = _context.RefundRequests
+                    .FirstOrDefault(r => r.MaDonHang == MaDonHang);
+
+                if (existingRequest != null)
+                {
+                    return StatusCode(400, "Đã gửi yêu cầu hoàn trả trước đó.");
+                }
+
+                // Kiểm tra thời hạn hoàn trả (3 ngày)
+                var order = _context.DonHangs.FirstOrDefault(o => o.MaDonHang == MaDonHang);
+                if (order == null)
+                {
+                    return NotFound("Không tìm thấy hóa đơn.");
+                }
+
+                if ((DateTime.Now - order.NgayDatHang.ToDateTime(new TimeOnly(0, 0))).TotalDays > 3)
+                {
+                    return StatusCode(400, "Thời hạn yêu cầu hoàn trả đã hết.");
+                }
+
+                // Tạo mới yêu cầu hoàn trả
+                var refundRequest = new RefundRequest
+                {
+                    MaDonHang = MaDonHang,
+                    LyDo = LyDo,
+                    TrangThai = "Đang chờ",
+                    NgayTao = DateTime.Now
+                };
+
+                _context.RefundRequests.Add(refundRequest);
+                _context.SaveChanges();
+
+                return Ok("Yêu cầu hoàn trả đã được xử lý thành công.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi: {ex.Message}");
+                return StatusCode(500, "Lỗi không xác định trên server.");
+            }
+        }
+
+
+
         // Đồng ý hoàn trả
         [HttpPost]
         public IActionResult Approve(int id)
@@ -88,7 +143,7 @@ namespace ASM_GS.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            refundRequest.TrangThai = "Đã duyệt";  // Cập nhật trạng thái
+            refundRequest.TrangThai = "Đã duyệt"; // Cập nhật trạng thái
             _context.SaveChanges();
 
             return RedirectToAction(nameof(Index));
@@ -104,10 +159,11 @@ namespace ASM_GS.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            refundRequest.TrangThai = "Không duyệt"; 
+            refundRequest.TrangThai = "Không duyệt"; // Cập nhật trạng thái
             _context.SaveChanges();
 
             return RedirectToAction(nameof(Index));
         }
+
     }
 }

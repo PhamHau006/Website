@@ -24,5 +24,7 @@ public class RefundRequest
     public DateTime NgayTao { get; set; } = DateTime.Now; 
 
     [ForeignKey("MaDonHang")]
-    public virtual DonHang DonHang { get; set; } = null!; 
+    public virtual DonHang DonHang { get; set; } = null!;
+    public virtual ICollection<RefundRequestImage> RefundRequestImages { get; set; } = new List<RefundRequestImage>();
+
 }

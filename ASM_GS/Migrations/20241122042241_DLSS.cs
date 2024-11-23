@@ -439,6 +439,26 @@ namespace ASM_GS.Migrations
                         principalColumn: "MaSanPham");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "RefundRequestImage",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RefundRequestId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefundRequestImage", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefundRequestImage_RefundRequests_RefundRequestId",
+                        column: x => x.RefundRequestId,
+                        principalTable: "RefundRequests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "Combos",
                 columns: new[] { "MaCombo", "Anh", "Gia", "MoTa", "TenCombo", "TrangThai" },
@@ -673,6 +693,11 @@ namespace ASM_GS.Migrations
                 column: "MaGiamGia");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RefundRequestImage_RefundRequestId",
+                table: "RefundRequestImage",
+                column: "RefundRequestId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RefundRequests_MaDonHang",
                 table: "RefundRequests",
                 column: "MaDonHang");
@@ -718,7 +743,7 @@ namespace ASM_GS.Migrations
                 name: "MaNhapGiamGia");
 
             migrationBuilder.DropTable(
-                name: "RefundRequests");
+                name: "RefundRequestImage");
 
             migrationBuilder.DropTable(
                 name: "TaiKhoans");
@@ -736,7 +761,7 @@ namespace ASM_GS.Migrations
                 name: "SanPhams");
 
             migrationBuilder.DropTable(
-                name: "DonHangs");
+                name: "RefundRequests");
 
             migrationBuilder.DropTable(
                 name: "NhanViens");
@@ -746,6 +771,9 @@ namespace ASM_GS.Migrations
 
             migrationBuilder.DropTable(
                 name: "DanhMucs");
+
+            migrationBuilder.DropTable(
+                name: "DonHangs");
 
             migrationBuilder.DropTable(
                 name: "KhachHangs");

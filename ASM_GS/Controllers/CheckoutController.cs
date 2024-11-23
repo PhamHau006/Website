@@ -99,12 +99,60 @@ namespace ASM_GS.Controllers
                     }).ToListAsync();
             }
             decimal totalAmount = 0;
+            
+
+            // Tính lại Total dựa trên CartItems trong POST
+            decimal totalAmount = model.CartItems.Sum(i => i.Price * i.Quantity);
+            decimal discountAmount = 0;
             if (TempTong==0)
             {
                 totalAmount = model.CartItems.Sum(i => i.Price * i.Quantity);
             }
             else
                 totalAmount = (decimal)TempTong;
+            // Kiểm tra mã giảm giá
+            if (!string.IsNullOrEmpty(model.DiscountCode))
+            {
+                var discountCode = await _context.MaNhapGiamGias
+                    .FirstOrDefaultAsync(c => c.MaNhap == model.DiscountCode && !c.IsUsed);
+
+                if (discountCode != null)
+                {
+                    var discount = await _context.GiamGia
+                        .FirstOrDefaultAsync(d => d.MaGiamGia == discountCode.MaGiamGia);
+
+                    if (discount != null)
+                    {
+                        // Đánh dấu mã giảm giá là đã sử dụng
+                        discountCode.IsUsed = true;
+                        _context.Update(discountCode);
+
+                        // Tính số tiền giảm giá
+                        discountAmount = (discount.GiaTri / 100) * totalAmount;
+                        totalAmount -= discountAmount; // Áp dụng giảm giá
+
+                        // Lưu thay đổi vào cơ sở dữ liệu
+                        await _context.SaveChangesAsync();
+
+                        TempData["SuccessMessage"] = $"Mã giảm giá đã áp dụng. Bạn được giảm {discountAmount:N0} VND.";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Mã giảm giá không hợp lệ.";
+                    }
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Mã giảm giá đã hết hạn hoặc đã được sử dụng.";
+                }
+            }
+
+            // Lưu tổng tiền và chi tiết giảm giá vào ViewData
+            ViewData["DiscountAmount"] = discountAmount;
+            ViewData["FinalTotal"] = totalAmount;
+
+
+
             // Tạo mã hóa đơn mới
             var lastInvoice = await _context.HoaDons.OrderByDescending(h => h.MaHoaDon).FirstOrDefaultAsync();
             string newInvoiceId = "HD" + ((lastInvoice != null ? int.Parse(lastInvoice.MaHoaDon.Substring(2)) : 0) + 1).ToString("D3");
@@ -266,6 +314,7 @@ namespace ASM_GS.Controllers
                     // Tính số tiền giảm giá
                     decimal discountAmount = (discount.GiaTri / 100) * totalAmount;
                     TempTong = (float)(totalAmount - discountAmount);
+
                     return Json(new
                     {
                         success = true,
@@ -273,7 +322,8 @@ namespace ASM_GS.Controllers
                         finalTotal = totalAmount - discountAmount
                     });
                 }
-            }          
+            }
+
             return Json(new { success = false, message = "Mã giảm giá không hợp lệ hoặc đã được sử dụng." });
         }
 

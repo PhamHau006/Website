@@ -32,6 +32,10 @@ namespace ASM_GS.Controllers
                 {
                     MaHoaDon = h.MaDonHang,
                     MaKhachHang = h.MaKhachHang,
+                    TenKhachHang = _context.KhachHangs
+                                  .Where(k => k.MaKhachHang == h.MaKhachHang)
+                                  .Select(k => k.TenKhachHang)
+                                  .FirstOrDefault(),
                     NgayXuatHoaDon = h.NgayDatHang,
                     TongTien = h.TongTien,
                     TrangThai = h.TrangThai
@@ -59,6 +63,11 @@ namespace ASM_GS.Controllers
                     MaHoaDon = h.MaDonHang,
                     MaKhachHang = h.MaKhachHang,
                     NgayXuatHoaDon = h.NgayDatHang,
+                    TenKhachHang = _context.KhachHangs
+                                  .Where(k => k.MaKhachHang == h.MaKhachHang)
+                                  .Select(k => k.TenKhachHang)
+                                  .FirstOrDefault(),
+                    NgayXuatHoaDon = h.NgayDatHang, // Sử dụng NgayDatHang (Ngày đặt hàng)
                     TongTien = h.TongTien,
                     TrangThai = h.TrangThai,
                     IsRefunded = h.RefundRequests.Any(), // Kiểm tra có yêu cầu hoàn trả nào không
@@ -68,8 +77,27 @@ namespace ASM_GS.Controllers
                     ChiTietHoaDons = h.ChiTietDonHangs.Select(ct => new ChiTietHoaDon_LSViewMode
                     {
                         MaSanPham = ct.MaSanPham,
+                        MaCombo = ct.MaCombo,
                         SoLuong = ct.SoLuong,
-                        Gia = ct.Gia
+                        Gia = ct.Gia,
+                        SanPhamName = _context.SanPhams
+                                            .Where(s => s.MaSanPham == ct.MaSanPham)
+                                            .Select(s => s.TenSanPham)
+                                            .FirstOrDefault(),
+                        ComboName = _context.Combos
+                                            .Where(c => c.MaCombo == ct.MaCombo)
+                                            .Select(c => c.TenCombo)
+                                            .FirstOrDefault(),
+                        // Lấy hình ảnh sản phẩm từ bảng AnhSanPham
+                        HinhAnhSanPham = _context.AnhSanPhams
+                                                .Where(a => a.MaSanPham == ct.MaSanPham)
+                                                .Select(a => a.UrlAnh) // Giả sử bảng AnhSanPham có trường HinhAnh chứa đường dẫn hình ảnh
+                                                .FirstOrDefault(),
+                        // Lấy hình ảnh combo từ bảng Combo
+                        HinhAnhCombo = _context.Combos
+                                                .Where(c => c.MaCombo == ct.MaCombo)
+                                                .Select(c => c.Anh) // Trường HinhAnh chứa đường dẫn hình ảnh của combo
+                                                .FirstOrDefault()
                     }).ToList()
                 })
                 .SingleOrDefault();

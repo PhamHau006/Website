@@ -16,5 +16,7 @@
 
         public string ComboName { get; set; }
         public bool IsRefunded { get; set; } = false;
+        public string HinhAnhSanPham { get; set; }
+        public string HinhAnhCombo { get; set; }
     }
 }

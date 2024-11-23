@@ -1,5 +1,6 @@
 ﻿@{
     ViewBag.Title = "Xác nhận đặt hàng";
+    Layout = "~/Views/Shared/_LayoutPhu.cshtml";
 }
 
 @if (TempData["SuccessMessage"] != null)
@@ -27,7 +28,7 @@ else if (TempData["ErrorMessage"] != null)
     </script>
 }
 
-<div style="margin-top: 200px;">
+<div style="margin-left: 100px;margin-top: 10px">
     <h2>Xác nhận đặt hàng</h2>
     <p>Mã đơn hàng: @ViewBag.OrderId</p>
 </div>

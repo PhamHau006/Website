@@ -248,11 +248,15 @@
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="dropdownPages" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Trang</a>
                                     <ul class="dropdown-menu list-unstyled" aria-labelledby="dropdownPages">
-                                        <li>
+                                       @*  <li>
                                             <a href="cart.html" class="dropdown-item item-anchor">Giỏ Hàng</a>
                                         </li>
                                         <li>
                                             <a href="checkout.html" class="dropdown-item item-anchor">Thanh Toán</a>
+                                        </li> *@
+                                        <li>
+                                            <a href="@Url.Action("Index", "DonHangLS")" class="dropdown-item item-anchor">Lịch sử đơn hàng</a>
+
                                         </li>
                                         <li>
                                             <a href="@Url.Action("Index", "LoginAndSignUp")" class="dropdown-item item-anchor">Đăng Nhập, Đăng ký</a>

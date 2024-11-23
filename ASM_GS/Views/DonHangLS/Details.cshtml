@@ -1,47 +1,117 @@
 ﻿@model ASM_GS.ViewModels.DonHang_LSViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutPhu.cshtml";
+}
+<br />
+<h1 style="margin-left: 50px">Chi tiết đơn hàng</h1>
+<div style="margin-top: 50px; margin-left: 50px; margin-right:50px">
 
-<h2>Chi tiết Đơn Hàng @Model.MaHoaDon</h2>
-
-<div>
-    <strong>Mã khách hàng:</strong> @Model.MaKhachHang <br />
-    <strong>Ngày xuất hóa đơn:</strong> @Model.NgayXuatHoaDon <br />
-    <strong>Tổng tiền:</strong> @Model.TongTien <br />
-    <strong>Trạng thái:</strong>
-    @if (Model.TrangThai == 0)
-    {
-        <span>Đang xử lý</span>
-    }
-    else if (Model.TrangThai == 1)
-    {
-        <span>Hoàn thành</span>
-    }
-    else
-    {
-        <span>Đã hủy</span>
-    }
-</div>
-
-<h3>Chi tiết sản phẩm</h3>
-<table class="table">
+    <table class="table table-bordered">
     <thead>
         <tr>
-            <th>Mã sản phẩm</th>
+            <th>Tên sản phẩm/Combo</th>
+            <th>Hình ảnh</th>
             <th>Số lượng</th>
             <th>Giá</th>
+            <th>Tổng tiền</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model.ChiTietHoaDons)
         {
             <tr>
-                <td>@item.MaSanPham</td>
+           
+                <!-- Hiển thị tên sản phẩm hoặc tên combo -->
+                <td>
+                    @if (!string.IsNullOrEmpty(item.ComboName))
+                    {
+                        @item.ComboName
+                    }
+                    else
+                    {
+                        @item.SanPhamName
+                    }
+                </td>
+
+                <!-- Hiển thị hình ảnh sản phẩm hoặc combo -->
+                <td>
+                    @if (!string.IsNullOrEmpty(item.HinhAnhCombo))
+                    {
+                        <img src="@item.HinhAnhCombo" alt="@item.ComboName" style="width: 100px; height: auto;" />
+                    }
+                    else if (!string.IsNullOrEmpty(item.HinhAnhSanPham))
+                    {
+                        <img src="@item.HinhAnhSanPham" alt="@item.SanPhamName" style="width: 100px; height: auto;" />
+                    }
+                    else
+                    {
+                        <span>Chưa có hình ảnh</span>
+                    }
+                </td>
+
+                <!-- Hiển thị số lượng -->
                 <td>@item.SoLuong</td>
-                <td>@item.Gia</td>
+
+                <!-- Hiển thị giá -->
+                <td>@item.Gia.ToString("N0") VNĐ</td>
+                <!-- Hiển thị tổng tiền -->
+                <td>
+                    @string.Format("{0:N0} VNĐ", item.SoLuong * item.Gia)
+                </td>
             </tr>
         }
     </tbody>
 </table>
+</div>
+<a href="@Url.Action("Index", "DonHangLS")" style="margin-left: 50px">Quay lại danh sách đơn hàng</a>
+<style>
+    /* Làm đẹp bảng mà không ảnh hưởng đến layout */
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 16px;
+        color: #333;
+        border: 1px solid #ddd; /* Thêm viền cho bảng */
+    }
+        /* Định dạng tiêu đề cột */
+        .table th {
+            background-color: #f8f8f8; /* Màu nền sáng cho tiêu đề */
+            color: #333; /* Màu chữ đen */
+            text-align: center;
+            padding: 12px;
+        }
 
+        /* Định dạng các dòng dữ liệu */
+        .table td {
+            text-align: center; /* Căn giữa nội dung */
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        /* Định dạng hàng chẵn */
+        .table tr:nth-child(even) {
+            background-color: #fafafa; /* Màu nền sáng cho hàng chẵn */
+        }
+
+        /* Định dạng hàng lẻ */
+        .table tr:nth-child(odd) {
+            background-color: #ffffff; /* Màu nền trắng cho hàng lẻ */
+        }
+
+        /* Hiệu ứng hover cho các hàng khi di chuột */
+        .table tr:hover {
+            background-color: #f0f0f0; /* Màu nền khi hover */
+        }
+
+        /* Định dạng hình ảnh trong bảng */
+        .table td img {
+            width: 100px;
+            height: auto;
+            border-radius: 8px; /* Bo góc ảnh */
+        }  
+
+</style>
 @if ((DateTime.Now - Model.NgayXuatHoaDon.ToDateTime(new TimeOnly(0, 0))).TotalDays <= 3)
 {
     @if (Model.IsRefunded)

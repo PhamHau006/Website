@@ -3,7 +3,7 @@
 <div>
     <h5>Mã Đơn Hàng: @Model.MaDonHang</h5>
     <p>Ngày Đặt: @Model.NgayDatHang</p>
-    <p>Tổng Tiền: @Model.TongTien</p>
+    <p>Tổng Tiền: @Model.TongTien.ToString("N0") VNĐ</p>
     <p>
         Trạng Thái:
         @if (Model.TrangThai == 0)

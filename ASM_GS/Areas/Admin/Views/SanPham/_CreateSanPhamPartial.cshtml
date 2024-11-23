@@ -6,10 +6,12 @@
 </div>
 <div class="modal-body">
     <form id="createForm" enctype="multipart/form-data">
+        <input type="hidden" id="MaSanPham" name="MaSanPham" value="@Model.MaSanPham" />
+
         <div class="mb-3">
             <label for="TenSanPham" class="form-label">Tên Sản Phẩm</label>
             <input type="text" id="TenSanPham" name="TenSanPham" class="form-control" placeholder="Nhập tên sản phẩm" />
-            <span class="text-danger" id="errorTenSanPham"></span> <!-- Error message for Tên Sản Phẩm -->
+            <span class="text-danger" id="errorTenSanPham"></span> <!-- Error message -->
         </div>
 
         <div class="mb-3">
@@ -21,8 +23,9 @@
         <div class="mb-3">
             <label for="Gia" class="form-label">Giá</label>
             <input type="number" id="Gia" name="Gia" class="form-control" placeholder="Nhập giá sản phẩm" />
-            <span class="text-danger" id="errorGia"></span> <!-- Error message for Giá -->
+            <span class="text-danger" id="errorGia"></span> <!-- Error message -->
         </div>
+
 
         <div class="mb-3">
             <label for="MoTa" class="form-label">Mô Tả</label>
@@ -39,20 +42,21 @@
                     <option value="@item.Value">@item.Text</option>
                 }
             </select>
-            <span class="text-danger" id="errorMaDanhMuc"></span> <!-- Error message for Danh mục -->
+            <span class="text-danger" id="errorMaDanhMuc"></span> <!-- Error message -->
         </div>
 
         <div class="mb-3">
             <label for="SoLuong" class="form-label">Số Lượng</label>
             <input type="number" id="SoLuong" name="SoLuong" class="form-control" placeholder="Nhập số lượng" />
-            <span class="text-danger" id="errorSoLuong"></span> <!-- Error message for Số Lượng -->
+            <span class="text-danger" id="errorSoLuong"></span> <!-- Error message -->
         </div>
 
         <div class="mb-3">
             <label for="NgayThem" class="form-label">Ngày Thêm</label>
-            <input type="date" id="NgayThem" name="NgayThem" class="form-control" />
-            <span class="text-danger" id="errorNgayThem"></span> <!-- Error message for Ngày Thêm -->
+            <input type="date" id="NgayThem" name="NgayThem" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly />
+            <span class="text-danger" id="errorNgayThem"></span> <!-- Error message -->
         </div>
+
 
         <div class="mb-3">
             <label for="DonVi" class="form-label">Đơn Vị</label>
@@ -61,15 +65,15 @@
         </div>
 
         <div class="mb-3">
-            <label for="Nsx" class="form-label">NSX</label>
-            <input type="date" id="Nsx" name="Nsx" class="form-control" />
-            <span class="text-danger" id="errorNsx"></span> <!-- Error message for NSX -->
+            <label for="Nsx" class="form-label">NSX ( Ngày sản xuất )</label>
+            <input type="date" id="Nsx" name="Nsx" class="form-control"  />
+            <span class="text-danger" id="errorNsx"></span> <!-- Error message -->
         </div>
 
         <div class="mb-3">
-            <label for="Hsd" class="form-label">HSD</label>
-            <input type="date" id="Hsd" name="Hsd" class="form-control" />
-            <span class="text-danger" id="errorHsd"></span> <!-- Error message for HSD -->
+            <label for="Hsd" class="form-label">HSD ( Hạn sử dụng )</label>
+            <input type="date" id="Hsd" name="Hsd" class="form-control"  />
+            <span class="text-danger" id="errorHsd"></span> <!-- Error message -->
         </div>
 
         <div class="mb-3">
@@ -88,3 +92,4 @@
     </form>
 
 </div>
+

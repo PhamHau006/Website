@@ -27,42 +27,43 @@ namespace ASM_GS.Areas.Admin.Controllers
             _context = context;
             _webHostEnvironment = webHostEnvironment;
         }
-
-        // GET: Admin/SanPham
-        public async Task<IActionResult> Index(string searchName, int? categoryId, int? status, string sortOrder, int? page, int? pageSize = 5)
+        public async Task<IActionResult> Index(string searchName, string categoryId, int? status, string sortOrder, int? page, int? pageSize = 10)
         {
+            // Kiểm tra session đăng nhập
             if (HttpContext.Session.GetString("StaffAccount") == null)
             {
                 HttpContext.Session.SetString("RedirectUrl", HttpContext.Request.GetDisplayUrl());
                 ViewData["RedirectUrl"] = HttpContext.Session.GetString("RedirectUrl");
             }
-            int defaultPageSize = pageSize ?? 5; // Default to 5 if not specified
+
+            int defaultPageSize = pageSize ?? 10;
             int pageNumber = page ?? 1;
 
+            // Query sản phẩm
             var sanPhams = _context.SanPhams
                 .Include(s => s.AnhSanPhams)
                 .Include(s => s.MaDanhMucNavigation)
                 .AsQueryable();
 
-            // Apply search filter
+            // Lọc theo tên sản phẩm
             if (!string.IsNullOrEmpty(searchName))
             {
                 sanPhams = sanPhams.Where(s => s.TenSanPham.Contains(searchName));
             }
 
-            // Apply category filter
-            if (categoryId.HasValue)
+            if (!string.IsNullOrEmpty(categoryId))
             {
-                sanPhams = sanPhams.Where(s => s.MaDanhMuc == categoryId.ToString());
+                sanPhams = sanPhams.Where(s => s.MaDanhMuc == categoryId);
             }
 
-            // Apply status filter
+
+            // Lọc theo trạng thái
             if (status.HasValue)
             {
                 sanPhams = sanPhams.Where(s => s.TrangThai == status.Value);
             }
 
-            // Apply sorting
+            // Áp dụng sắp xếp
             switch (sortOrder)
             {
                 case "price_asc":
@@ -74,25 +75,27 @@ namespace ASM_GS.Areas.Admin.Controllers
                 case "name_desc":
                     sanPhams = sanPhams.OrderByDescending(s => s.TenSanPham);
                     break;
-                case "name_asc":
                 default:
                     sanPhams = sanPhams.OrderBy(s => s.TenSanPham);
                     break;
             }
 
-            // Add ViewBag data to preserve filter and sorting values
+            // Truyền danh sách danh mục sang ViewBag dưới dạng List<DanhMuc>
+            ViewBag.DanhMucList = await _context.DanhMucs.ToListAsync();
+
+            // Truyền các giá trị đã chọn sang View
             ViewBag.SearchName = searchName;
             ViewBag.CategoryId = categoryId;
             ViewBag.Status = status;
             ViewBag.SortOrder = sortOrder;
             ViewBag.PageSize = pageSize;
 
-            // Ensure ViewBag.DanhMucList is populated
-            ViewBag.DanhMucList = new SelectList(await _context.DanhMucs.ToListAsync(), "MaDanhMuc", "TenDanhMuc");
-
-            var pagedList = sanPhams.ToPagedList(pageNumber, pageSize ?? 5);
+            // Trả về danh sách sản phẩm phân trang
+            var pagedList = sanPhams.ToPagedList(pageNumber, defaultPageSize);
             return View(pagedList);
         }
+
+
 
 
 
@@ -107,20 +110,59 @@ namespace ASM_GS.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(SanPham sanPham)
         {
+            // Set NgayThem to today's date
+            sanPham.NgayThem = DateOnly.FromDateTime(DateTime.Now);
+
+            // Custom validation for required fields
+            if (string.IsNullOrWhiteSpace(sanPham.TenSanPham))
+                ModelState.AddModelError("TenSanPham", "Tên sản phẩm là bắt buộc.");
+
+            if (sanPham.Gia <= 0)
+                ModelState.AddModelError("Gia", "Giá phải lớn hơn 0.");
+
+            if (string.IsNullOrWhiteSpace(sanPham.MaDanhMuc))
+                ModelState.AddModelError("MaDanhMuc", "Danh mục là bắt buộc.");
+
+            if (sanPham.SoLuong < 0)
+                ModelState.AddModelError("SoLuong", "Số lượng không được nhỏ hơn 0.");
+
+            if (!sanPham.Nsx.HasValue)
+                ModelState.AddModelError("Nsx", "Ngày sản xuất (NSX) là bắt buộc.");
+
+            if (!sanPham.Hsd.HasValue)
+                ModelState.AddModelError("Hsd", "Hạn sử dụng (HSD) là bắt buộc.");
+
+            if (sanPham.Nsx.HasValue && sanPham.Hsd.HasValue && sanPham.Hsd.Value < sanPham.Nsx.Value)
+                ModelState.AddModelError("Hsd", "Hạn sử dụng (HSD) không được sớm hơn ngày sản xuất (NSX).");
+
+            string randomMaSanPham;
+            do
+            {
+                var random = new Random();
+                int randomNumber = random.Next(1, 1000);
+                randomMaSanPham = "SP" + randomNumber.ToString("D3");
+            } while (SanPhamExists(randomMaSanPham));
+
+            // Clear ModelState error for MaSanPham
+            ModelState.Remove("MaSanPham");
+            sanPham.MaSanPham = randomMaSanPham;
+
+            // Validate ModelState
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToList()
+                );
+                return Json(new { success = false, errors });
+            }
+
             try
             {
-                // Generate unique product code and other processing logic
-                string randomMaSanPham;
-                do
-                {
-                    var random = new Random();
-                    int randomNumber = random.Next(1, 1000);
-                    randomMaSanPham = "SP" + randomNumber.ToString("D3");
-                } while (SanPhamExists(randomMaSanPham));
-
-                sanPham.MaSanPham = randomMaSanPham;
+                
                 sanPham.TrangThai = sanPham.SoLuong == 0 ? 0 : 1;
 
+                // Handle image uploads
                 if (sanPham.UploadImages != null && sanPham.UploadImages.Count > 0)
                 {
                     string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "img/AnhSanPham");
@@ -146,7 +188,7 @@ namespace ASM_GS.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Đã xảy ra lỗi khi thêm sản phẩm. Vui lòng thử lại!" });
+                return Json(new { success = false, message = "Đã xảy ra lỗi khi thêm sản phẩm. Vui lòng thử lại!", error = ex.Message });
             }
         }
 
@@ -178,10 +220,35 @@ namespace ASM_GS.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(SanPham sanPham)
         {
+            // Custom validation for required fields
+            if (string.IsNullOrWhiteSpace(sanPham.TenSanPham))
+                ModelState.AddModelError("TenSanPham", "Tên sản phẩm là bắt buộc.");
+
+            if (sanPham.Gia <= 0)
+                ModelState.AddModelError("Gia", "Giá phải lớn hơn 0.");
+
+            if (string.IsNullOrWhiteSpace(sanPham.MaDanhMuc))
+                ModelState.AddModelError("MaDanhMuc", "Danh mục là bắt buộc.");
+
+            if (sanPham.SoLuong < 0)
+                ModelState.AddModelError("SoLuong", "Số lượng không được nhỏ hơn 0.");
+
+            if (!sanPham.Nsx.HasValue)
+                ModelState.AddModelError("Nsx", "Ngày sản xuất (NSX) là bắt buộc.");
+
+            if (!sanPham.Hsd.HasValue)
+                ModelState.AddModelError("Hsd", "Hạn sử dụng (HSD) là bắt buộc.");
+
+            if (sanPham.Nsx.HasValue && sanPham.Hsd.HasValue && sanPham.Hsd.Value < sanPham.Nsx.Value)
+                ModelState.AddModelError("Hsd", "Hạn sử dụng (HSD) không được sớm hơn ngày sản xuất (NSX).");
+
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                return Json(new { success = false, errors });
+                var errors = ModelState.ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToList()
+                );
+                return Json(new { success = false, errors }); // Return errors as JSON
             }
 
             try
@@ -251,9 +318,6 @@ namespace ASM_GS.Areas.Admin.Controllers
                 return Json(new { success = false, errors = new List<string> { ex.Message } });
             }
         }
-
-
-
 
 
         // POST: Admin/SanPham/Delete/5

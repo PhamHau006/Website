@@ -9,13 +9,13 @@
         width: 150px;
     }
 
-        .avatar-content-setting-info img {
-            border-radius: 50%;
-            width: 120px;
-            height: 120px;
-            object-fit: cover;
-            margin-bottom: 10px;
-        }
+    .avatar-content-setting-info img {
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        margin-bottom: 10px;
+    }
 
     .change-photo {
         display: flex;
@@ -26,15 +26,15 @@
         color: #888;
     }
 
-        .change-photo a {
-            color: #007bff;
-            text-decoration: none;
-            cursor: pointer;
-        }
+    .change-photo a {
+        color: #007bff;
+        text-decoration: none;
+        cursor: pointer;
+    }
 
-            .change-photo a:hover {
-                text-decoration: underline;
-            }
+    .change-photo a:hover {
+        text-decoration: underline;
+    }
 </style>
 
 
@@ -90,19 +90,16 @@
 
         <div class="item-info row">
             <label>Giới tính:</label>
-            <select id="GioiTinh" class="form-control">
-                @if (Model.GioiTinh.HasValue && Model.GioiTinh.Value)
-                {
-                    <option value="true" selected>Nam</option>
-                    <option value="false">Nữ</option>
-                }
-                else
-                {
-                    <option value="true">Nam</option>
-                    <option value="false" selected>Nữ</option>
-                }
-            </select>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <label>
+                    <input type="radio" name="GioiTinh" value="true" @(Model.GioiTinh == true ? "checked" : "") /> Nam
+                </label>
+                <label>
+                    <input type="radio" name="GioiTinh" value="false" @(Model.GioiTinh == false ? "checked" : "") /> Nữ
+                </label>
+            </div>
         </div>
+
         <div class="btn-edit-info">
             <button onclick="saveChanges()" class="btn btn-primary">Cập nhật</button>
         </div>
@@ -134,19 +131,19 @@
     function saveChanges() {
         const formData = new FormData();
 
-        // Append the selected image if available
+        // Append file if selected
         const imageFile = document.getElementById('fileInput').files[0];
         if (imageFile) {
             formData.append('Anh', imageFile);
         }
 
-        // Append other form fields
+        // Append other fields
         formData.append('TenKhachHang', document.getElementById('TenKhachHang').value);
         formData.append('SoDienThoai', document.getElementById('SoDienThoai').value);
         formData.append('DiaChi', document.getElementById('DiaChi').value);
         formData.append('Cccd', document.getElementById('Cccd').value);
         formData.append('NgaySinh', document.getElementById('NgaySinh').value);
-        formData.append('GioiTinh', document.getElementById('GioiTinh').value === 'true');
+        formData.append('GioiTinh', document.querySelector('input[name="GioiTinh"]:checked').value);
 
         fetch('@Url.Action("Edit", "InformationPersonal")', {
             method: 'POST',
@@ -161,7 +158,7 @@
                     Swal.fire({
                         icon: 'success',
                         title: 'Thành công',
-                        text: 'Thông tin cá nhân đã được cập nhật thành công!'
+                        text: result.message
                     }).then(() => {
                         location.reload();
                     });

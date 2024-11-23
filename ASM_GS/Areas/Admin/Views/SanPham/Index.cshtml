@@ -143,30 +143,82 @@
 
         <!-- Filter Form -->
         <form id="filterForm" class="form-inline d-flex align-items-center" style="gap:5px; margin-right:5px">
-            <input type="text" name="searchName" id="searchName" class="form-control" placeholder="Tìm theo tên" style="font-size: 12px;" />
-            <select name="categoryId" id="categoryId" class="form-control" style="font-size: 12px;" onchange="this.form.submit();">
-                <option value="">-- Chọn danh mục --</option>
-                @foreach (var item in ViewBag.DanhMucList as SelectList)
+            <!-- Input tìm kiếm -->
+            <input type="text" name="searchName" id="searchName" class="form-control" placeholder="Tìm theo tên"
+                   value="@ViewBag.SearchName" style="font-size: 12px;" />
+
+                <select name="categoryId" id="categoryId" class="form-control" onchange="this.form.submit();" style="margin-right: 10px;">
+                    <option value="">-- Chọn danh mục --</option>
+                    @foreach (var item in (List<ASM_GS.Models.DanhMuc>)ViewBag.DanhMucList)
+                    {
+                        @if (item.MaDanhMuc == (ViewBag.CategoryId?.ToString() ?? ""))
+                        {
+                            <option value="@item.MaDanhMuc" selected="selected">@item.TenDanhMuc</option>
+                        }
+                        else
+                        {
+                            <option value="@item.MaDanhMuc">@item.TenDanhMuc</option>
+                        }
+                    }
+                </select>
+    <!-- Dropdown lọc theo trạng thái -->
+            <select name="status" id="status" class="form-control" style="font-size: 12px;" onchange="this.form.submit();">
+                <option value="">-- Trạng thái --</option>
+                @if (ViewBag.Status?.ToString() == "1")
                 {
-                    <option value="@item.Value">@item.Text</option>
+                    <option value="1" selected>Còn Hàng</option>
+                    <option value="0">Hết Hàng</option>
+                }
+                else if (ViewBag.Status?.ToString() == "0")
+                {
+                    <option value="1">Còn Hàng</option>
+                    <option value="0" selected>Hết Hàng</option>
+                }
+                else
+                {
+                    <option value="1">Còn Hàng</option>
+                    <option value="0">Hết Hàng</option>
                 }
             </select>
 
-            <select name="status" id="status" class="form-control" style="font-size: 12px;" onchange="this.form.submit();">
-                <option value="">-- Trạng thái --</option>
-                <option value="1">Còn Hàng</option>
-                <option value="0">Hết Hàng</option>
+
+    <!-- Dropdown sắp xếp -->
+            <select name="sortOrder" id="sortOrder" class="form-control" style="font-size: 12px; width: 200px;" onchange="this.form.submit();">
+                @if (string.IsNullOrEmpty(ViewBag.SortOrder))
+                {
+                    <option value="" selected>Sắp xếp theo tên (A-Z)</option>
+                    <option value="name_desc">Sắp xếp theo tên (Z-A)</option>
+                    <option value="price_asc">Giá: Thấp đến Cao</option>
+                    <option value="price_desc">Giá: Cao đến Thấp</option>
+                }
+                else if (ViewBag.SortOrder == "name_desc")
+                {
+                    <option value="">Sắp xếp theo tên (A-Z)</option>
+                    <option value="name_desc" selected>Sắp xếp theo tên (Z-A)</option>
+                    <option value="price_asc">Giá: Thấp đến Cao</option>
+                    <option value="price_desc">Giá: Cao đến Thấp</option>
+                }
+                else if (ViewBag.SortOrder == "price_asc")
+                {
+                    <option value="">Sắp xếp theo tên (A-Z)</option>
+                    <option value="name_desc">Sắp xếp theo tên (Z-A)</option>
+                    <option value="price_asc" selected>Giá: Thấp đến Cao</option>
+                    <option value="price_desc">Giá: Cao đến Thấp</option>
+                }
+                else if (ViewBag.SortOrder == "price_desc")
+                {
+                    <option value="">Sắp xếp theo tên (A-Z)</option>
+                    <option value="name_desc">Sắp xếp theo tên (Z-A)</option>
+                    <option value="price_asc">Giá: Thấp đến Cao</option>
+                    <option value="price_desc" selected>Giá: Cao đến Thấp</option>
+                }
             </select>
 
-            <select name="sortOrder" id="sortOrder" class="form-control" style="font-size: 12px; width: 200px;" onchange="this.form.submit();">
-                <option value="">Sắp xếp theo tên (A-Z)</option>
-                <option value="name_desc">Sắp xếp theo tên (Z-A)</option>
-                <option value="price_asc">Giá: Thấp đến Cao</option>
-                <option value="price_desc">Giá: Cao đến Thấp</option>
-            </select>
-        </form>
+</form>
 
     </div>
+
+
     <!-- Bordered Table -->
     <div class="card">
         <h5 class="card-header">@ViewData["Title"]</h5>
@@ -183,7 +235,7 @@
                                 <th>Giá</th>
                                 <th>Tên Danh Mục</th>
                                 <th>Số Lượng</th>
-                                <th>Đơn Vị</th>
+                                @* <th>Đơn Vị</th> *@
                                 <th>Trạng Thái</th>
                                 <th>Hành Động</th>
                             </tr>
@@ -206,7 +258,7 @@
                                     <td>@item.Gia.ToString("N0")</td>
                                     <td>@item.MaDanhMucNavigation?.TenDanhMuc</td>
                                     <td>@item.SoLuong</td>
-                                    <td>@item.DonVi</td>
+                                    @* <td>@item.DonVi</td> *@
                                     <td>
                                         @if (item.TrangThai == 1)
                                         {
@@ -298,58 +350,100 @@
     <!-- AJAX Script -->
 
     <script>
-        function loadAddProductModal() {
-            $.ajax({
-                url: '/Admin/SanPham/CreatePartial', // URL to the CreatePartial view
-                type: 'GET',
-                success: function (data) {
-                    $('#modalAddProduct .modal-content').html(data); // Insert content into modal
-                    $('#modalAddProduct').modal('show'); // Show modal
+        $(document).ready(function() {
+            function initializeCreateFormAjax() {
+                // Attach submit handler to the form
+                $("#createForm").on("submit", function(e) {
+                    e.preventDefault(); // Prevent default form submission
 
-                    // After form submission inside the modal
-                    $('#modalAddProduct form').on('submit', function (event) {
-                        event.preventDefault(); // Prevent default form submission
-                        $.ajax({
-                            url: '/Admin/SanPham/Create',
-                            type: 'POST',
-                            data: new FormData(this),
-                            processData: false,
-                            contentType: false,
-                            success: function (response) {
-                                $('#modalAddProduct').modal('hide'); // Close the modal
+                    // Collect form data
+                    let formData = new FormData(this);
+
+                    $.ajax({
+                        url: "/Admin/SanPham/Create", // URL to handle form submission
+                        type: "POST",
+                        data: formData,
+                        processData: false, // Required for FormData
+                        contentType: false, // Required for FormData
+                        beforeSend: function() {
+                            // Disable the submit button to prevent multiple submissions
+                            $("#createForm button[type='submit']").prop("disabled", true).text("Đang xử lý...");
+                        },
+                        success: function(response) {
+                            // Clear existing error messages
+                            $(".text-danger").text("");
+
+                            if (response.success) {
+                                // Success handling
                                 Swal.fire({
-                                    icon: response.success ? 'success' : 'error',
-                                    title: response.success ? 'Thành công!' : 'Lỗi!',
-                                    text: response.message,
-                                    confirmButtonText: 'OK'
+                                    icon: "success",
+                                    title: "Thành công!",
+                                    text: response.message || "Sản phẩm đã được thêm thành công.",
                                 }).then(() => {
-                                    if (response.success) {
-                                        location.reload(); // Reload page if successful
-                                    }
+                                    // Reload the product list
+                                    location.reload();
                                 });
-                            },
-                            error: function () {
+
+                                // Reset the form
+                                $("#createForm")[0].reset();
+                                // Close the modal
+                                $("#modalAddProduct").modal("hide");
+                            } else if (response.errors) {
+                                // Display validation errors below each field
+                                for (let key in response.errors) {
+                                    $(`#error${key}`).text(response.errors[key].join(", "));
+                                }
+                            } else {
                                 Swal.fire({
-                                    icon: 'error',
-                                    title: 'Lỗi!',
-                                    text: 'Không thể thêm sản phẩm. Vui lòng thử lại!',
-                                    confirmButtonText: 'OK'
+                                    icon: "error",
+                                    title: "Lỗi!",
+                                    text: response.message || "Đã xảy ra lỗi. Vui lòng thử lại.",
                                 });
                             }
+                        },
+                        error: function() {
+                            // Handle server errors
+                            Swal.fire({
+                                icon: "error",
+                                title: "Lỗi!",
+                                text: "Không thể gửi dữ liệu. Vui lòng thử lại.",
+                            });
+                        },
+                        complete: function() {
+                            // Re-enable the submit button
+                            $("#createForm button[type='submit']").prop("disabled", false).text("Thêm Sản Phẩm");
+                        },
+                    });
+                });
+            }
+
+            // Initialize the form inside the modal when loaded
+            function loadAddProductModal() {
+                $.ajax({
+                    url: "/Admin/SanPham/CreatePartial", // URL to the CreatePartial view
+                    type: "GET",
+                    success: function(data) {
+                        // Load the modal content
+                        $("#modalAddProduct .modal-content").html(data);
+                        $("#modalAddProduct").modal("show"); // Show the modal
+                        initializeCreateFormAjax(); // Reinitialize form submission for the loaded form
+                    },
+                    error: function() {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Lỗi!",
+                            text: "Không thể tải nội dung. Vui lòng thử lại!",
                         });
-                    });
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error loading partial view:", error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi!',
-                        text: 'Không thể tải nội dung. Vui lòng thử lại!',
-                        confirmButtonText: 'OK'
-                    });
-                }
+                    },
+                });
+            }
+
+            // Attach the click event to trigger the modal
+            $(".btn-primary[data-bs-toggle='modal']").on("click", function(e) {
+                e.preventDefault();
+                loadAddProductModal();
             });
-        }
+        });
 
 
         function loadEditProduct(maSanPham) {
@@ -357,12 +451,12 @@
                 url: '/Admin/SanPham/EditPartial',
                 type: 'GET',
                 data: { maSanPham: maSanPham },
-                success: function (response) {
+                success: function(response) {
                     $('#editProductModal .modal-content').html(response); // Insert response content
                     $('#editProductModal').modal('show'); // Show modal
 
                     // Handle form submission for updating product
-                    $('#editProductModal form').on('submit', function (event) {
+                    $('#editProductModal form').on('submit', function(event) {
                         event.preventDefault(); // Prevent default form submission
 
                         $.ajax({
@@ -371,57 +465,85 @@
                             data: new FormData(this),
                             processData: false,
                             contentType: false,
-                            success: function (response) {
-                                $('#editProductModal').modal('hide'); // Close the modal
-                                Swal.fire({
-                                    icon: response.success ? 'success' : 'error',
-                                    title: response.success ? 'Cập nhật thành công!' : 'Lỗi cập nhật!',
-                                    text: response.message || (response.errors ? response.errors.join(", ") : "Đã xảy ra lỗi."),
-                                    confirmButtonText: 'OK'
-                                }).then(() => {
-                                    if (response.success) {
-                                        location.reload(); // Reload page on successful update
-                                    }
-                                });
+                            beforeSend: function() {
+                                // Disable the submit button to prevent multiple submissions
+                                $("#editProductModal button[type='submit']").prop("disabled", true).text("Đang xử lý...");
                             },
-                            error: function () {
+                            success: function(response) {
+                                // Clear existing error messages
+                                $(".text-danger").text("");
+
+                                if (response.success) {
+                                    $('#editProductModal').modal('hide'); // Close the modal
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Cập nhật thành công!',
+                                        text: response.message || 'Sản phẩm đã được cập nhật.',
+                                    }).then(() => {
+                                        location.reload(); // Reload page on successful update
+                                    });
+                                } else if (response.errors) {
+                                    // Display validation errors below each field
+                                    for (let key in response.errors) {
+                                        $(`#error${key}`).text(response.errors[key].join(", "));
+                                    }
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Lỗi cập nhật!',
+                                        text: response.message || 'Đã xảy ra lỗi.',
+                                    });
+                                }
+                            },
+                            error: function() {
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Lỗi!',
                                     text: 'Không thể cập nhật sản phẩm. Vui lòng thử lại!',
                                     confirmButtonText: 'OK'
                                 });
+                            },
+                            complete: function() {
+                                // Re-enable the submit button after AJAX completes
+                                $("#editProductModal button[type='submit']").prop("disabled", false).text("Cập nhật sản phẩm");
                             }
                         });
                     });
                 },
-                error: function () {
+                error: function() {
                     $('#editProductModal .modal-content').html('<p class="text-danger">Không thể tải thông tin sản phẩm. Vui lòng thử lại sau.</p>');
                 }
             });
         }
 
 
-
-
-
-        $(document).ready(function () {
-            // Trigger tìm kiếm mỗi khi thay đổi đầu vào hoặc sắp xếp
-            $('#filterForm input, #filterForm select').on('input change', function () {
+        $(document).ready(function() {
+            // Bắt sự kiện input và thay đổi dropdown
+            $('#filterForm input, #filterForm select').on('input change', function() {
                 performSearch();
             });
 
             // Thực hiện tìm kiếm qua AJAX
             function performSearch() {
+                const serializedData = $('#filterForm').serialize();
+                console.log("Serialized Data: ", serializedData);
+
                 $.ajax({
-                    url: '/Admin/SanPham/Index',
+                    url: '/Admin/SanPham/Index', // URL của action Index
                     type: 'GET',
-                    data: $('#filterForm').serialize(), // Serialize form data
-                    success: function (data) {
+                    data: serializedData, // Serialize toàn bộ dữ liệu của form
+                    success: function(data) {
                         var $data = $(data);
+                        // Thay thế danh sách sản phẩm trong view
                         $('#productListContainer').html($data.find('#productListContainer').html());
+
+                        // Cập nhật giá trị trong các trường lọc
+                        $('#searchName').val($data.find('#searchName').val());
+                        $('#categoryId').val($data.find('#categoryId').val());
+                        $('#status').val($data.find('#status').val());
+                        $('#sortOrder').val($data.find('#sortOrder').val());
                     },
-                    error: function (xhr, status, error) {
+                    error: function(xhr, status, error) {
                         console.error("Lỗi tìm kiếm:", error);
                     }
                 });

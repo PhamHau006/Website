@@ -148,7 +148,7 @@
     {
         <script>
             // Sử dụng SweetAlert để hiển thị thông báo thành công
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'success',
                     title: '@TempData["successMessage"]',
@@ -310,7 +310,7 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
         var directUrl = '@Direct';
 
         if (directUrl) {
@@ -327,7 +327,7 @@
     });
 </script>
 <script>
-    setTimeout(function () {
+    setTimeout(function() {
         var successMessage = document.querySelector(".alert-success");
         if (successMessage) {
             successMessage.style.display = "none";
@@ -337,10 +337,10 @@
         $.ajax({
             url: '/Admin/GiamGiaCB/Create', // Đường dẫn tới action Create
             type: 'GET',
-            success: function (response) {
+            success: function(response) {
                 $('#createModalContent').html(response);
             },
-            error: function () {
+            error: function() {
                 $('#createModalContent').html('<p class="text-danger">Không thể tải form tạo mới. Vui lòng thử lại sau.</p>');
             }
         });
@@ -350,10 +350,10 @@
             url: '/Admin/GiamGiaCB/Details',
             type: 'GET',
             data: { id: maGiamGia },
-            success: function (response) {
+            success: function(response) {
                 $('#detailsModalContent').html(response);
             },
-            error: function () {
+            error: function() {
                 $('#detailsModalContent').html('<p class="text-danger">Không thể tải chi tiết. Vui lòng thử lại sau.</p>');
             }
         });
@@ -362,10 +362,10 @@
         $.ajax({
             url: '/Admin/GiamGiaCB/Edit/' + maGiamGia, // Đường dẫn chính xác tới hành động Edit
             type: 'GET',
-            success: function (response) {
+            success: function(response) {
                 $('#editModalContent').html(response); // Tải phản hồi vào modal
             },
-            error: function () {
+            error: function() {
                 $('#editModalContent').html('<p class="text-danger">Không thể tải form chỉnh sửa. Vui lòng thử lại sau.</p>');
             }
         });
@@ -390,7 +390,7 @@
     }
 
     // Tìm phần tử input và thêm sự kiện 'input'
-    document.querySelector('input[name="searchTerm"]').addEventListener('input', function (event) {
+    document.querySelector('input[name="searchTerm"]').addEventListener('input', function(event) {
         event.preventDefault(); // Ngăn chặn hành vi mặc định (nếu có)
 
         var searchTerm = this.value.trim(); // Lấy giá trị nhập vào, bao gồm cả dấu tiếng Việt
@@ -400,19 +400,19 @@
             url: '/Admin/GiamGiaCB/Index', // Thay URL này bằng đường dẫn đến action tìm kiếm
             type: 'GET',
             data: { searchTerm: searchTerm },
-            success: function (response) {
+            success: function(response) {
                 // Cập nhật kết quả tìm kiếm ngay khi nhận được phản hồi
                 $('#searchResultsContainer').html(response);
             },
-            error: function () {
+            error: function() {
                 console.error('Không thể tải kết quả tìm kiếm. Vui lòng thử lại sau.');
             }
         });
     });
-    document.querySelector('select[name="trangThai"]').addEventListener('change', function () {
+    document.querySelector('select[name="trangThai"]').addEventListener('change', function() {
         document.getElementById('searchForm').submit(); // Gửi biểu mẫu khi thay đổi trạng thái
     });
-    document.querySelector('select[name="sortOrder"]').addEventListener('change', function () {
+    document.querySelector('select[name="sortOrder"]').addEventListener('change', function() {
         document.getElementById('searchForm').submit(); // Gửi biểu mẫu khi thay đổi sắp xếp
     });
 </script>

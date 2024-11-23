@@ -20,9 +20,9 @@
         white-space: nowrap;
     }
 
-    .custom-alert button.btn-close {
-        filter: brightness(0) invert(1);
-    }
+        .custom-alert button.btn-close {
+            filter: brightness(0) invert(1);
+        }
 
     .btn-success {
         background-color: #0e92eb;
@@ -30,13 +30,13 @@
         box-shadow: 0 0.125rem 0.25rem 0 rgba(14, 146, 235, 0.4);
     }
 
-    .btn-success:hover,
-    .btn-success:active,
-    .btn-success:focus {
-        background-color: #0e92eb;
-        border-color: #0e92eb;
-        box-shadow: 0 0.125rem 0.25rem 0 rgba(14, 146, 235, 0.4);
-    }
+        .btn-success:hover,
+        .btn-success:active,
+        .btn-success:focus {
+            background-color: #0e92eb;
+            border-color: #0e92eb;
+            box-shadow: 0 0.125rem 0.25rem 0 rgba(14, 146, 235, 0.4);
+        }
 </style>
 
 <br />
@@ -184,8 +184,9 @@
             <thead>
                 <tr>
                     <th>#</th>
-        @*             <th>Mã Giảm Giá</th>
-         *@          <th>Tên Giảm Giá</th>
+                    @*             <th>Mã Giảm Giá</th>
+                    *@
+                    <th>Tên Giảm Giá</th>
                     <th>Giá Trị (%)</th>
                     <th>Ngày Bắt Đầu</th>
                     <th>Ngày Kết Thúc</th>
@@ -205,7 +206,7 @@
                             <td>
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#detailsDiscountModal" onclick="loadDetailsDiscountForm('@discount.MaGiamGia')" style="text-decoration: none; color: inherit;">@discount.TenGiamGia</a>
                             </td>
-                            <td>@($"{discount.GiaTri:P0}")</td> <!-- Display as percentage -->
+                            <td>@String.Format("{0:0}%", discount.GiaTri)</td> <!-- Display as percentage with no decimals -->
                             <td>@discount.NgayBatDau.ToShortDateString()</td>
                             <td>@discount.NgayKetThuc.ToShortDateString()</td>
                             <td>@discount.SoLuongMaNhapToiDa</td>
@@ -250,7 +251,7 @@
         </table>
     </div>
 </div>
-        
+
 <!-- Modal xem Chi Tiết Giảm Giá -->
 <div class="modal fade" id="detailsDiscountModal" tabindex="-1" aria-labelledby="detailsDiscountModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">

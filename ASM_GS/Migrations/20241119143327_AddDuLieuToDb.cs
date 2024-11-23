@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ASM_GS.Migrations
 {
     /// <inheritdoc />
-    public partial class DLLS : Migration
+    public partial class AddDuLieuToDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -11,4 +11,10 @@
         public decimal Subtotal => Price * Quantity;
         public int MaxQuantity { get; set; }
     }
+    public static class PaymentType
+    {
+        public static string COD = "COD";
+        public static string VNPAY = "VnPay";
+        public static string MOMO = "MoMo";
+    }
 }

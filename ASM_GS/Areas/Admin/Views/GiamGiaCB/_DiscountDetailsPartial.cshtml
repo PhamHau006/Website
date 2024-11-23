@@ -12,7 +12,7 @@
 </div>
 <div class="modal-body">
     <p><strong>Tên:</strong> @Model.TenGiamGia</p>
-    <p><strong>Giá Trị:</strong> @($"{Model.GiaTri:P0}")</p> <!-- Hiển thị dưới dạng phần trăm -->
+    <p><strong>Giá Trị:</strong> @String.Format("{0:0}%", Model.GiaTri)</p> <!-- Làm tròn đến số nguyên -->
     <p><strong>Ngày Bắt Đầu:</strong> @Model.NgayBatDau.ToShortDateString()</p>
     <p><strong>Ngày Kết Thúc:</strong> @Model.NgayKetThuc.ToShortDateString()</p>
     <p><strong>Số lượng tối đa:</strong> @Model.SoLuongMaNhapToiDa</p>

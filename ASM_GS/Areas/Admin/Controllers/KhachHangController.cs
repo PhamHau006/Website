@@ -62,7 +62,6 @@ namespace ASM_GS.Areas.Admin.Controllers
             ViewBag.Status = status;
             ViewBag.PageSize = pageSizeValue;
             ViewBag.Page = page;
-
             return View(pagedKhachHangs); 
         }
 

@@ -24,8 +24,8 @@ namespace ASM_GS.Areas.Admin.Controllers
             if (HttpContext.Session.GetString("StaffAccount") == null)
             {
                 HttpContext.Session.SetString("RedirectUrl", HttpContext.Request.GetDisplayUrl());
-				ViewData["RedirectUrl"] = HttpContext.Session.GetString("RedirectUrl");
-			}
+                ViewData["RedirectUrl"] = HttpContext.Session.GetString("RedirectUrl");
+            }
             // Truy vấn tất cả các giảm giá, bao gồm các mã nhập chi tiết
             var discounts = _context.GiamGia
                 .Include(d => d.MaNhapGiamGias) // Bao gồm mã nhập chi tiết nếu cần
@@ -79,40 +79,46 @@ namespace ASM_GS.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(GiamGia giamGia)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                return PartialView("_DiscountCreatePartial", giamGia); // Trả về partial view nếu có lỗi
-            }
-
-            Random random = new Random();
-            string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            string maGiamGia = "CP" + string.Concat(Enumerable.Range(0, 6).Select(_ => characters[random.Next(characters.Length)]));
-            giamGia.MaGiamGia = maGiamGia;
-
-
-            // Thêm giảm giá vào cơ sở dữ liệu
-            _context.Add(giamGia);
-            await _context.SaveChangesAsync();
-
-            // Tạo mã nhập giảm giá theo số lượng tối đa
-            for (int i = 0; i < giamGia.SoLuongMaNhapToiDa; i++)
-            {
-                // Tạo mã nhập ngẫu nhiên (8 ký tự viết hoa)
-                string randomCode = CodeGenerator.GenerateRandomCode();
-                var maNhapGiamGia = new MaNhapGiamGia
+                // Kiểm tra giá trị giảm giá phải là phần trăm hợp lệ (0-100)
+                if (giamGia.GiaTri < 0 || giamGia.GiaTri > 100)
                 {
-                    MaNhap = randomCode,
-                    MaGiamGia = giamGia.MaGiamGia
-                };
-                _context.MaNhapGiamGia.Add(maNhapGiamGia);
+                    ModelState.AddModelError("GiaTri", "Giảm giá phải là một tỷ lệ phần trăm hợp lệ từ 0 đến 100.");
+                    return View(giamGia);
+                }
+
+                // Tạo mã giảm giá ngẫu nhiên
+                Random random = new Random();
+                string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                string maGiamGia = "CP" + string.Concat(Enumerable.Range(0, 6).Select(_ => characters[random.Next(characters.Length)]));
+                giamGia.MaGiamGia = maGiamGia;
+
+                // Thêm vào cơ sở dữ liệu
+                _context.Add(giamGia);
+                await _context.SaveChangesAsync();
+
+                // Tạo mã nhập giảm giá theo số lượng
+                for (int i = 0; i < giamGia.SoLuongMaNhapToiDa; i++)
+                {
+                    string randomCode = CodeGenerator.GenerateRandomCode();
+                    var maNhapGiamGia = new MaNhapGiamGia
+                    {
+                        MaNhap = randomCode,
+                        MaGiamGia = giamGia.MaGiamGia
+                    };
+                    _context.MaNhapGiamGia.Add(maNhapGiamGia);
+                }
+
+                await _context.SaveChangesAsync();
+                TempData["successMessage"] = "Tạo mã giảm giá thành công!";
+                return RedirectToAction("Index");
             }
 
-            // Lưu các mã nhập giảm giá mới vào cơ sở dữ liệu
-            await _context.SaveChangesAsync();
+            return PartialView("_DiscountCreatePartial", giamGia); // Trả về partial view với dữ liệu
 
-            TempData["successMessage"] = "Tạo giảm giá thành công!";
-            return RedirectToAction("Index");
         }
+
 
 
         public IActionResult Details(string id)
@@ -149,6 +155,12 @@ namespace ASM_GS.Areas.Admin.Controllers
                 return PartialView("_DiscountEditPartial", giamGia); // Trả về partial view với lỗi xác thực
             }
 
+            // Kiểm tra giá trị GiaTri có phải là phần trăm hợp lệ (0 <= GiaTri <= 100)
+            if (giamGia.GiaTri < 0 || giamGia.GiaTri > 100)
+            {
+                ModelState.AddModelError("GiaTri", "Giảm giá phải là tỷ lệ phần trăm hợp lệ từ 0 đến 100.");
+                return PartialView("_DiscountEditPartial", giamGia);
+            }
             // Lấy thông tin giảm giá hiện tại từ cơ sở dữ liệu, bao gồm các mã nhập chi tiết
             var existingDiscount = _context.GiamGia
                 .Include(g => g.MaNhapGiamGias)
@@ -212,7 +224,7 @@ namespace ASM_GS.Areas.Admin.Controllers
             }
 
             var giamgia = _context.GiamGia.FirstOrDefault(g => g.MaGiamGia == id);
-      
+
             _context.GiamGia.Remove(giamgia);
             _context.SaveChanges();
 
@@ -222,22 +234,54 @@ namespace ASM_GS.Areas.Admin.Controllers
 
         public IActionResult UseCode(string maNhap)
         {
-            // Tìm mã nhập trong cơ sở dữ liệu
+            // Lấy thông tin mã nhập
             var code = _context.MaNhapGiamGias.FirstOrDefault(c => c.MaNhap == maNhap);
 
-            // Kiểm tra xem mã nhập có tồn tại và chưa được sử dụng
             if (code != null && !code.IsUsed)
             {
-                code.IsUsed = true; // Đánh dấu mã nhập là đã sử dụng
-                _context.SaveChanges(); // Lưu thay đổi vào cơ sở dữ liệu
-                TempData["successMessage"] = "Mã nhập đã được sử dụng!";
+                // Lấy thông tin giảm giá
+                var discount = _context.GiamGia.FirstOrDefault(d => d.MaGiamGia == code.MaGiamGia);
+
+                if (discount != null)
+                {
+                    // Kiểm tra trạng thái của giảm giá
+                    if (discount.TrangThai != 1) // Giả sử trạng thái 1 là "áp dụng"
+                    {
+                        TempData["errorMessage"] = "Mã giảm giá không ở trạng thái áp dụng.";
+                        return RedirectToAction("Details", new { id = discount.MaGiamGia });
+                    }
+
+                    // Kiểm tra giá trị giảm giá
+                    decimal discountValue = 0;
+                    decimal originalPrice = 1000; // Giá trị gốc của sản phẩm (bạn có thể thay thế bằng giá trị thực tế)
+
+                    if (discount.GiaTri >= 0 && discount.GiaTri <= 100)
+                    {
+                        // Tính giá trị giảm giá theo phần trăm
+                        discountValue = (originalPrice * discount.GiaTri) / 100;
+                    }
+                    else
+                    {
+                        TempData["errorMessage"] = "Giảm giá không hợp lệ.";
+                        return RedirectToAction("Details", new { id = discount.MaGiamGia });
+                    }
+
+                    // Đánh dấu mã nhập là đã sử dụng
+                    code.IsUsed = true;
+                    _context.SaveChanges();
+
+                    TempData["successMessage"] = $"Mã nhập đã được sử dụng, giảm giá: {discountValue:C}!";
+                }
+                else
+                {
+                    TempData["errorMessage"] = "Mã giảm giá không hợp lệ.";
+                }
             }
             else
             {
                 TempData["errorMessage"] = "Mã nhập không hợp lệ hoặc đã được sử dụng.";
             }
 
-            // Chuyển hướng trở lại trang chi tiết giảm giá
             return RedirectToAction("Details", new { id = code?.MaGiamGia });
         }
 

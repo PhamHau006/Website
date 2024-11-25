@@ -22,20 +22,42 @@
     </div>
     <div class="form-group">
         <label>Chọn Sản Phẩm</label>
-        <div class="checkbox-list">
-            @if (ViewBag.SanPhams != null)
-            {
-                foreach (var sanPham in ViewBag.SanPhams)
+        <input type="text" id="searchSanPham" class="form-control" placeholder="Tìm kiếm sản phẩm..." />
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Tên sản phẩm</th>
+                    <th>Giá</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="sanPhamTable">
+                @if (ViewBag.SanPhams != null)
                 {
-                    <div class="form-check">
-                        <input type="checkbox" name="selectedSanPhams" value="@sanPham.MaSanPham" class="form-check-input" id="sanPham_@sanPham.MaSanPham" />
-                        <label class="form-check-label" for="sanPham_@sanPham.MaSanPham">@sanPham.TenSanPham</label>
-                    </div>
+                    foreach (var sanPham in ViewBag.SanPhams)
+                    {
+                        <tr>
+                            <td>@sanPham.TenSanPham</td>
+                            <td>@sanPham.Gia.ToString("N0") VNĐ</td>
+                            <td>
+                                <input type="number" class="form-control quantity-input" data-id="@sanPham.MaSanPham" min="1" value="1" style="width: 80px; display: inline-block;" />
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-success btn-add" data-id="@sanPham.MaSanPham" data-name="@sanPham.TenSanPham">
+                                    Thêm
+                                </button>
+                            </td>
+                        </tr>
+                    }
                 }
-            }
-        </div>
-        <small class="form-text text-muted">Chọn các sản phẩm bằng cách tích vào ô bên cạnh.</small>
-        <span class="text-danger">@ViewData.ModelState["selectedSanPhams"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+            </tbody>
+
+        </table>
+        <small class="form-text text-muted">Phân trang nếu sản phẩm quá nhiều.</small>
+    </div>
+    <div id="selectedProducts">
+        <h5>Sản phẩm đã chọn:</h5>
+        <ul id="selectedProductList"></ul>
     </div>
     <div class="form-group">
         <label for="anhcombo">Hình ảnh</label>
@@ -62,3 +84,85 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    $(document).on('click', '.btn-add', function () {
+        const productId = $(this).data('id');
+        const productName = $(this).data('name');
+        const quantityInput = $(`input.quantity-input[data-id="${productId}"]`);
+        const quantity = parseInt(quantityInput.val()) || 1; // Lấy số lượng, mặc định là 1 nếu không hợp lệ
+        const selectedList = $('#selectedProductList');
+
+        if (!selectedList.find(`li[data-id="${productId}"]`).length) {
+            selectedList.append(
+                `<li data-id="${productId}" data-quantity="${quantity}">
+                    ${productName} - Số lượng: ${quantity}
+                    <button type="button" class="btn btn-sm btn-danger btn-remove">Xóa</button>
+                 </li>`
+            );
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'selectedSanPhams',
+                value: `${productId}:${quantity}`
+            }).appendTo('#createComboForm');
+        }
+    });
+
+    $(document).on('click', '.btn-remove', function () {
+        const productId = $(this).closest('li').data('id');
+        $(this).closest('li').remove();
+        $(`#createComboForm input[name="selectedSanPhams"][value^="${productId}:"]`).remove();
+    });
+
+    $('#searchSanPham').on('input', function () {
+        const searchTerm = $(this).val().toLowerCase();
+        let count = 0;
+
+        $('#sanPhamTable tr').each(function () {
+            if (count >= maxDisplay) {
+                $(this).hide();
+                return;
+            }
+            const productName = $(this).find('td:first').text().toLowerCase();
+            if (productName.includes(searchTerm)) {
+                $(this).show();
+                count++;
+            } else {
+                $(this).hide();
+            }
+        });
+
+        // Hiển thị thông báo nếu không có sản phẩm
+        if (count === 0) {
+            $('#sanPhamTable').after('<div id="noResults" class="text-danger mt-2">Không tìm thấy sản phẩm phù hợp</div>');
+        } else {
+            $('#noResults').remove();
+        }
+    });
+
+    $(document).ready(function () {
+        const maxDisplay = 5;
+
+        $('#sanPhamTable tr').hide(); // Ẩn toàn bộ sản phẩm ban đầu
+        $('#sanPhamTable tr').slice(0, maxDisplay).show(); // Hiển thị tối đa 10 sản phẩm đầu tiên
+
+        $('#searchSanPham').on('input', function () {
+            const searchTerm = $(this).val().toLowerCase();
+            let count = 0;
+
+            $('#sanPhamTable tr').each(function () {
+                const productName = $(this).find('td:first').text().toLowerCase();
+                if (productName.includes(searchTerm)) {
+                    if (count < maxDisplay) {
+                        $(this).show();
+                        count++;
+                    } else {
+                        $(this).hide();
+                    }
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+    });
+
+</script>

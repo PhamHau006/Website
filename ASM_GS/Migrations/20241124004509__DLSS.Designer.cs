@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ASM_GS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241122042241_DLSS")]
-    partial class DLSS
+    [Migration("20241124004509__DLSS")]
+    partial class _DLSS
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -396,7 +396,6 @@ namespace ASM_GS.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Anh")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Gia")

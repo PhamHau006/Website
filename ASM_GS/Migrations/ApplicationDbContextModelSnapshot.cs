@@ -393,7 +393,6 @@ namespace ASM_GS.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Anh")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Gia")

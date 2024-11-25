@@ -12,53 +12,67 @@
 
 <!-- Tìm kiếm và lọc -->
 <form method="get" action="/Admin/HoaDon/Index" class="mb-4">
-    <div class="row">
-        <div class="col-md-8">
-            <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm kiếm mã hóa đơn hoặc khách hàng" />
-        </div>
-        <div class="col-md-4">
-            <div class="row">
+    <div class="d-flex justify-content-between align-items-center mb-3" style="gap: 10px; padding: 10px;">
+        <label for="pageSize" class="mr-2 mb-0" style="margin-left: 10px; white-space: nowrap;">Hiển thị:</label>
+        <select id="pageSize" name="pageSize" class="form-select d-inline-block w-auto" onchange="this.form.submit()" style="width: 45px; margin-left: 10px;">
+            @if (ViewBag.PageSize == 5)
+            {
+                <option value="5" selected>5</option>
+            }
+            else
+            {
+                <option value="5">5</option>
+            }
 
-                <div class="col-md-4">
-                    <select name="trangThai" id="trangThai" class="form-control">
-                        <option value="">Tất cả trạng thái</option>
-                        <option value="1">Đã thanh toán</option>
-                        <option value="0">Chưa thanh toán</option>
-                    </select>
-                </div>
-                <div class="col-md-12 mt-3 text-end">
-                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-                </div>
-            </div>
-            <select id="pageSize" name="pageSize" class="form-select d-inline-block w-auto" onchange="this.form.submit()" style="width: 45px; margin-left: 10px;">
-                @if (ViewBag.PageSize == 5)
-                {
-                    <option value="5" selected>5</option>
-                }
-                else
-                {
-                    <option value="5">5</option>
-                }
+            @if (ViewBag.PageSize == 10)
+            {
+                <option value="10" selected>10</option>
+            }
+            else
+            {
+                <option value="10">10</option>
+            }
 
-                @if (ViewBag.PageSize == 10)
-                {
-                    <option value="10" selected>10</option>
-                }
-                else
-                {
-                    <option value="10">10</option>
-                }
+            @if (ViewBag.PageSize == 15)
+            {
+                <option value="15" selected>15</option>
+            }
+            else
+            {
+                <option value="15">15</option>
+            }
+        </select>
+        <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm kiếm mã hóa đơn hoặc khách hàng" />
+        <br />
+@*         <button type="submit" class="btn btn-primary">Tìm kiếm</button>*@     
+         <select name="trangThai" id="trangThai" class="form-control" onchange="this.form.submit()">
+            @if (ViewBag.TrangThai == null || ViewBag.TrangThai.ToString() == "")
+            {
+                <option value="" selected>Tất cả trạng thái</option>
+            }
+            else
+            {
+                <option value="">Tất cả trạng thái</option>
+            }
 
-                @if (ViewBag.PageSize == 15)
-                {
-                    <option value="15" selected>15</option>
-                }
-                else
-                {
-                    <option value="15">15</option>
-                }
-            </select>
-        </div>
+            @if (ViewBag.TrangThai?.ToString() == "1")
+            {
+                <option value="1" selected>Đã thanh toán</option>
+            }
+            else
+            {
+                <option value="1">Đã thanh toán</option>
+            }
+
+            @if (ViewBag.TrangThai?.ToString() == "0")
+            {
+                <option value="0" selected>Chưa thanh toán</option>
+            }
+            else
+            {
+                <option value="0">Chưa thanh toán</option>
+            }
+        </select>
     </div>
 </form>
 
@@ -81,7 +95,7 @@
                 <td>@hoaDon.MaHoaDon</td>
                 <td>@hoaDon.MaKhachHang</td>
                 <td>@hoaDon.NgayXuatHoaDon.ToShortDateString()</td>
-                <td>@hoaDon.TongTien.ToString("N0") VND</td>
+                <td>@hoaDon.TongTien.ToString("N0") VNĐ</td>
                 <td>
                     @if (hoaDon.TrangThai == 1)
                     {
@@ -154,7 +168,7 @@
                     </tbody>
                 </table>
                 <div class="d-flex justify-content-end">
-                    <h5>Tổng tiền: <span id="tongTien"></span> VND</h5>
+                    <h5>Tổng tiền: <span id="tongTien"></span></h5>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" onclick="inHoaDon()">In hóa đơn</button>
@@ -228,15 +242,15 @@
                             </td>
                         <td>${tenSanPham}</td>
                         <td>${soLuong}</td>
-                        <td>${gia.toLocaleString()} VND</td>
-                        <td>${thanhTien.toLocaleString()} VND</td>
+                        <td>${gia.toLocaleString()} VNĐ</td>
+                            <td>${thanhTien.toLocaleString()} VNĐ</td>
                     </tr>`;
             });
 
             // Hiển thị chi tiết hóa đơn
             $('#chiTietContent').html(content);
             // Hiển thị tổng tiền
-            $('#tongTien').text(total.toLocaleString() + ' VND');
+            $('#tongTien').text(total.toLocaleString() + ' VNĐ');
             // Gán mã hóa đơn vào modal
             $('#maHoaDon').text(maHoaDon);
         }).fail(function () {

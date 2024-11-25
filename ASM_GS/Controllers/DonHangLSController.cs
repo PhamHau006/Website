@@ -67,7 +67,6 @@ namespace ASM_GS.Controllers
                                   .Where(k => k.MaKhachHang == h.MaKhachHang)
                                   .Select(k => k.TenKhachHang)
                                   .FirstOrDefault(),
-                    NgayXuatHoaDon = h.NgayDatHang, // Sử dụng NgayDatHang (Ngày đặt hàng)
                     TongTien = h.TongTien,
                     TrangThai = h.TrangThai,
                     IsRefunded = h.RefundRequests.Any(), // Kiểm tra có yêu cầu hoàn trả nào không

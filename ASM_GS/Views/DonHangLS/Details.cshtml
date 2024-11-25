@@ -63,55 +63,8 @@
     </tbody>
 </table>
 </div>
-<a href="@Url.Action("Index", "DonHangLS")" style="margin-left: 50px">Quay lại danh sách đơn hàng</a>
-<style>
-    /* Làm đẹp bảng mà không ảnh hưởng đến layout */
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 20px 0;
-        font-size: 16px;
-        color: #333;
-        border: 1px solid #ddd; /* Thêm viền cho bảng */
-    }
-        /* Định dạng tiêu đề cột */
-        .table th {
-            background-color: #f8f8f8; /* Màu nền sáng cho tiêu đề */
-            color: #333; /* Màu chữ đen */
-            text-align: center;
-            padding: 12px;
-        }
-
-        /* Định dạng các dòng dữ liệu */
-        .table td {
-            text-align: center; /* Căn giữa nội dung */
-            padding: 10px;
-            border: 1px solid #ddd;
-        }
-
-        /* Định dạng hàng chẵn */
-        .table tr:nth-child(even) {
-            background-color: #fafafa; /* Màu nền sáng cho hàng chẵn */
-        }
-
-        /* Định dạng hàng lẻ */
-        .table tr:nth-child(odd) {
-            background-color: #ffffff; /* Màu nền trắng cho hàng lẻ */
-        }
-
-        /* Hiệu ứng hover cho các hàng khi di chuột */
-        .table tr:hover {
-            background-color: #f0f0f0; /* Màu nền khi hover */
-        }
-
-        /* Định dạng hình ảnh trong bảng */
-        .table td img {
-            width: 100px;
-            height: auto;
-            border-radius: 8px; /* Bo góc ảnh */
-        }  
-
-</style>
+@* <a href="@Url.Action("Index", "DonHangLS")" style="margin-left: 50px">Quay lại danh sách đơn hàng</a>
+ *@
 @if ((DateTime.Now - Model.NgayXuatHoaDon.ToDateTime(new TimeOnly(0, 0))).TotalDays <= 3)
 {
     @if (Model.IsRefunded)
@@ -130,7 +83,7 @@
     }
     else
     {
-        <div id="refundSection">
+        <div id="refundSection" style="margin-top: 50px; margin-left: 50px; margin-right:50px">
             <h4>Hoàn trả hóa đơn</h4>
             <form id="refundForm" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
@@ -153,8 +106,8 @@ else
 {
     <p class="text-muted">Thời hạn yêu cầu hoàn trả đã hết.</p>
 }
-
-<a href="@Url.Action("Index", "DonHangLS")">Quay lại danh sách đơn hàng</a>
+<br />
+<a href="@Url.Action("Index", "DonHangLS")" style="margin-top: 50px; margin-left: 50px; margin-right:50px">Quay lại danh sách đơn hàng</a>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -218,3 +171,131 @@ else
             });
     });
 </script>
+<style>
+    /* Làm đẹp bảng mà không ảnh hưởng đến layout */
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 16px;
+        color: #333;
+        border: 1px solid #ddd; /* Thêm viền cho bảng */
+    }
+        /* Định dạng tiêu đề cột */
+        .table th {
+            background-color: #f8f8f8; /* Màu nền sáng cho tiêu đề */
+            color: #333; /* Màu chữ đen */
+            text-align: center;
+            padding: 12px;
+        }
+
+        /* Định dạng các dòng dữ liệu */
+        .table td {
+            text-align: center; /* Căn giữa nội dung */
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        /* Định dạng hàng chẵn */
+        .table tr:nth-child(even) {
+            background-color: #fafafa; /* Màu nền sáng cho hàng chẵn */
+        }
+
+        /* Định dạng hàng lẻ */
+        .table tr:nth-child(odd) {
+            background-color: #ffffff; /* Màu nền trắng cho hàng lẻ */
+        }
+
+        /* Hiệu ứng hover cho các hàng khi di chuột */
+        .table tr:hover {
+            background-color: #f0f0f0; /* Màu nền khi hover */
+        }
+
+        /* Định dạng hình ảnh trong bảng */
+        .table td img {
+            width: 100px;
+            height: auto;
+            border-radius: 8px; /* Bo góc ảnh */
+        }
+</style>
+<style>
+    #refundSection {
+        margin-top: 50px;
+        padding: 20px;
+        background-color: #f9f9f9; /* Tông màu nhẹ nhàng */
+        border: 1px solid #ddd; /* Đường viền nhẹ */
+        border-radius: 10px; /* Bo góc */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Hiệu ứng đổ bóng */
+        max-width: 600px;
+    }
+
+        #refundSection h4 {
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #refundSection .form-group {
+            margin-bottom: 20px;
+        }
+
+        #refundSection label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        #refundSection textarea,
+        #refundSection input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s;
+        }
+
+            #refundSection textarea:focus,
+            #refundSection input[type="file"]:focus {
+                border-color: #007bff;
+                outline: none;
+            }
+
+        #refundSection #imagePreview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+            #refundSection #imagePreview img {
+                width: 120px;
+                height: auto;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            }
+
+        #refundSection button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background-color: #dc3545; /* Màu đỏ nút */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+
+            #refundSection button:hover {
+                background-color: #c82333; /* Màu đậm hơn khi hover */
+            }
+
+    /* Chỉnh padding và margin tổng thể */
+  
+    .text-muted {
+        font-style: italic;
+        color: #999;
+    }
+</style>

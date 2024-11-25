@@ -13,117 +13,115 @@
 
 <!-- Thanh tìm kiếm và lọc -->
 <form asp-action="Index" method="get" class="form-inline mb-3">
-    <div class="form-group mr-2">
-        <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control" placeholder="Tìm kiếm mã đơn hàng..." />
+    <div class="d-flex justify-content-between align-items-center mb-3" style=" gap: 10px; padding: 10px;">
+
+        <div class="form-group mr-2">
+            <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control" placeholder="Tìm kiếm mã đơn hàng..." />
+        </div>
+
+        <div class="form-group mr-2">
+            <select name="trangThai" class="form-control">
+                @if (string.IsNullOrEmpty(selectedTrangThai))
+                {
+                    <option value="" selected>Tất cả trạng thái</option>
+                }
+                else
+                {
+                    <option value="">Tất cả trạng thái</option>
+                }
+
+                @if (selectedTrangThai == "Đang chờ")
+                {
+                    <option value="Đang chờ" selected>Đang chờ</option>
+                }
+                else
+                {
+                    <option value="Đang chờ">Đang chờ</option>
+                }
+
+                @if (selectedTrangThai == "Đã duyệt")
+                {
+                    <option value="Đã duyệt" selected>Đã duyệt</option>
+                }
+                else
+                {
+                    <option value="Đã duyệt">Đã duyệt</option>
+                }
+
+                @if (selectedTrangThai == "Không duyệt")
+                {
+                    <option value="Không duyệt" selected>Không duyệt</option>
+                }
+                else
+                {
+                    <option value="Không duyệt">Không duyệt</option>
+                }
+            </select>
+        </div>
+
+
+        <div class="form-group mr-2">
+            <select name="sortBy" class="form-control">
+                @if (selectedSortBy == "NgayTao")
+                {
+                    <option value="NgayTao" selected>Sắp xếp theo ngày</option>
+                }
+                else
+                {
+                    <option value="NgayTao">Sắp xếp theo ngày</option>
+                }
+
+                @if (selectedSortBy == "MaDonHang")
+                {
+                    <option value="MaDonHang" selected>Sắp xếp theo mã đơn</option>
+                }
+                else
+                {
+                    <option value="MaDonHang">Sắp xếp theo mã đơn</option>
+                }
+
+                @if (selectedSortBy == "TrangThai")
+                {
+                    <option value="TrangThai" selected>Sắp xếp theo trạng thái</option>
+                }
+                else
+                {
+                    <option value="TrangThai">Sắp xếp theo trạng thái</option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Lọc & Tìm kiếm</button>
+        <div class="form-group mr-2">
+            <select name="pageSize" class="form-control">
+                @if (selectedPageSize == 5)
+                {
+                    <option value="5" selected>5</option>
+                }
+                else
+                {
+                    <option value="5">5</option>
+                }
+
+                @if (selectedPageSize == 10)
+                {
+                    <option value="10" selected>10</option>
+                }
+                else
+                {
+                    <option value="10">10</option>
+                }
+
+                @if (selectedPageSize == 20)
+                {
+                    <option value="20" selected>20</option>
+                }
+                else
+                {
+                    <option value="20">20</option>
+                }
+            </select>
+        </div>
     </div>
-
-    <div class="form-group mr-2">
-        <select name="trangThai" class="form-control">
-            @if (string.IsNullOrEmpty(selectedTrangThai))
-            {
-                <option value="" selected>Tất cả trạng thái</option>
-            }
-            else
-            {
-                <option value="">Tất cả trạng thái</option>
-            }
-
-            @if (selectedTrangThai == "Đang chờ")
-            {
-                <option value="Đang chờ" selected>Đang chờ</option>
-            }
-            else
-            {
-                <option value="Đang chờ">Đang chờ</option>
-            }
-
-            @if (selectedTrangThai == "Đã duyệt")
-            {
-                <option value="Đã duyệt" selected>Đã duyệt</option>
-            }
-            else
-            {
-                <option value="Đã duyệt">Đã duyệt</option>
-            }
-
-            @if (selectedTrangThai == "Không duyệt")
-            {
-                <option value="Không duyệt" selected>Không duyệt</option>
-            }
-            else
-            {
-                <option value="Không duyệt">Không duyệt</option>
-            }
-        </select>
-    </div>
-
-
-    <div class="form-group mr-2">
-        <select name="sortBy" class="form-control">
-            @if (selectedSortBy == "NgayTao")
-            {
-                <option value="NgayTao" selected>Sắp xếp theo ngày</option>
-            }
-            else
-            {
-                <option value="NgayTao">Sắp xếp theo ngày</option>
-            }
-
-            @if (selectedSortBy == "MaDonHang")
-            {
-                <option value="MaDonHang" selected>Sắp xếp theo mã đơn</option>
-            }
-            else
-            {
-                <option value="MaDonHang">Sắp xếp theo mã đơn</option>
-            }
-
-            @if (selectedSortBy == "TrangThai")
-            {
-                <option value="TrangThai" selected>Sắp xếp theo trạng thái</option>
-            }
-            else
-            {
-                <option value="TrangThai">Sắp xếp theo trạng thái</option>
-            }
-        </select>
-    </div>
-
-
-    <div class="form-group mr-2">
-        <select name="pageSize" class="form-control">
-            @if (selectedPageSize == 5)
-            {
-                <option value="5" selected>5</option>
-            }
-            else
-            {
-                <option value="5">5</option>
-            }
-
-            @if (selectedPageSize == 10)
-            {
-                <option value="10" selected>10</option>
-            }
-            else
-            {
-                <option value="10">10</option>
-            }
-
-            @if (selectedPageSize == 20)
-            {
-                <option value="20" selected>20</option>
-            }
-            else
-            {
-                <option value="20">20</option>
-            }
-        </select>
-    </div>
-
-
-
-    <button type="submit" class="btn btn-primary">Lọc & Tìm kiếm</button>
 </form>
 
 <!-- Bảng hiển thị -->

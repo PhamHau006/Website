@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Customer";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var Direct = ViewData["RedirectUrl"] as string;
 }
 <body>
 <div class="d-flex align-items-center justify-content-between" style="flex-wrap: nowrap; margin-bottom: 10px;">
@@ -684,4 +685,20 @@
             });
         });
 </script>
+<script>
+    $(document).ready(function () {
+        var directUrl = '@Direct';
 
+        if (directUrl) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Thông báo',
+                text: 'Bạn sẽ được chuyển đến trang đăng nhập.',
+                showConfirmButton: false,
+                timer: 3000
+            }).then(() => {
+                window.location.href = '/LoginAdmin';
+            });
+        }
+    });
+</script>

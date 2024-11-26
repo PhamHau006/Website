@@ -8,7 +8,7 @@
 <body>
     <div class="d-flex align-items-center justify-content-between" style="flex-wrap: nowrap; margin-bottom: 10px;">
         <!-- Form tìm kiếm -->
-        <form id="searchForm" asp-action="Staff" method="get" class="form-inline d-flex align-items-center" style="flex-wrap: nowrap;">
+        <form id="searchForm" asp-action="Admin" method="get" class="form-inline d-flex align-items-center" style="flex-wrap: nowrap;">
             <input type="text" id="searchInput" name="searchTerm" value="@ViewBag.SearchTerm"
                    placeholder="Tìm kiếm theo tên Nhân Viên hoặc tài khoản..."
                    class="form-control form-control-sm"
@@ -402,9 +402,26 @@
         }
 </style>
 <script>
+    $(document).ready(function () {
+        var directUrl = '@Direct';
+
+        if (directUrl) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Thông báo',
+                text: 'Bạn sẽ được chuyển đến trang đăng nhập.',
+                showConfirmButton: false,
+                timer: 3000
+            }).then(() => {
+                window.location.href = '/LoginAdmin';
+            });
+        }
+    });
+</script>
+<script>
     function LoadData(maKhachHang, maTaiKhoan) {
         $.ajax({
-            url: '/Admin/TaiKhoan/GetStaffDetails',
+            url: '/Admin/TaiKhoan/GetAdminDetails',
             type: 'GET',
             data: { maKhachHang: maKhachHang, maTaiKhoan: maTaiKhoan },
             success: function (response) {
@@ -438,10 +455,9 @@
             }
         });
     }
-    function LoadData2(maKhachHang, maTaiKhoan)
-    {
+    function LoadData2(maKhachHang, maTaiKhoan) {
         $.ajax({
-            url: '/Admin/TaiKhoan/GetStaffDetails',
+            url: '/Admin/TaiKhoan/GetAdminDetails',
             type: 'GET',
             data: { maKhachHang: maKhachHang, maTaiKhoan: maTaiKhoan },
             success: function (response) {
@@ -485,7 +501,7 @@
         $('#errorEmail').text('');
 
         $.ajax({
-            url: '/Admin/TaiKhoan/UpdateAccountStaff',
+            url: '/Admin/TaiKhoan/UpdateAccountAdmin',
             type: 'POST',
             data: {
                 MaTaiKhoan: maTaiKhoan,
@@ -542,7 +558,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '/Admin/TaiKhoan/DisableAccountStaff',
+                    url: '/Admin/TaiKhoan/DisableAccountAdmin',
                     type: 'POST',
                     data: { maTaiKhoan: maTaiKhoan },
                     success: function (response) {
@@ -592,7 +608,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '/Admin/TaiKhoan/EnableAccountStaff',
+                    url: '/Admin/TaiKhoan/EnableAccountAdmin',
                     type: 'POST',
                     data: { maTaiKhoan: maTaiKhoan },
                     success: function (response) {
@@ -642,7 +658,7 @@
         };
 
         $.ajax({
-            url: "/Admin/TaiKhoan/ValidateAndAddAccountStaff",
+            url: "/Admin/TaiKhoan/ValidateAndAddAccountAdmin",
             type: "POST",
             data: data,
             success: function (response) {
@@ -651,7 +667,7 @@
                     Swal.fire({
                         icon: "success",
                         title: "Thành công!",
-                        text: "Tài khoản và Nhân Viên đã được tạo thành công.",
+                        text: "Tài khoản Admin đã được tạo thành công.",
                         confirmButtonText: "OK"
                     }).then(() => {
                         location.reload();
@@ -680,31 +696,14 @@
     $('#searchInput').on('input', function () {
         var searchTerm = $(this).val();
 
-    $.ajax({
-        url: '@Url.Action("Staff", "TaiKhoan", new { area = "Admin" })',
-    type: 'GET',
-    data: {searchTerm: searchTerm, page: 1, pageSize: @ViewBag.PageSize },
-    success: function (data) {
-        $('table').html($(data).find('table').html());
+        $.ajax({
+            url: '@Url.Action("Admin", "TaiKhoan", new { area = "Admin" })',
+            type: 'GET',
+            data: { searchTerm: searchTerm, page: 1, pageSize: @ViewBag.PageSize },
+            success: function (data) {
+                $('table').html($(data).find('table').html());
             }
         });
-    });
-</script>
-<script>
-    $(document).ready(function () {
-        var directUrl = '@Direct';
-
-        if (directUrl) {
-            Swal.fire({
-                icon: 'info',
-                title: 'Thông báo',
-                text: 'Bạn sẽ được chuyển đến trang đăng nhập.',
-                showConfirmButton: false,
-                timer: 3000
-            }).then(() => {
-                window.location.href = '/LoginAdmin';
-            });
-        }
     });
 </script>
 

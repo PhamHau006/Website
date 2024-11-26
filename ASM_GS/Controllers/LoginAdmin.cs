@@ -61,7 +61,7 @@ namespace ASM_GS.Controllers
             HttpContext.Session.SetString("ProfilePicture", staff?.HinhAnh ?? "/assets/Avatar/default.png");
             HttpContext.Session.SetString("StaffName", staff.TenNhanVien);
             HttpContext.Session.SetString("StaffRole", user.VaiTro);
-
+            HttpContext.Session.SetString("MaNhanVien", staff.MaNhanVien);
             return Json(new { success = true, message = "Đăng nhập thành công" });
         }
 

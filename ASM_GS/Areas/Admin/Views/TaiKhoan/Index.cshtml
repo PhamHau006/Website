@@ -2,8 +2,11 @@
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var Role = ViewData["VaiTro"] as string;
+    var Admin = ViewData["NhanVien"] as NhanVien;
+    var Direct = ViewData["RedirectUrl"] as string;
 }
-
+<body>
 <div class="row mb-5">
     <div class="col-md-6 col-lg-4 mb-3">
         <div class="card h-100">
@@ -17,29 +20,101 @@
             </div>
         </div>
     </div>
-    <div class="col-md-6 col-lg-4 mb-3">
-        <div class="card h-100">
-            <img class="card-img-top" src="https://i.pinimg.com/736x/ca/5d/5f/ca5d5fb3d94217f998202c3ce90242cf.jpg" alt="Card image cap" style=" width: 380px;height: 400px;object-fit: cover;object-position: 50% 50%;" />
-            <div class="card-body">
-                <h5 class="card-title"><strong style="font-size: 2rem">Nhân Viên</strong></h5>
-                <p class="card-text">
-                    Tài khoản được cấp cho nhân viên để thuận tiện trong công việc của họ.
-                </p>
-                <a href="javascript:void(0)" class="btn btn-outline-primary">Go <i class="fa-solid fa-arrow-right"></i></a>
+    @if(Role=="Admin")
+    {
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card h-100">
+                <img class="card-img-top" src="https://i.pinimg.com/736x/ca/5d/5f/ca5d5fb3d94217f998202c3ce90242cf.jpg" alt="Card image cap" style=" width: 380px;height: 400px;object-fit: cover;object-position: 50% 50%;" />
+                <div class="card-body">
+                    <h5 class="card-title"><strong style="font-size: 2rem">Nhân Viên</strong></h5>
+                    <p class="card-text">
+                        Tài khoản được cấp cho nhân viên để thuận tiện trong công việc của họ.
+                    </p>
+                    <a href="TaiKhoan/Staff" class="btn btn-outline-primary">Go <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-6 col-lg-4 mb-3">
-        <div class="card h-100" style="background-color: black">
-            <img class="card-img-top" src="https://st2.depositphotos.com/1009659/10042/i/450/depositphotos_100422618-stock-photo-padlock-sign-in-hexagon-over.jpg" alt="Card image cap" style=" width: 385px;height: 400px;object-fit: cover;object-position: 50% 50%;" />
-            <div class="card-body">
-                <h5 class="card-title"><strong style="font-size: 2rem; color: red">ADMIN</strong></h5>
-                <p class="card-text" style="color:red">
-                    Lưu ý: Hãy cân nhắc kỹ lựa chọn này trước khi thêm mới !!
-                </p>
-                <a href="javascript:void(0)" class="btn btn-outline-primary">Go <i class="fa-solid fa-arrow-right"></i></a>
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card h-100" style="background-color: black">
+                <img class="card-img-top" src="https://st2.depositphotos.com/1009659/10042/i/450/depositphotos_100422618-stock-photo-padlock-sign-in-hexagon-over.jpg" alt="Card image cap" style=" width: 385px;height: 400px;object-fit: cover;object-position: 50% 50%;" />
+                <div class="card-body">
+                    <h5 class="card-title"><strong style="font-size: 2rem; color: red">ADMIN</strong></h5>
+                    <p class="card-text" style="color:red">
+                        Lưu ý: Hãy cân nhắc kỹ lựa chọn này trước khi thêm mới !!
+                    </p>
+                    <a class="btn btn-outline-primary" onclick="XacNhanLaiMatKhau()">Go <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
             </div>
         </div>
-    </div>
+    }
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+<script>
+    function XacNhanLaiMatKhau() {
+        Swal.fire({
+            title: 'Nhập lại mật khẩu',
+            input: 'password',
+            inputAttributes: {
+                autocapitalize: 'off',
+                placeholder: 'Nhập mật khẩu của bạn'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Xác nhận',
+            cancelButtonText: 'Hủy',
+            showLoaderOnConfirm: true,
+            preConfirm: (password) => {
+                return fetch('/Admin/TaiKhoan/ValidateAdminPassword', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password: password })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.success) {
+                            throw new Error('Mật khẩu không chính xác!');
+                        }
+                        return data;
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(
+                            `Lỗi: ${error.message}`
+                        );
+                    });
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Xác nhận thành công!',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = 'Admin/TaiKhoan/Admin';
+                });
+            }
+        });
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var directUrl = '@Direct';
+
+        if (directUrl) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Thông báo',
+                text: 'Bạn sẽ được chuyển đến trang đăng nhập.',
+                showConfirmButton: false,
+                timer: 3000
+            }).then(() => {
+                window.location.href = '/LoginAdmin';
+            });
+        }
+    });
+</script>
 

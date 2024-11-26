@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-
+using X.PagedList;
+using X.PagedList.Extensions;
 namespace ASM_GS.Areas.Admin.Controllers
 {
     [Area("Admin")]
@@ -20,13 +21,14 @@ namespace ASM_GS.Areas.Admin.Controllers
         }
 
         // Action hiển thị danh sách đơn hàng
-        public async Task<IActionResult> Index(string trangThai = "all")
+        public async Task<IActionResult> Index(string trangThai = "all", int page = 1, int pageSize = 5)
         {
             if (HttpContext.Session.GetString("StaffAccount") == null)
             {
                 HttpContext.Session.SetString("RedirectUrl", HttpContext.Request.GetDisplayUrl());
                 ViewData["RedirectUrl"] = HttpContext.Session.GetString("RedirectUrl");
             }
+
             IQueryable<DonHang> ordersQuery = _context.DonHangs
                 .Include(dh => dh.ChiTietDonHangs)
                 .ThenInclude(ct => ct.MaSanPhamNavigation);
@@ -43,7 +45,7 @@ namespace ASM_GS.Areas.Admin.Controllers
                     ordersQuery = ordersQuery.Where(dh => dh.TrangThai == 2);
                     break;
                 case "refunded":
-                    ordersQuery = ordersQuery.Where(dh => dh.TrangThai == 4);  // Hiển thị đơn hàng đã hoàn trả
+                    ordersQuery = ordersQuery.Where(dh => dh.TrangThai == 4);
                     break;
                 case "all":
                 default:
@@ -51,7 +53,7 @@ namespace ASM_GS.Areas.Admin.Controllers
                     break;
             }
 
-            var orders = await ordersQuery.Select(dh => new DonHangViewModel
+            var orders = ordersQuery.Select(dh => new DonHangViewModel
             {
                 MaDonHang = dh.MaDonHang,
                 MaKhachHang = dh.MaKhachHang,
@@ -68,10 +70,16 @@ namespace ASM_GS.Areas.Admin.Controllers
                         ? ct.MaSanPhamNavigation.AnhSanPhams.FirstOrDefault().UrlAnh
                         : "/images/default-product.jpg"
                 }).ToList()
-            }).ToListAsync();
+            }).ToPagedList(page, pageSize); // Dùng phiên bản đồng bộ
+
+
+            ViewBag.TrangThai = trangThai;
+            ViewBag.PageSize = pageSize;
+            ViewBag.Page = page;
 
             return View(orders);
         }
+
 
         // Hành động duyệt đơn và thay đổi trạng thái
         [HttpPost]

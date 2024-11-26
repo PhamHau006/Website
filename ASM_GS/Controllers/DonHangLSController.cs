@@ -30,7 +30,7 @@ namespace ASM_GS.Controllers
                 .Where(h => h.MaKhachHang == userId) // Filtering by user ID
                 .Select(h => new DonHang_LSViewModel
                 {
-                    MaHoaDon = h.MaDonHang,
+                    MaDonHang = h.MaDonHang,
                     MaKhachHang = h.MaKhachHang,
                     TenKhachHang = _context.KhachHangs
                                   .Where(k => k.MaKhachHang == h.MaKhachHang)
@@ -60,14 +60,14 @@ namespace ASM_GS.Controllers
                 .Where(h => h.MaDonHang == id) // Lọc theo mã đơn hàng
                 .Select(h => new DonHang_LSViewModel
                 {
-                    MaHoaDon = h.MaDonHang,
+                    MaDonHang = h.MaDonHang,
                     MaKhachHang = h.MaKhachHang,
                     NgayXuatHoaDon = h.NgayDatHang,
                     TenKhachHang = _context.KhachHangs
                                   .Where(k => k.MaKhachHang == h.MaKhachHang)
                                   .Select(k => k.TenKhachHang)
                                   .FirstOrDefault(),
-                    NgayXuatHoaDon = h.NgayDatHang, // Sử dụng NgayDatHang (Ngày đặt hàng)
+
                     TongTien = h.TongTien,
                     TrangThai = h.TrangThai,
                     IsRefunded = h.RefundRequests.Any(), // Kiểm tra có yêu cầu hoàn trả nào không
@@ -109,7 +109,32 @@ namespace ASM_GS.Controllers
 
             return View(order);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CancelOrder(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                Console.WriteLine("ID không hợp lệ hoặc null.");
+                return BadRequest("Mã đơn hàng không hợp lệ.");
+            }
 
+            var order = _context.DonHangs.FirstOrDefault(h => h.MaDonHang == id);
+            if (order == null)
+            {
+                Console.WriteLine($"Không tìm thấy đơn hàng với ID: {id}");
+                return NotFound("Không tìm thấy đơn hàng.");
+            }
+
+            if (order.TrangThai == 0) // Trạng thái "Đang xử lý"
+            {
+                order.TrangThai = 4; // Trạng thái "Đã hủy"
+                _context.SaveChanges();
+                return Ok("Đơn hàng đã được hủy thành công.");
+            }
+
+            return BadRequest("Chỉ có thể hủy đơn hàng ở trạng thái 'Đang xử lý'.");
+        }
 
 
     }

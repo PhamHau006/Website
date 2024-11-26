@@ -56,30 +56,47 @@ namespace ASM_GS.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetChiTietHoaDon(string maHoaDon)
         {
+            // Lấy chi tiết hóa đơn
             var chiTiet = _context.ChiTietHoaDons
                 .Where(ct => ct.MaHoaDon == maHoaDon)
                 .Select(ct => new
                 {
+                    // Thông tin sản phẩm (nếu không phải combo)
                     sanPham = ct.SanPham == null ? null : new
                     {
                         TenSanPham = ct.SanPham.TenSanPham,
-                        HinhAnh = ct.SanPham.AnhSanPhams.Any() // Kiểm tra nếu có ảnh
-                            ? ct.SanPham.AnhSanPhams.FirstOrDefault().UrlAnh // Lấy ảnh đầu tiên
-                            : "/images/default-image.jpg" // Ảnh mặc định nếu không có
+                        HinhAnh = ct.SanPham.AnhSanPhams.Any()
+                            ? ct.SanPham.AnhSanPhams.FirstOrDefault().UrlAnh
+                            : "/images/default-image.jpg"
                     },
+                    // Thông tin combo (nếu là combo)
                     combo = ct.Combo == null ? null : new
                     {
                         TenCombo = ct.Combo.TenCombo,
-                        HinhAnh = ct.Combo.Anh ?? "/images/default-image.jpg"
+                        HinhAnh = !string.IsNullOrEmpty(ct.Combo.Anh) ? ct.Combo.Anh : "/images/default-image.jpg",
+                        SanPhamsTrongCombo = _context.ChiTietCombos
+                            .Where(c => c.MaCombo == ct.Combo.MaCombo)
+                            .Select(c => new
+                            {
+                                TenSanPham = c.MaSanPhamNavigation.TenSanPham,
+                                SoLuongTrongCombo = c.SoLuong, // Số lượng của sản phẩm trong combo
+                                GiaSanPham = c.MaSanPhamNavigation.Gia,
+                                HinhAnhSanPham = c.MaSanPhamNavigation.AnhSanPhams.Any()
+                                    ? c.MaSanPhamNavigation.AnhSanPhams.FirstOrDefault().UrlAnh
+                                    : "/images/default-image.jpg"
+                            }).ToList()
                     },
-                    ct.SoLuong,
-                    Gia = ct.SanPham != null ? ct.SanPham.Gia : 0,
-                    ThanhTien = ct.SanPham != null ? ct.SanPham.Gia * ct.SoLuong : 0
+                    ct.SoLuong, // Số lượng combo hoặc sản phẩm
+                    Gia = ct.SanPham != null ? ct.SanPham.Gia : (ct.Combo != null ? ct.Combo.Gia : 0),
+                    ThanhTien = ct.SanPham != null
+                        ? ct.SanPham.Gia * ct.SoLuong
+                        : (ct.Combo != null ? ct.Combo.Gia * ct.SoLuong : 0)
                 })
                 .ToList();
 
             return Json(chiTiet);
         }
+
 
 
 

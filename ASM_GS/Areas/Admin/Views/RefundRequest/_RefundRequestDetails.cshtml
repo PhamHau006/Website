@@ -1,27 +1,254 @@
 ﻿@model ASM_GS.Models.RefundRequest
 
-@{
-    ViewData["Title"] = "Chi tiết yêu cầu hoàn trả";
-}
+<div class="container mt-4">
+    <h3 class="mb-4 text-primary">Chi tiết Yêu cầu Hoàn trả</h3>
 
-<div class="container mt-5">
-    <h2 class="mb-4">Chi tiết yêu cầu hoàn trả</h2>
-    
-    <!-- Card cho thông tin hoàn trả -->
+    <!-- Card Thông tin Yêu cầu Hoàn trả -->
     <div class="card mb-4">
         <div class="card-header bg-primary text-white">
-            <h5 class="card-title mb-0">Thông tin yêu cầu hoàn trả</h5>
+            <h5 class="card-title mb-0">Thông tin Yêu cầu Hoàn trả</h5>
         </div>
         <div class="card-body">
             <p><strong>Mã đơn hàng:</strong> @Model.MaDonHang</p>
             <p><strong>Lý do hoàn trả:</strong> @Model.LyDo</p>
-            <p><strong>Ngày tạo:</strong> @Model.NgayTao.ToShortDateString()</p>
-            <p><strong>Trạng thái:</strong> @Model.TrangThai</p>
+            <p><strong>Ngày tạo:</strong> @Model.NgayTao.ToString("dd/MM/yyyy")</p>
+            <p>
+                <strong>Trạng thái:</strong>
+                <span class="badge @GetStatusBadgeClass(Model.TrangThai)">
+                    @Model.TrangThai
+                </span>
+            </p>
+            <!-- Nút hành động -->
+            <div class="mt-3">
+                @if (Model.TrangThai == "Đang chờ")
+                {
+                    <button class="btn btn-success" id="approveButton" data-id="@Model.Id">
+                        Đồng ý hoàn trả
+                    </button>
+                    <button class="btn btn-danger" id="rejectButton" data-id="@Model.Id">
+                        Hủy hoàn trả
+                    </button>
+                }
+                else
+                {
+                    <p class="text-muted">Yêu cầu này đã được xử lý.</p>
+                }
+            </div>
         </div>
     </div>
-    
- 
+
+
+    <!-- Hình ảnh đính kèm -->
+    @if (Model.RefundRequestImages != null && Model.RefundRequestImages.Any())
+    {
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-header bg-primary text-white">Hình ảnh đính kèm</h5>
+            </div>
+            <div class="card-header bg-primary text-white">
+                <div class="row">
+                    @foreach (var image in Model.RefundRequestImages)
+                    {
+                        <div class="col-md-3 mb-3">
+                            <img src="@image.ImageUrl" class="img-fluid rounded border shadow" style="max-height: 150px;" alt="Hình ảnh hoàn trả">
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Hình ảnh đính kèm</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Không có hình ảnh đính kèm cho yêu cầu hoàn trả này.</p>
+            </div>
+        </div>
+    }
+
+
+    <!-- Thông tin Đơn hàng -->
+    @if (Model.DonHang != null)
+    {
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Thông tin Đơn hàng</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Tên khách hàng:</strong> @Model.DonHang.KhachHang.TenKhachHang</p>
+                <p><strong>Mã đơn hàng:</strong> @Model.DonHang.MaDonHang</p>
+                <p><strong>Tổng tiền:</strong> @String.Format("{0:N0} đ", Model.DonHang.TongTien)</p>
+                <p>
+                    <strong>Trạng thái đơn hàng:</strong>
+                    @switch (Model.DonHang.TrangThai)
+                    {
+                        case 0:
+                            <span class="badge bg-warning text-dark">Đang xử lý</span>
+                            ;
+                            break;
+                        case 1:
+                            <span class="badge bg-success">Đang vận chuyển</span>
+                            ;
+                            break;
+                        case 2:
+                            <span class="badge bg-success">Đã giao</span>
+                            ;
+                            break;    
+                        case 4:
+                            <span class="badge bg-danger">Đã hủy</span>
+                            ;
+                            break;      
+                        case 5:
+                            <span class="badge bg-danger">Đã hoàn</span>
+                            ;
+                            break;
+                        case 6:
+                            <span class="badge bg-dark text-white">Không đồng ý hoàn</span>
+                            ;
+                            break;
+                        default:
+                            <span class="badge bg-secondary">Không xác định</span>
+                            ;
+                            break;
+                    }
+                </p>
+            </div>
+        </div>
+    }
+
+    <!-- Thông tin Sản phẩm -->
+    @if (Model.DonHang != null && Model.DonHang.ChiTietDonHangs.Any())
+    {
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Danh sách Sản phẩm</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Hình ảnh</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var chiTiet in Model.DonHang.ChiTietDonHangs)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    <img src="@GetProductImageUrl(chiTiet)" class="img-fluid rounded" style="max-width: 100px; max-height: 100px;" alt="Ảnh sản phẩm">
+                                </td>
+                                <td>@chiTiet.MaSanPhamNavigation?.TenSanPham</td>
+                                <td>@chiTiet.SoLuong</td>
+                                <td>@String.Format("{0:N0} đ", chiTiet.Gia)</td>
+                                <td>@String.Format("{0:N0} đ", chiTiet.SoLuong * chiTiet.Gia)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 </div>
 
+@functions {
+    public string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Đang chờ" => "bg-warning text-dark",
+            "Đã duyệt" => "bg-success",
+            "Không duyệt" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    public string GetProductImageUrl(ChiTietDonHang chiTiet)
+    {
+        if (chiTiet.MaSanPhamNavigation?.AnhSanPhams?.Any() == true)
+        {
+            return chiTiet.MaSanPhamNavigation.AnhSanPhams.FirstOrDefault()?.UrlAnh ?? "/images/default-product.jpg";
+        }
+        return "/images/default-product.jpg";
+    }
+}
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Nút đồng ý hoàn trả
+        $("#approveButton").click(function () {
+            const id = $(this).data("id");
+
+            // Thông báo hỏi bằng alert
+            const confirmation = confirm("Bạn có chắc chắn muốn đồng ý hoàn trả?");
+            if (confirmation) {
+                $.ajax({
+                    url: `/Admin/RefundRequest/Approve/${id}`,
+                    type: "POST",
+                    success: function () {
+                        // Thông báo thành công bằng SweetAlert
+                        Swal.fire({
+                            title: "Thành công!",
+                            text: "Yêu cầu hoàn trả đã được đồng ý.",
+                            icon: "success"
+                        }).then(() => {
+                            location.reload(); // Reload lại trang
+                        });
+                    },
+                    error: function (xhr) {
+                        // Thông báo lỗi bằng SweetAlert
+                        Swal.fire({
+                            title: "Lỗi!",
+                            text: `Đã xảy ra lỗi: ${xhr.responseText}`,
+                            icon: "error"
+                        });
+                    }
+                });
+            }
+        });
+
+        $("#rejectButton").click(function () {
+    const id = $(this).data("id");
+
+    // Thông báo hỏi bằng alert
+    const confirmation = confirm("Bạn có chắc chắn muốn hủy yêu cầu hoàn trả?");
+    if (confirmation) {
+        $.ajax({
+            url: `/Admin/RefundRequest/Reject/${id}`,
+            type: "POST",
+            success: function () {
+                // Thông báo thành công bằng SweetAlert
+                Swal.fire({
+                    title: "Thành công!",
+                    text: "Yêu cầu hoàn trả đã bị hủy.",
+                    icon: "success"
+                }).then(() => {
+                    location.reload(); // Reload lại trang
+                });
+            },
+            error: function (xhr) {
+                // Thông báo lỗi bằng SweetAlert
+                Swal.fire({
+                    title: "Lỗi!",
+                    text: `Đã xảy ra lỗi: ${xhr.responseText}`,
+                    icon: "error"
+                });
+            }
+        });
+    }
+});
+
+
+</script>
+

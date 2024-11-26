@@ -11,56 +11,92 @@
 <h2 class="mb-4 text-center"><i class="bi bi-file-earmark-earmark"></i> Danh sách hóa đơn</h2>
 
 <!-- Tìm kiếm và lọc -->
-<form method="get" action="/Admin/HoaDon/Index" class="mb-4">
-    <div class="row">
-        <div class="col-md-8">
-            <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm kiếm mã hóa đơn hoặc khách hàng" />
-        </div>
-        <div class="col-md-4">
-            <div class="row">
+<form method="get" action="/Admin/HoaDon/Index" class="d-flex align-items-center mb-4 justify-content-between">
+    <!-- Dropdown chọn số lượng hiển thị -->
+    <div class="d-flex align-items-center">
+        <label for="pageSize" class="me-2 fw-bold">Hiển thị:</label>
+        <select id="pageSize" name="pageSize" class="form-select w-auto me-3" onchange="this.form.submit()">
+            @if (ViewBag.PageSize == 5)
+            {
+                <option value="5" selected>5</option>
+            }
+            else
+            {
+                <option value="5">5</option>
+            }
+            @if (ViewBag.PageSize == 10)
+            {
+                <option value="10" selected>10</option>
+            }
+            else
+            {
+                <option value="10">10</option>
+            }
+            @if (ViewBag.PageSize == 15)
+            {
+                <option value="15" selected>15</option>
+            }
+            else
+            {
+                <option value="15">15</option>
+            }
+        </select>
+    </div>
 
-                <div class="col-md-4">
-                    <select name="trangThai" id="trangThai" class="form-control">
-                        <option value="">Tất cả trạng thái</option>
-                        <option value="1">Đã thanh toán</option>
-                        <option value="0">Chưa thanh toán</option>
-                    </select>
-                </div>
-                <div class="col-md-12 mt-3 text-end">
-                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-                </div>
-            </div>
-            <select id="pageSize" name="pageSize" class="form-select d-inline-block w-auto" onchange="this.form.submit()" style="width: 45px; margin-left: 10px;">
-                @if (ViewBag.PageSize == 5)
-                {
-                    <option value="5" selected>5</option>
-                }
-                else
-                {
-                    <option value="5">5</option>
-                }
+    <!-- Tìm kiếm và lọc -->
+    <div class="d-flex flex-wrap gap-2">
+        <input type="text" name="search" value="@ViewBag.Search" class="form-control w-auto" placeholder="Tìm theo tên" />
+        <select name="trangThai" id="trangThai" class="form-select w-auto">
+            @if (string.IsNullOrEmpty(ViewBag.TrangThai as string))
+            {
+                <option value="" selected>-- Trạng thái --</option>
+            }
+            else
+            {
+                <option value="">-- Trạng thái --</option>
+            }
 
-                @if (ViewBag.PageSize == 10)
-                {
-                    <option value="10" selected>10</option>
-                }
-                else
-                {
-                    <option value="10">10</option>
-                }
+            @if (ViewBag.TrangThai == "1")
+            {
+                <option value="1" selected>Đã thanh toán</option>
+            }
+            else
+            {
+                <option value="1">Đã thanh toán</option>
+            }
 
-                @if (ViewBag.PageSize == 15)
-                {
-                    <option value="15" selected>15</option>
-                }
-                else
-                {
-                    <option value="15">15</option>
-                }
-            </select>
-        </div>
+            @if (ViewBag.TrangThai == "0")
+            {
+                <option value="0" selected>Chưa thanh toán</option>
+            }
+            else
+            {
+                <option value="0">Chưa thanh toán</option>
+            }
+        </select>
+        <select name="sortBy" class="form-select w-auto">
+            @if (ViewBag.SortBy == "A-Z")
+            {
+                <option value="A-Z" selected>Sắp xếp theo tên (A-Z)</option>
+            }
+            else
+            {
+                <option value="A-Z">Sắp xếp theo tên (A-Z)</option>
+            }
+            @if (ViewBag.SortBy == "Z-A")
+            {
+                <option value="Z-A" selected>Sắp xếp theo tên (Z-A)</option>
+            }
+            else
+            {
+                <option value="Z-A">Sắp xếp theo tên (Z-A)</option>
+            }
+        </select>
+        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
     </div>
 </form>
+
+
 
 <!-- Danh sách hóa đơn -->
 <table class="table table-bordered">
@@ -157,8 +193,7 @@
                     <h5>Tổng tiền: <span id="tongTien"></span> VND</h5>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="inHoaDon()">In hóa đơn</button>
-                    <button type="button" class="btn btn-success" onclick="exportToWord()">Xuất Word</button>
+                    <button type="button" class="btn btn-success" onclick="exportToWord()">Xuất hoá đơn</button>
 
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                 </div>
@@ -169,6 +204,26 @@
     </div>
 </div>
 
+<style>
+    form {
+        gap: 10px; /* Khoảng cách giữa các phần tử */
+    }
+
+        form .form-select,
+        form .form-control {
+            min-width: 150px;
+        }
+
+        form .btn {
+            white-space: nowrap;
+            padding: 5px 15px;
+        }
+
+        form .me-auto {
+            margin-right: auto; /* Đẩy phần còn lại sang trái */
+        }
+
+</style>
 
 <script>
     function inHoaDon() {

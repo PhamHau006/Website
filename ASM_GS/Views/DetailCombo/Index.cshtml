@@ -33,10 +33,15 @@
                         </div>
                         <p>@Model.MoTa</p>
                         <div class="product-action mt-4">
-                            <button type="submit" class="btn btn-dark btn-lg text-uppercase me-3">
+                            <div class="product-quantity d-flex align-items-center mb-3">
+                                <label for="combo-quantity" class="me-3">Số lượng:</label>
+                                <input type="number" id="combo-quantity" class="form-control text-center" style="width: 100px;" min="1" value="1">
+                            </div>
+                            <button type="button" class="btn btn-dark btn-lg text-uppercase add-combo-to-cart" data-combo-id="@Model.MaCombo">
                                 Thêm vào giỏ hàng
                             </button>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -80,39 +85,76 @@
 
 <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('.add-combo-to-cart').on('click', function () {
+                const comboId = $(this).data('combo-id');
+                const quantity = parseInt($('#combo-quantity').val(), 10); // Lấy giá trị số lượng từ input
 
-<script>
-    var swiper = new Swiper('.product-large-slider', {
-        slidesPerView: 1,
-        spaceBetween: 10,
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-        },
-        loop: true,
-        autoplay: {
-            delay: 2000,
-            disableOnInteraction: false,
+                if (quantity <= 0) {
+                    Swal.fire('Lỗi', 'Số lượng phải lớn hơn 0.', 'error');
+                    return;
+                }
+
+                $.ajax({
+                    url: '/api/CartAPI/AddComboToCart',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        comboId: comboId,
+                        quantity: quantity
+                    }),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công',
+                                text: response.message,
+                                confirmButtonText: 'OK'
+                            });
+                        } else {
+                            Swal.fire('Lỗi', response.message, 'error');
+                        }
+                    },
+                    error: function (xhr) {
+                        Swal.fire('Lỗi', `Không thể thêm combo vào giỏ hàng. Lỗi: ${xhr.status}`, 'error');
+                    }
+                });
+            });
+        });
+        var swiper = new Swiper('.product-large-slider', {
+            slidesPerView: 1,
+            spaceBetween: 10,
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            loop: true,
+            autoplay: {
+                delay: 2000,
+                disableOnInteraction: false,
+            }
+        });
+    </script>
+
+    <style>
+        .product-image-gallery img {
+            width: 100%; /* Ensures image takes up full width of its container */
+            height: 500px; /* Set a fixed height; adjust as needed */
+            object-fit: cover; /* Ensures the image covers the container without distortion */
+            border-radius: 8px; /* Optional: adds rounded corners */
         }
-    });
-</script>
 
-<style>
-    .product-image-gallery img {
-        width: 100%; /* Ensures image takes up full width of its container */
-        height: 500px; /* Set a fixed height; adjust as needed */
-        object-fit: cover; /* Ensures the image covers the container without distortion */
-        border-radius: 8px; /* Optional: adds rounded corners */
-    }
+        .product-item h6 {
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: center;
+        }
 
-    .product-item h6 {
-        font-weight: bold;
-        margin-top: 10px;
-        text-align: center;
-    }
-
-    .price {
-        font-weight: bold;
-        color: #333;
-    }
-</style>
+        .price {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+}

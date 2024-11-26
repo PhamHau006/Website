@@ -22,7 +22,7 @@ namespace ASM_GS.Migrations
                     MoTa = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Gia = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
-                    Anh = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Anh = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -380,7 +380,7 @@ namespace ASM_GS.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     MaGioHang = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    MaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    MaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     MaCombo = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     SoLuong = table.Column<int>(type: "int", nullable: false)
                 },
@@ -402,8 +402,7 @@ namespace ASM_GS.Migrations
                         name: "FK_ChiTietGioHangs_SanPhams_MaSanPham",
                         column: x => x.MaSanPham,
                         principalTable: "SanPhams",
-                        principalColumn: "MaSanPham",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "MaSanPham");
                 });
 
             migrationBuilder.CreateTable(

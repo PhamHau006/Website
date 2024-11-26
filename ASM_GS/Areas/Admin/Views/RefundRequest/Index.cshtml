@@ -11,21 +11,54 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<!-- Thanh tìm kiếm và lọc -->
-<form asp-action="Index" method="get" class="form-inline mb-3">
-    <div class="form-group mr-2">
-        <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control" placeholder="Tìm kiếm mã đơn hàng..." />
-    </div>
-
-    <div class="form-group mr-2">
-        <select name="trangThai" class="form-control">
-            @if (string.IsNullOrEmpty(selectedTrangThai))
+<form asp-action="Index" method="get" class="row g-3 align-items-center mb-3">
+    <!-- Hiển thị số lượng -->
+    <div class="col-auto">
+        <label for="pageSize" class="form-label">Hiển thị:</label>
+        <select name="pageSize" id="pageSize" class="form-select">
+            @if (selectedPageSize == 5)
             {
-                <option value="" selected>Tất cả trạng thái</option>
+                <option value="5" selected>5</option>
             }
             else
             {
-                <option value="">Tất cả trạng thái</option>
+                <option value="5">5</option>
+            }
+            @if (selectedPageSize == 10)
+            {
+                <option value="10" selected>10</option>
+            }
+            else
+            {
+                <option value="10">10</option>
+            }
+            @if (selectedPageSize == 20)
+            {
+                <option value="20" selected>20</option>
+            }
+            else
+            {
+                <option value="20">20</option>
+            }
+        </select>
+    </div>
+
+
+    <!-- Tìm kiếm -->
+    <div class="col-auto">
+        <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control" placeholder="Tìm theo tên" />
+    </div>
+
+    <!-- Lọc trạng thái -->
+    <div class="col-auto">
+        <select name="trangThai" class="form-select">
+            @if (string.IsNullOrEmpty(selectedTrangThai))
+            {
+                <option value="" selected>-- Trạng thái --</option>
+            }
+            else
+            {
+                <option value="">-- Trạng thái --</option>
             }
 
             @if (selectedTrangThai == "Đang chờ")
@@ -57,9 +90,9 @@
         </select>
     </div>
 
-
-    <div class="form-group mr-2">
-        <select name="sortBy" class="form-control">
+    <!-- Sắp xếp -->
+    <div class="col-auto">
+        <select name="sortBy" class="form-select">
             @if (selectedSortBy == "NgayTao")
             {
                 <option value="NgayTao" selected>Sắp xếp theo ngày</option>
@@ -68,7 +101,6 @@
             {
                 <option value="NgayTao">Sắp xếp theo ngày</option>
             }
-
             @if (selectedSortBy == "MaDonHang")
             {
                 <option value="MaDonHang" selected>Sắp xếp theo mã đơn</option>
@@ -77,7 +109,6 @@
             {
                 <option value="MaDonHang">Sắp xếp theo mã đơn</option>
             }
-
             @if (selectedSortBy == "TrangThai")
             {
                 <option value="TrangThai" selected>Sắp xếp theo trạng thái</option>
@@ -89,42 +120,12 @@
         </select>
     </div>
 
-
-    <div class="form-group mr-2">
-        <select name="pageSize" class="form-control">
-            @if (selectedPageSize == 5)
-            {
-                <option value="5" selected>5</option>
-            }
-            else
-            {
-                <option value="5">5</option>
-            }
-
-            @if (selectedPageSize == 10)
-            {
-                <option value="10" selected>10</option>
-            }
-            else
-            {
-                <option value="10">10</option>
-            }
-
-            @if (selectedPageSize == 20)
-            {
-                <option value="20" selected>20</option>
-            }
-            else
-            {
-                <option value="20">20</option>
-            }
-        </select>
+    <!-- Nút lọc -->
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Lọc & Tìm kiếm</button>
     </div>
-
-
-
-    <button type="submit" class="btn btn-primary">Lọc & Tìm kiếm</button>
 </form>
+
 
 <!-- Bảng hiển thị -->
 <table class="table table-bordered table-hover">
@@ -145,12 +146,19 @@
                 <tr>
                     <td>@item.MaDonHang</td>
                     <td>@item.LyDo</td>
-                    <td>@item.TrangThai</td>
+                    <td>
+                        <span class="badge @GetStatusBadgeClass(item.TrangThai)">
+                            @item.TrangThai
+                        </span>
+                    </td>
+
                     <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
                     <td>
-                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#refundRequestModal" data-id="@item.Id">
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#refundRequestModal" data-id="@item.Id">
                             Xem chi tiết
                         </button>
+
+
                     </td>
                 </tr>
             }
@@ -199,26 +207,100 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="refundRequestModalLabel">Chi tiết yêu cầu hoàn trả</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div id="refundRequestDetails"></div>
+                <div id="refundRequestDetails">
+                    <!-- Nội dung partial view sẽ được load tại đây -->
+                </div>
             </div>
         </div>
     </div>
 </div>
+@functions {
+    public string GetStatusBadgeClass(string trangThai)
+    {
+        return trangThai switch
+        {
+            "Đang chờ" => "badge-dang-cho",
+            "Đã duyệt" => "badge-da-duyet",
+            "Không duyệt" => "badge-khong-duyet",
+            _ => "badge-secondary"
+        };
+    }
+}
+
+<style>
+    .badge {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        border-radius: 0.375rem;
+        display: inline-block;
+    }
+
+    .badge-dang-cho {
+        background-color: #ffc107; /* Vàng */
+        color: #000;
+    }
+
+    .badge-da-duyet {
+        background-color: #28a745; /* Xanh lá */
+        color: #fff;
+    }
+
+    .badge-khong-duyet {
+        background-color: #dc3545; /* Đỏ */
+        color: #fff;
+    }
+
+    form.row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f9f9fc;
+        border-radius: 8px;
+        padding: 10px 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-label {
+        margin-right: 8px;
+        font-weight: 500;
+    }
+
+    .form-select, .form-control {
+        border-radius: 8px;
+        height: 40px;
+        padding: 0 10px;
+    }
+
+    .btn {
+        background-color: #5b6bff;
+        color: #fff;
+        font-weight: 500;
+        border: none;
+        padding: 0 20px;
+        height: 40px;
+        line-height: 40px;
+        border-radius: 8px;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn:hover {
+            background-color: #4957e2;
+        }
+</style>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $('#refundRequestModal').on('show.bs.modal', function (e) {
-            var button = $(e.relatedTarget);
-            var refundRequestId = button.data('id');
+            var button = $(e.relatedTarget); // Nút đã kích hoạt modal
+            var refundRequestId = button.data('id'); // Lấy `id` từ data attribute
 
             $.ajax({
-                url: '@Url.Action("Details", "RefundRequest")/' + refundRequestId,
+                url: '@Url.Action("Details", "RefundRequest", new { area = "Admin" })/' + refundRequestId,
                 type: 'GET',
                 success: function (data) {
                     $('#refundRequestDetails').html(data);
@@ -228,5 +310,6 @@
                 }
             });
         });
+
     </script>
 }

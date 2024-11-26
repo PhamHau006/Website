@@ -85,14 +85,16 @@
                                         <button type="button" class="quantity-left-minus btn btn-light btn-number" data-type="minus">
                                             <svg width="16" height="16"><use xlink:href="#minus"></use></svg>
                                         </button>
-                                        <input type="text" id="quantity" name="quantity" class="form-control input-number text-center" value="1" min="1" max="100">
+                                        <input type="number" id="quantity" name="quantity" class="form-control input-number text-center" value="1" min="1" max="100">
                                         <button type="button" class="quantity-right-plus btn btn-light btn-number" data-type="plus">
                                             <svg width="16" height="16"><use xlink:href="#plus"></use></svg>
                                         </button>
                                     </div>
-                                    <button type="submit" class="btn btn-dark product-cart-submit btn-lg text-uppercase me-3">
+                                    <!-- Nút Thêm vào giỏ hàng -->
+                                    <button type="button" class="btn btn-dark product-cart-submit btn-lg text-uppercase me-3">
                                         Thêm vào giỏ hàng
                                     </button>
+
                                 </div>
                             </div>
                         </div>
@@ -251,7 +253,60 @@
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@section Scripts {
 <script>
+        $(document).ready(function () {
+            // Khi nhấn vào nút "Thêm vào giỏ hàng"
+            $('.product-cart-submit').on('click', function () {
+                const productId = '@Model.MaSanPham'; // Lấy ID sản phẩm từ Razor Model
+                const quantity = parseInt($('#quantity').val(), 10); // Lấy số lượng từ input
+
+                if (quantity <= 0) {
+                    Swal.fire('Lỗi', 'Số lượng sản phẩm phải lớn hơn 0.', 'error');
+                    return;
+                }
+
+                // Gửi dữ liệu qua Ajax
+                $.ajax({
+                    url: '/api/CartAPI/AddToCart', // API để thêm vào giỏ hàng
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        ProductId: productId,
+                        Quantity: quantity
+                    }),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công',
+                                text: response.message || 'Sản phẩm đã được thêm vào giỏ hàng!',
+                                confirmButtonText: 'OK'
+                            });
+                        } else {
+                            Swal.fire('Lỗi', response.message || 'Không thể thêm vào giỏ hàng.', 'error');
+                        }
+                    },
+                    error: function (xhr) {
+                        Swal.fire('Lỗi', `Không thể thêm sản phẩm vào giỏ hàng. Lỗi: ${xhr.status}`, 'error');
+                    }
+                });
+            });
+
+            // Tăng số lượng
+            $('.quantity-right-plus').on('click', function () {
+                let quantity = parseInt($('#quantity').val());
+                $('#quantity').val(quantity + 1);
+            });
+
+            // Giảm số lượng
+            $('.quantity-left-minus').on('click', function () {
+                let quantity = parseInt($('#quantity').val());
+                if (quantity > 1) {
+                    $('#quantity').val(quantity - 1);
+                }
+            });
+        });
     var swiper = new Swiper('.product-large-slider', {
         slidesPerView: 1,
         spaceBetween: 10,
@@ -388,3 +443,4 @@
     }
 
 </style>
+}

@@ -5,65 +5,121 @@
 <br />
 <h1 style="margin-left: 50px">Chi tiết đơn hàng</h1>
 <div style="margin-top: 50px; margin-left: 50px; margin-right:50px">
-
+    <h1 style="margin-left: 50px">Chi tiết đơn hàng</h1>
     <table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Tên sản phẩm/Combo</th>
-            <th>Hình ảnh</th>
-            <th>Số lượng</th>
-            <th>Giá</th>
-            <th>Tổng tiền</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.ChiTietHoaDons)
-        {
+        <thead>
             <tr>
-           
-                <!-- Hiển thị tên sản phẩm hoặc tên combo -->
-                <td>
-                    @if (!string.IsNullOrEmpty(item.ComboName))
-                    {
-                        @item.ComboName
-                    }
-                    else
-                    {
-                        @item.SanPhamName
-                    }
-                </td>
-
-                <!-- Hiển thị hình ảnh sản phẩm hoặc combo -->
-                <td>
-                    @if (!string.IsNullOrEmpty(item.HinhAnhCombo))
-                    {
-                        <img src="@item.HinhAnhCombo" alt="@item.ComboName" style="width: 100px; height: auto;" />
-                    }
-                    else if (!string.IsNullOrEmpty(item.HinhAnhSanPham))
-                    {
-                        <img src="@item.HinhAnhSanPham" alt="@item.SanPhamName" style="width: 100px; height: auto;" />
-                    }
-                    else
-                    {
-                        <span>Chưa có hình ảnh</span>
-                    }
-                </td>
-
-                <!-- Hiển thị số lượng -->
-                <td>@item.SoLuong</td>
-
-                <!-- Hiển thị giá -->
-                <td>@item.Gia.ToString("N0") VNĐ</td>
-                <!-- Hiển thị tổng tiền -->
-                <td>
-                    @string.Format("{0:N0} VNĐ", item.SoLuong * item.Gia)
-                </td>
+                <th>Tên sản phẩm/Combo</th>
+                <th>Hình ảnh</th>
+                <th>Số lượng</th>
+                <th>Giá</th>
+                <th>Tổng tiền</th>
             </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ChiTietHoaDons)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.ComboName))
+                        {
+                            @item.ComboName
+                        }
+                        else
+                        {
+                            @item.SanPhamName
+                        }
+                    </td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.HinhAnhCombo))
+                        {
+                            <img src="@item.HinhAnhCombo" alt="@item.ComboName" style="width: 100px; height: auto;" />
+                        }
+                        else if (!string.IsNullOrEmpty(item.HinhAnhSanPham))
+                        {
+                            <img src="@item.HinhAnhSanPham" alt="@item.SanPhamName" style="width: 100px; height: auto;" />
+                        }
+                        else
+                        {
+                            <span>Chưa có hình ảnh</span>
+                        }
+                    </td>
+                    <td>@item.SoLuong</td>
+                    <td>@item.Gia.ToString("N0") VNĐ</td>
+                    <td>@string.Format("{0:N0} VNĐ", item.SoLuong * item.Gia)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Kiểm tra trạng thái đơn hàng -->
+    @if (Model.TrangThai == 0) // Trạng thái "Đang xử lý"
+    {
+        <form id="cancelOrderForm" method="post" action="@Url.Action("CancelOrder", "DonHangLS")">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="orderId" name="id" value="@Model.MaDonHang" />
+            <button type="submit" class="btn btn-danger">Hủy đơn hàng</button>
+        </form>
+    }
+    else if (Model.TrangThai == 1) // Trạng thái "Đang vận chuyển"
+    {
+        <p style="color: orange; font-weight: bold;">Đơn hàng đang vận chuyển. Không thể hủy hoặc hoàn trả.</p>
+    }
+    else if ((DateTime.Now - Model.NgayXuatHoaDon.ToDateTime(new TimeOnly(0, 0))).TotalDays <= 3)
+    {
+        @if (Model.IsRefunded)
+        {
+            <p class="text-success">Đã gửi yêu cầu hoàn trả trước đó.</p>
+            <h5>Ảnh đính kèm:</h5>
+            <div class="row">
+                @foreach (var image in Model.RefundRequestImages)
+                {
+                    <div class="col-md-3">
+                        <img src="@image.ImageUrl" class="img-thumbnail" alt="Ảnh hoàn trả" />
+                    </div>
+                }
+            </div>
         }
-    </tbody>
-</table>
+        else
+        {
+            <div id="refundSection">
+                <h4>Hoàn trả hóa đơn</h4>
+                <form id="refundForm" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="MaDonHang" value="@Model.MaDonHang" />
+                    <div class="form-group">
+                        <label for="LyDo">Lý do hoàn trả:</label>
+                        <textarea id="LyDo" name="LyDo" class="form-control" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="Images">Tải lên ảnh:</label>
+                        <input type="file" id="Images" name="Images" class="form-control" multiple accept="image/*" />
+                    </div>
+                    <div id="imagePreview" class="row mt-3"></div>
+                    <button type="button" class="btn btn-danger mt-3" id="submitRefund">Yêu cầu hoàn trả</button>
+                </form>
+            </div>
+        }
+    }
+    else
+    {
+        <script>
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thông báo',
+                text: 'Thời hạn yêu cầu hoàn trả đã hết.',
+                confirmButtonText: 'OK'
+            });
+        </script>
+    }
 </div>
-<a href="@Url.Action("Index", "DonHangLS")" style="margin-left: 50px">Quay lại danh sách đơn hàng</a>
+<button style="margin-top:50px; margin-left: 50px;">
+    <a href="@Url.Action("Index", "DonHangLS")">Quay lại danh sách đơn hàng</a>
+</button>
+
+
+
+
 <style>
     /* Làm đẹp bảng mà không ảnh hưởng đến layout */
     .table {
@@ -112,109 +168,133 @@
         }  
 
 </style>
-@if ((DateTime.Now - Model.NgayXuatHoaDon.ToDateTime(new TimeOnly(0, 0))).TotalDays <= 3)
-{
-    @if (Model.IsRefunded)
-    {
-        <p class="text-success">Đã gửi yêu cầu hoàn trả trước đó.</p>
 
-        <h5>Ảnh đính kèm:</h5>
-        <div class="row">
-            @foreach (var image in Model.RefundRequestImages)
-            {
-                <div class="col-md-3">
-                    <img src="@image.ImageUrl" class="img-thumbnail" alt="Ảnh hoàn trả" />
-                </div>
-            }
-        </div>
-    }
-    else
-    {
-        <div id="refundSection">
-            <h4>Hoàn trả hóa đơn</h4>
-            <form id="refundForm" enctype="multipart/form-data">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="MaDonHang" value="@Model.MaHoaDon" />
-                <div class="form-group">
-                    <label for="LyDo">Lý do hoàn trả:</label>
-                    <textarea id="LyDo" name="LyDo" class="form-control" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="Images">Tải lên ảnh:</label>
-                    <input type="file" id="Images" name="Images" class="form-control" multiple accept="image/*" />
-                </div>
-                <div id="imagePreview" class="row mt-3"></div>
-                <button type="button" class="btn btn-danger mt-3" id="submitRefund">Yêu cầu hoàn trả</button>
-            </form>
-        </div>
-    }
-}
-else
-{
-    <p class="text-muted">Thời hạn yêu cầu hoàn trả đã hết.</p>
-}
 
-<a href="@Url.Action("Index", "DonHangLS")">Quay lại danh sách đơn hàng</a>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    document.getElementById('Images').addEventListener('change', function (event) {
-        const files = event.target.files;
-        const previewContainer = document.getElementById('imagePreview');
-        previewContainer.innerHTML = '';
 
-        Array.from(files).forEach(file => {
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'img-thumbnail col-md-3 m-2';
-                    img.style.maxWidth = '150px';
-                    previewContainer.appendChild(img);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    });
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    document.getElementById("cancelOrderButton")?.addEventListener("click", function (event) {
+        event.preventDefault();
+        const orderId = document.getElementById("orderId").value;
 
-    document.getElementById('submitRefund').addEventListener('click', function () {
-        const form = document.getElementById('refundForm');
-        const formData = new FormData(form);
         const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-
-        fetch('@Url.Action("CreateRefundRequest", "RefundRequest", new { area = "Admin" })', {
-            method: 'POST',
+        fetch('@Url.Action("CancelOrder", "DonHangLS")', {
+            method: "POST",
             headers: {
-                'RequestVerificationToken': token
+                "Content-Type": "application/json",
+                "RequestVerificationToken": token,
             },
-            body: formData,
+            body: JSON.stringify({ id: orderId })
         })
             .then(response => {
-                if (!response.ok) {
-                    return response.text().then(errorMessage => {
-                        throw new Error(errorMessage || 'Đã xảy ra lỗi không xác định.');
-                    });
-                }
+                if (!response.ok) throw new Error("Có lỗi xảy ra.");
                 return response.text();
             })
-            .then(result => {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công!',
-                    text: result,
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    document.getElementById('refundSection').style.display = 'none';
-                });
-            })
-            .catch(error => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Thất bại!',
-                    text: error.message,
-                    confirmButtonText: 'OK'
-                });
-            });
+            .then(result => alert(result))
+            .catch(error => alert(error.message));
     });
-</script>
+
+        document.getElementById('Images').addEventListener('change', function (event) {
+            const files = event.target.files;
+            const previewContainer = document.getElementById('imagePreview');
+            previewContainer.innerHTML = '';
+
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'img-thumbnail col-md-3 m-2';
+                        img.style.maxWidth = '150px';
+                        previewContainer.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+        document.getElementById('submitRefund').addEventListener('click', function () {
+            const form = document.getElementById('refundForm');
+            const formData = new FormData(form);
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            fetch('@Url.Action("CreateRefundRequest", "RefundRequest", new { area = "Admin" })', {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': token
+                },
+                body: formData,
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(errorMessage => {
+                            throw new Error(errorMessage || 'Đã xảy ra lỗi không xác định.');
+                        });
+                    }
+                    return response.text();
+                })
+                .then(result => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: result,
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        document.getElementById('refundSection').style.display = 'none';
+                    });
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Thất bại!',
+                        text: error.message,
+                        confirmButtonText: 'OK'
+                    });
+                });
+        });
+    </script>
+    <style>
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 16px;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+            .table th {
+                background-color: #f8f8f8;
+                color: #333;
+                text-align: center;
+                padding: 12px;
+            }
+
+            .table td {
+                text-align: center;
+                padding: 10px;
+                border: 1px solid #ddd;
+            }
+
+            .table tr:nth-child(even) {
+                background-color: #fafafa;
+            }
+
+            .table tr:nth-child(odd) {
+                background-color: #ffffff;
+            }
+
+            .table tr:hover {
+                background-color: #f0f0f0;
+            }
+
+            .table td img {
+                width: 100px;
+                height: auto;
+                border-radius: 8px;
+            }
+
+    </style>
+

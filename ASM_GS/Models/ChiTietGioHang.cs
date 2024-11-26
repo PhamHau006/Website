@@ -12,10 +12,10 @@ public partial class ChiTietGioHang
     [ForeignKey("MaGioHang")]
     public virtual GioHang GioHang { get; set; }
 
-    public string MaSanPham { get; set; } = null!;
+    public string? MaSanPham { get; set; } // Cho phép null
 
     [ForeignKey("MaSanPham")]
-    public virtual SanPham SanPham { get; set; }
+    public virtual SanPham? SanPham { get; set; } // Cho phép null
 
     public string? MaCombo { get; set; }
 

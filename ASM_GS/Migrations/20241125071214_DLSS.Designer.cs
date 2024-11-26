@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ASM_GS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241122042241_DLSS")]
+    [Migration("20241125071214_DLSS")]
     partial class DLSS
     {
         /// <inheritdoc />
@@ -396,7 +396,6 @@ namespace ASM_GS.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Anh")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Gia")
@@ -1084,7 +1083,6 @@ namespace ASM_GS.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("MaSanPham")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("SoLuong")
@@ -1324,9 +1322,7 @@ namespace ASM_GS.Migrations
 
                     b.HasOne("ASM_GS.Models.SanPham", "SanPham")
                         .WithMany("ChiTietGioHangs")
-                        .HasForeignKey("MaSanPham")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MaSanPham");
 
                     b.Navigation("Combo");
 

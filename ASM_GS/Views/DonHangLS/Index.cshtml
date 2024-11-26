@@ -20,7 +20,7 @@
             @foreach (var order in Model)
             {
                 <tr>
-                    <td>@order.MaHoaDon</td>
+                    <td>@order.MaDonHang</td>
                     <td>@order.TenKhachHang</td>
                     <td>@order.NgayXuatHoaDon</td>
                     <td>@order.TongTien.ToString("N0") VNĐ</td>
@@ -32,15 +32,32 @@
                         }
                         else if (order.TrangThai == 1)
                         {
-                            <span class="status in-progress">Đang giao</span>
+                            <span class="status in-progress">Đang vận chuyển</span>
                         }
                         else if (order.TrangThai == 2)
                         {
-                            <span class="status completed">Đã giao</span>
+                            <span class="status completed">Đã giao hàng</span>
+                        }
+                        else if (order.TrangThai == 4)
+                        {
+                            <span class="status cancelled">Đã huỷ</span>
+                        }
+                        else if (order.TrangThai == 5)
+                        {
+                            <span class="status refunded">Đã hoàn</span>
+                        }
+                        else if (order.TrangThai == 6)
+                        {
+                            <span class="status rejected">Không đồng ý hoàn</span>
+                        }
+                        else
+                        {
+                            <span class="status unknown">Không xác định</span>
                         }
                     </td>
+
                     <td>
-                        <a class="btn btn-info" href="@Url.Action("Details", "DonHangLS", new { id = order.MaHoaDon })">Xem chi tiết</a>
+                        <a class="btn btn-info" href="@Url.Action("Details", "DonHangLS", new { id = order.MaDonHang})">Xem chi tiết</a>
                     </td>
                 </tr>
             }
@@ -50,6 +67,58 @@
 
 <!-- Add your custom CSS -->
 <style>
+    /* Trạng thái "Đã hoàn" */
+    .status.refunded {
+        background-color: #007BFF; /* Xanh đậm */
+        color: #FFF; /* Trắng */
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
+    /* Trạng thái "Không đồng ý hoàn" */
+    .status.rejected {
+        background-color: #343A40; /* Đen */
+        color: #FFF; /* Trắng */
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
+    /* Các trạng thái khác */
+    .status.pending {
+        background-color: #FFC107; /* Vàng */
+        color: #000; /* Đen */
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
+    .status.in-progress {
+        background-color: #17A2B8; /* Xanh dương */
+        color: #FFF; /* Trắng */
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
+    .status.completed {
+        background-color: #28A745; /* Xanh lá */
+        color: #FFF; /* Trắng */
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
+    .status.cancelled {
+        background-color: #DC3545; /* Đỏ */
+        color: #FFF; /* Trắng */
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
+    .status.unknown {
+        background-color: #6C757D; /* Xám */
+        color: #FFF; /* Trắng */
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
     /* General Styles */
     .page-title {
         font-size: 1.8rem;
@@ -65,7 +134,8 @@
         border-collapse: collapse;
     }
 
-        .table th, .table td {
+        .table th,
+        .table td {
             padding: 12px;
             text-align: left;
             font-size: 1rem;
@@ -77,10 +147,12 @@
         padding: 5px 10px;
         border-radius: 5px;
         font-weight: normal;
+        color: white; /* Chữ mặc định màu trắng */
     }
 
         .status.pending {
             background-color: #FFEB3B; /* Màu vàng */
+            color: black; /* Chữ màu đen cho trạng thái Đang xử lý */
         }
 
         .status.in-progress {
@@ -89,6 +161,11 @@
 
         .status.completed {
             background-color: #8BC34A; /* Màu xanh lá cây */
+        }
+
+        .status.cancelled {
+            background-color: #FF5722; /* Màu đỏ */
+            color: white; /* Chữ màu trắng */
         }
 
     /* Button Styles */
@@ -105,3 +182,4 @@
             color: white;
         }
 </style>
+

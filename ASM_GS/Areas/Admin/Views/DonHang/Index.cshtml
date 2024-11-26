@@ -1,5 +1,6 @@
-﻿@model IEnumerable<ASM_GS.ViewModels.DonHangViewModel>
-
+﻿@model IPagedList<ASM_GS.ViewModels.DonHangViewModel>
+@using X.PagedList
+@using X.PagedList.Mvc.Core
 @{
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
     var Direct = ViewData["RedirectUrl"] as string;
@@ -37,11 +38,39 @@
 }
 
 <div class="btn-group" role="group">
-    <a href="@Url.Action("Index", "DonHang", new { area = "Admin", trangThai = "all" })" class="btn btn-primary">Tất Cả</a>
-    <a href="@Url.Action("Index", "DonHang", new { area = "Admin", trangThai = "processing" })" class="btn btn-warning">Xử Lý</a>
-    <a href="@Url.Action("Index", "DonHang", new { area = "Admin", trangThai = "shipped" })" class="btn btn-info">Vận Chuyển</a>
+    <a href="@Url.Action("Index", "DonHang", new { area = "Admin", trangThai = "all" })" class="btn btn-primary" style="margin-right:20px;">Tất Cả</a>
+    <a href="@Url.Action("Index", "DonHang", new { area = "Admin", trangThai = "processing" })" class="btn btn-warning" style="margin-right:20px;">Xử Lý</a>
+    <a href="@Url.Action("Index", "DonHang", new { area = "Admin", trangThai = "shipped" })" class="btn btn-info" style="margin-right:20px;">Vận Chuyển</a>
     <a href="@Url.Action("Index", "DonHang", new { area = "Admin", trangThai = "completed" })" class="btn btn-success">Đã Giao</a>
-    <a href="@Url.Action("Index", "DonHang", new { area = "Admin", trangThai = "refunded" })" class="btn btn-danger">Hoàn Trả</a>
+</div>
+<div class="col-1">
+    <label for="pageSize" class="form-label">Hiển thị:</label>
+    <select name="pageSize" id="pageSize" class="form-select">
+        @if ((int)ViewBag.PageSize == 5)
+        {
+            <option value="5" selected>5</option>
+        }
+        else
+        {
+            <option value="5">5</option>
+        }
+        @if ((int)ViewBag.PageSize == 10)
+        {
+            <option value="10" selected>10</option>
+        }
+        else
+        {
+            <option value="10">10</option>
+        }
+        @if ((int)ViewBag.PageSize == 20)
+        {
+            <option value="20" selected>20</option>
+        }
+        else
+        {
+            <option value="20">20</option>
+        }
+    </select>
 </div>
 
 <table class="table">
@@ -66,17 +95,35 @@
                 <td>
                     @if (order.TrangThai == 0)
                     {
-                        <span>Đang xử lý</span>
+                        <span class="status status-processing">Đang xử lý</span>
                     }
                     else if (order.TrangThai == 1)
                     {
-                        <span>Đang giao</span>
+                        <span class="status status-shipping">Đang giao</span>
                     }
                     else if (order.TrangThai == 2)
                     {
-                        <span>Đã giao</span>
+                        <span class="status status-delivered">Đã giao</span>
+                    }
+                    else if (order.TrangThai == 4)
+                    {
+                        <span class="status status-cancelled">Đã hủy</span>
+                    }
+                    else if (order.TrangThai == 5)
+                    {
+                        <span class="status status-refunded">Đã hoàn</span>
+                    }
+                    else if (order.TrangThai == 6)
+                    {
+                        <span class="status status-rejected">Không đồng ý hoàn</span>
+                    }
+                    else
+                    {
+                        <span class="status status-unknown">Không xác định</span>
                     }
                 </td>
+
+
                 <td>
                     <button class="btn btn-info btn-details" data-id="@order.MaDonHang">Chi Tiết</button>
                 </td>
@@ -96,19 +143,31 @@
                             <button type="submit" name="trangThai" value="2" class="btn btn-success">Đã Giao</button>
                         </form>
                     }
-                    else if (order.TrangThai == 2)
-                    {
-                        <form method="post" action="@Url.Action("Refund", "DonHang", new { area = "Admin" })">
-                            <input type="hidden" name="maDonHang" value="@order.MaDonHang" />
-                            <button type="submit" class="btn btn-danger">Hoàn Trả</button>
-                        </form>
-                    }
                 </td>
             </tr>
         }
     </tbody>
 </table>
-
+<!-- Phân trang -->
+<div class="d-flex justify-content-center">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, pageSize = ViewBag.PageSize, trangThai = ViewBag.TrangThai }),
+            new PagedListRenderOptions
+    {
+        DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+        DisplayLinkToLastPage = PagedListDisplayMode.Always,
+        DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+        DisplayLinkToNextPage = PagedListDisplayMode.Always,
+        MaximumPageNumbersToDisplay = 5,
+        LinkToPreviousPageFormat = "«",
+        LinkToNextPageFormat = "»",
+        LinkToFirstPageFormat = "Trang đầu",
+        LinkToLastPageFormat = "Trang cuối",
+        ContainerDivClasses = new[] { "pagination" },
+        UlElementClasses = new[] { "pagination" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" }
+    })
+</div>
 <!-- Modal -->
 <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -127,6 +186,47 @@
     </div>
 </div>
 
+<style>
+    /* Định dạng chung cho trạng thái */
+    .status {
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        color: white;
+        display: inline-block;
+        text-align: center;
+    }
+
+    /* Màu sắc cho từng trạng thái */
+    .status-processing {
+        background-color: #FFC107; /* Màu vàng */
+    }
+
+    .status-shipping {
+        background-color: #17A2B8; /* Màu xanh dương nhạt */
+    }
+
+    .status-delivered {
+        background-color: #28A745; /* Màu xanh lá */
+    }
+
+    .status-cancelled {
+        background-color: #DC3545; /* Màu đỏ */
+    }
+
+    .status-refunded {
+        background-color: #007BFF; /* Màu xanh dương */
+    }
+
+    .status-rejected {
+        background-color: #6C757D; /* Màu xám đậm */
+    }
+
+    .status-unknown {
+        background-color: #6C757D; /* Màu xám nhạt */
+    }
+
+</style>
 <script>
     $(document).ready(function () {
         $(".btn-details").click(function () {

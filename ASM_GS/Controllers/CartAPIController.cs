@@ -21,6 +21,71 @@ namespace ASM_GS.Controllers
             _logger = logger;
         }
 
+        [HttpPost("AddComboToCart")]
+        public async Task<IActionResult> AddComboToCart([FromBody] AddComboRequest request)
+        {
+            try
+            {
+                if (request == null || string.IsNullOrEmpty(request.ComboId) || request.Quantity <= 0)
+                {
+                    return BadRequest(new { success = false, message = "Thông tin combo hoặc số lượng không hợp lệ." });
+                }
+
+                var maKhachHang = HttpContext.Session.GetString("User");
+                if (string.IsNullOrEmpty(maKhachHang))
+                {
+                    return BadRequest(new { success = false, message = "Vui lòng đăng nhập để thêm combo vào giỏ hàng." });
+                }
+
+                var gioHang = await GetOrCreateCartAsync(maKhachHang);
+
+                var combo = await _context.Combos
+                    .Include(c => c.ChiTietCombos)
+                    .ThenInclude(ct => ct.MaSanPhamNavigation)
+                    .FirstOrDefaultAsync(c => c.MaCombo == request.ComboId);
+
+                if (combo == null)
+                {
+                    return NotFound(new { success = false, message = "Combo không tồn tại." });
+                }
+
+                foreach (var chiTiet in combo.ChiTietCombos)
+                {
+                    var sanPham = chiTiet.MaSanPhamNavigation;
+                    if (sanPham == null || sanPham.SoLuong < chiTiet.SoLuong * request.Quantity)
+                    {
+                        return BadRequest(new { success = false, message = $"Sản phẩm '{sanPham?.TenSanPham}' trong combo không đủ số lượng." });
+                    }
+                }
+
+                var cartItem = gioHang.ChiTietGioHangs.FirstOrDefault(ct => ct.MaCombo == request.ComboId);
+
+                if (cartItem != null)
+                {
+                    cartItem.SoLuong += request.Quantity;
+                }
+                else
+                {
+                    cartItem = new ChiTietGioHang
+                    {
+                        MaGioHang = gioHang.MaGioHang,
+                        MaCombo = request.ComboId, // Gán MaCombo cho combo
+                        SoLuong = request.Quantity
+                    };
+                    _context.ChiTietGioHangs.Add(cartItem);
+                }
+                await _context.SaveChangesAsync();
+
+                return Ok(new { success = true, message = "Combo đã được thêm vào giỏ hàng." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = "Có lỗi xảy ra khi xử lý yêu cầu của bạn." });
+            }
+        }
+
+
+
         [HttpPost("AddToCart")]
         public async Task<IActionResult> AddToCart([FromBody] CartItemRequest request)
         {
@@ -51,7 +116,7 @@ namespace ASM_GS.Controllers
                 var totalQuantity = (cartItem?.SoLuong ?? 0) + request.Quantity;
                 if (totalQuantity > product.SoLuong)
                 {
-                    return BadRequest(new { success = false, message = $"Số lượng yêu cầu vượt quá số lượng tồn kho ({product.SoLuong})." });
+                    return BadRequest(new { success = false, message = $"Số lượng yêu cầu vượt quá tồn kho ({product.SoLuong})." });
                 }
 
                 if (cartItem != null)
@@ -118,7 +183,6 @@ namespace ASM_GS.Controllers
             }
         }
 
-
         [HttpDelete("RemoveItem/{id}")]
         public async Task<IActionResult> RemoveItem(int id)
         {
@@ -173,6 +237,12 @@ namespace ASM_GS.Controllers
     public class UpdateQuantityRequest
     {
         public int Id { get; set; }
+        public int Quantity { get; set; }
+    }
+
+    public class AddComboRequest
+    {
+        public string ComboId { get; set; }
         public int Quantity { get; set; }
     }
 }

@@ -27,7 +27,7 @@
     *@
     <div class="d-flex justify-content-between align-items-center mb-3" style="gap: 10px; padding: 10px;">
         <!-- Control Buttons -->
-    <form method="get" class="d-inline">
+        <form method="get" class="d-inline">
             <label for="pageSize" class="mr-2 mb-0" style="margin-left: 10px;">Hiển thị:</label>
 
             <select id="pageSize" name="pageSize" class="form-select d-inline-block w-auto" onchange="this.form.submit()" style="width: 60px; margin-left: 10px;">
@@ -66,9 +66,7 @@
 
             @*  <a href="javascript:void(0);" class="btn btn-primary" onclick="loadCreateModal()">
             Thêm Khách Hàng
-            </a> *@
-        </div>
-        
+            </a> *@        
         
         <!-- Form tìm kiếm -->
         <form  id="searchForm" asp-action="Index" method="get" class="form-inline d-flex align-items-center1">
@@ -83,20 +81,21 @@
             </select>
 
         </form>   
-    @if (TempData["successMessage"] != null)
-    {
-        <script>
-            // Sử dụng SweetAlert để hiển thị thông báo thành công
-            document.addEventListener('DOMContentLoaded', function () {
-                Swal.fire({
-                    icon: 'success',
-                    title: '@TempData["successMessage"]',
-                    //text: '@TempData["successMessage"]',
-                    //showConfirmButton: false,
-                    //timer: 2000 // Thông báo tự động ẩn sau 2 giây
-                });
+        @if (TempData["successMessage"] != null)
+        {
+            <script>
+                // Sử dụng SweetAlert để hiển thị thông báo thành công
+                document.addEventListener('DOMContentLoaded', function () {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '@TempData["successMessage"]',
+                        //text: '@TempData["successMessage"]',
+                        //showConfirmButton: false,
+                        //timer: 2000 // Thông báo tự động ẩn sau 2 giây
+                    });
             </script>
         }
+
     </div>
 
     <!-- Customer Table -->

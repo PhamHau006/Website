@@ -1,5 +1,6 @@
 ﻿using ASM_GS.Controllers;
 using ASM_GS.Models;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -131,13 +132,17 @@ namespace ASM_GS.Areas.Admin.Controllers
             // Thêm ChiTietCombos nếu có
             if (selectedSanPhams != null)
             {
-                foreach (var maSanPham in selectedSanPhams)
+                foreach (var item in selectedSanPhams)
                 {
+                    var parts = item.Split(':');
+                    var maSanPham = parts[0];
+                    var soLuong = int.Parse(parts[1]);
+
                     var chiTietCombo = new ChiTietCombo
                     {
                         MaCombo = combo.MaCombo,
                         MaSanPham = maSanPham,
-                        SoLuong = 1
+                        SoLuong = soLuong
                     };
                     _context.ChiTietCombos.Add(chiTietCombo);
                 }
@@ -213,7 +218,7 @@ namespace ASM_GS.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Combo combo, List<string> selectedSanPhams)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 ViewBag.SanPhams = _context.SanPhams.ToList();
                 return PartialView("_ComboEditPartial", combo); // Trả về partial view với thông tin lỗi
@@ -223,7 +228,7 @@ namespace ASM_GS.Areas.Admin.Controllers
                 ModelState.AddModelError("selectedSanPhams", "Vui lòng chọn ít nhất một sản phẩm.");
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 ViewBag.SanPhams = _context.SanPhams.ToList();
                 return PartialView("_ComboEditPartial", combo);
@@ -252,21 +257,25 @@ namespace ASM_GS.Areas.Admin.Controllers
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await combo.anhcombo.CopyToAsync(stream);
-                }
+                }   
 
                 // Cập nhật đường dẫn ảnh
                 existingCombo.Anh = fileName;
             }
-
+    
             _context.ChiTietCombos.RemoveRange(existingCombo.ChiTietCombos);
 
-            foreach (var maSanPham in selectedSanPhams)
+            foreach (var item in selectedSanPhams)
             {
+                var parts = item.Split(':');
+                var maSanPham = parts[0];
+                var soLuong = int.Parse(parts[1]);
+
                 var chiTietCombo = new ChiTietCombo
                 {
                     MaCombo = combo.MaCombo,
                     MaSanPham = maSanPham,
-                    SoLuong = 1
+                    SoLuong = soLuong
                 };
                 _context.ChiTietCombos.Add(chiTietCombo);
             }

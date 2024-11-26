@@ -109,12 +109,13 @@ namespace ASM_GS.Controllers
                             : (item.Combo != null ? $"/img/AnhCombo/{item.Combo.Anh}" : "/images/default-product.jpg")
                     }).ToListAsync();
             }
-
-            // Tính tổng tiền
-            decimal totalAmount = TempTong == 0
-                ? model.CartItems.Sum(i => i.Price * i.Quantity)
-                : (decimal)TempTong;
-
+            decimal totalAmount = 0;
+            if (TempTong == 0)
+            {
+                totalAmount = model.CartItems.Sum(i => i.Price * i.Quantity);
+            }
+            else
+                totalAmount = (decimal)TempTong;
             // Tạo mã hóa đơn mới
             var lastInvoice = await _context.HoaDons.OrderByDescending(h => h.MaHoaDon).FirstOrDefaultAsync();
             string newInvoiceId = "HD" + ((lastInvoice != null ? int.Parse(lastInvoice.MaHoaDon.Substring(2)) : 0) + 1).ToString("D3");

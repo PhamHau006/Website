@@ -35,6 +35,11 @@ namespace ASM_GS.Areas.Admin.Controllers
             {
                 hoaDons = hoaDons.Where(hd => hd.TrangThai == trangThai);
             }
+            // Lọc trạng thái
+            if (trangThai.HasValue && (trangThai == 0 || trangThai == 1)) // Kiểm tra trạng thái hợp lệ
+            {
+                hoaDons = hoaDons.Where(hd => hd.TrangThai == trangThai);
+            }
 
             // Sắp xếp theo ngày xuất hóa đơn
             hoaDons = hoaDons.OrderByDescending(hd => hd.NgayXuatHoaDon);

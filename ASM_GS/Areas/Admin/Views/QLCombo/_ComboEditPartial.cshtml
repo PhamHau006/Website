@@ -1,7 +1,7 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @model ASM_GS.Models.Combo
 
-<form asp-action="Edit" method="post" id="editComboForm" enctype="multipart/form-data">
+<form asp-action="Edit" method="post" id="editComboForm" enctype="multipart/form-data" data-ajax="true" data-ajax-method="POST" data-ajax-success="onEditSuccess">
     <input type="hidden" asp-for="MaCombo" />
     <div class="form-group">
         <label asp-for="TenCombo">Tên Combo</label>
@@ -20,18 +20,63 @@
     </div>
     <div class="form-group">
         <label>Chọn Sản Phẩm</label>
-        <div class="checkbox-list">
-            @foreach (var sanPham in ViewBag.SanPhams as List<ASM_GS.Models.SanPham>)
-            {
-                <div class="form-check">
-                    <input type="checkbox" name="selectedSanPhams" value="@sanPham.MaSanPham" class="form-check-input" id="sanPham_@sanPham.MaSanPham"
-                    @(Model.ChiTietCombos.Any(ct => ct.MaSanPham == sanPham.MaSanPham) ? "checked" : "") />
-                    <label class="form-check-label" for="sanPham_@sanPham.MaSanPham">@sanPham.TenSanPham</label>
-                </div>
-            }
-        </div>
-        <span class="text-danger">@ViewData.ModelState["selectedSanPhams"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+        <input type="text" id="searchSanPham" class="form-control" placeholder="Tìm kiếm sản phẩm..." />
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Tên sản phẩm</th>
+                    <th>Giá</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="sanPhamTable">
+                @if (ViewBag.SanPhams != null)
+                {
+                    foreach (var sanPham in ViewBag.SanPhams)
+                    {
+                        <tr>
+                            <td>@sanPham.TenSanPham</td>
+                            <td>@sanPham.Gia.ToString("N0") VNĐ</td>
+                            <td>
+                                <input type="number" class="form-control quantity-input" data-id="@sanPham.MaSanPham" min="1" value="1" style="width: 80px; display: inline-block;" />
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-success btn-add"
+                                        data-id="@sanPham.MaSanPham"
+                                        data-name="@sanPham.TenSanPham"
+                                @(Model.ChiTietCombos.Any(ct => ct.MaSanPham == sanPham.MaSanPham) ? "disabled" : "")>
+                                    Thêm
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+
+        </table>
+        <small class="form-text text-muted">Hiển thị tối đa 5 sản phẩm, tìm kiếm để lọc nhanh.</small>
     </div>
+    <div id="selectedProducts">
+        <h5>Sản phẩm đã chọn:</h5>
+        <ul id="selectedProductList">
+            @if (Model.ChiTietCombos != null)
+            {
+                foreach (var chiTiet in Model.ChiTietCombos)
+                {
+                    <li data-id="@chiTiet.MaSanPham">
+                        @chiTiet.MaSanPhamNavigation.TenSanPham
+                        - Số lượng:
+                        <input type="number" class="form-control quantity-input" data-id="@chiTiet.MaSanPham" value="@chiTiet.SoLuong" min="1" style="width: 80px; display: inline-block;" />
+                        <button type="button" class="btn btn-sm btn-danger btn-remove">Xóa</button>
+                        <input type="hidden" name="selectedSanPhams" value="@chiTiet.MaSanPham:@chiTiet.SoLuong" />
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+
+
+
     <div class="form-group">
         <label for="anhcombo">Ảnh Combo</label>
         <input type="file" name="anhcombo" class="form-control" />
@@ -60,4 +105,78 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
- 
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+ <script>
+    $(document).ready(function () {
+        const maxDisplay = 5;
+
+        // Hiển thị tối đa 5 sản phẩm ban đầu
+        $('#sanPhamTable tr').hide();
+        $('#sanPhamTable tr').slice(0, maxDisplay).show();
+
+        // Tìm kiếm sản phẩm
+        $('#searchSanPham').on('input', function () {
+            const searchTerm = $(this).val().toLowerCase();
+            let count = 0;
+
+            $('#sanPhamTable tr').each(function () {
+                const productName = $(this).find('td:first').text().toLowerCase();
+                if (productName.includes(searchTerm)) {
+                    if (count < maxDisplay) {
+                        $(this).show();
+                        count++;
+                    } else {
+                        $(this).hide();
+                    }
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
+        // Thêm sản phẩm vào danh sách đã chọn
+        $(document).on('click', '.btn-add', function () {
+            const productId = $(this).data('id');
+            const productName = $(this).data('name');
+            const quantity = $(`.quantity-input[data-id="${productId}"]`).val();
+            const selectedList = $('#selectedProductList');
+
+            if (!selectedList.find(`li[data-id="${productId}"]`).length) {
+                selectedList.append(
+                    `<li data-id="${productId}">
+                        ${productName} - Số lượng:
+                        <input type="number" class="form-control quantity-input" data-id="${productId}" value="${quantity}" min="1" style="width: 80px; display: inline-block;" />
+                        <button type="button" class="btn btn-sm btn-danger btn-remove">Xóa</button>
+                        <input type="hidden" name="selectedSanPhams" value="${productId}:${quantity}" />
+                    </li>`
+                );
+
+                // Disable nút "Thêm" sau khi sản phẩm được chọn
+                $(this).prop('disabled', true);
+            }
+        });
+
+        // Xóa sản phẩm khỏi danh sách đã chọn
+        $(document).on('click', '.btn-remove', function () {
+            const productId = $(this).closest('li').data('id');
+            $(this).closest('li').remove();
+            $(`#editComboForm input[name="selectedSanPhams"][value^="${productId}:"]`).remove();
+
+            // Enable lại nút "Thêm" sau khi sản phẩm bị xóa
+            $(`#sanPhamTable .btn-add[data-id="${productId}"]`).prop('disabled', false);
+        });
+
+        // Cập nhật số lượng sản phẩm trong danh sách đã chọn
+        $(document).on('change', '.quantity-input', function () {
+            const productId = $(this).data('id');
+            const quantity = $(this).val();
+
+            // Cập nhật giá trị trong input hidden
+            $(`#editComboForm input[name="selectedSanPhams"][value^="${productId}:"]`).val(`${productId}:${quantity}`);
+        });
+    });
+
+
+ </script>

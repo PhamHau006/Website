@@ -48,7 +48,7 @@
                     </td>
                     <td>@chiTiet.MaSanPhamNavigation.TenSanPham</td>
                     <td>@chiTiet.SoLuong</td>
-                    <td>@chiTiet.MaSanPhamNavigation.Gia.ToString("N0") VNĐ</td>
+                    <td>@(Math.Round(chiTiet.SoLuong * chiTiet.MaSanPhamNavigation.Gia).ToString("N0")) VNĐ</td>
                 </tr>
             }
         </tbody>

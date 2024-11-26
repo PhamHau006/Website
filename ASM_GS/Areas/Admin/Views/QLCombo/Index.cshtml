@@ -175,7 +175,7 @@
     </div>
 </div>
 
-<div class="card" style="margin: 10px 10px">
+<div class="card" style="margin: 10px 10px;">
     <h5 class="card-header">@ViewData["Title"]</h5>
     <div class="card-body">
         <div class="table-responsive">
@@ -217,7 +217,7 @@
                                 <td style="padding: 10px; width: 220px;">
                                     @if (!string.IsNullOrEmpty(combo.Anh))
                                     {
-                                        <img src="@Url.Content($"~/img/AnhCombo/{System.IO.Path.GetFileName(combo.Anh)}")" alt="Ảnh Combo" style="width: 100%; height: auto; object-fit: cover; border-radius: 3%;" />
+                                        <img src="@Url.Content($"~/img/AnhCombo/{System.IO.Path.GetFileName(combo.Anh)}")" alt="Ảnh Combo" style="width: 50%; height: auto; object-fit: cover; border-radius: 3%;" />
                                     }
                                     else
                                     {
@@ -347,7 +347,7 @@
     <p style="color: red; font-size: 2rem">Vui lòng đăng nhập</p>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
+@* <script>
     $(document).ready(function () {
         var directUrl = '@Direct';
 
@@ -363,7 +363,7 @@
             });
         }
     });
-</script>
+</script> *@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
    @*  // Tự động ẩn thông báo sau 2 giây (2000 ms)

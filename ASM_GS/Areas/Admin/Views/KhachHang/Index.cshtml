@@ -142,8 +142,18 @@
                             <td>@khachHang.Cccd</td>
                             <td>@(khachHang.NgaySinh?.ToShortDateString() ?? "N/A")</td>
                             <td>@(khachHang.GioiTinh.HasValue ? (khachHang.GioiTinh.Value ? "Nam" : "Nữ") : "N/A")</td>
-                            <td>@(khachHang.TrangThai == 0 ? "Ngừng hoạt động" : "Hoạt động")</td>
                             <td>
+                                @if (khachHang.TrangThai == 0)
+                                {
+                                    <span class="badge bg-danger">Ngừng hoạt động</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">Hoạt động</span>
+                                }
+                            </td>
+@*                             <td>@(khachHang.TrangThai == 0 ? "Ngừng hoạt động" : "Hoạt động")</td>
+ *@                            <td>
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-sm" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: transparent; border: none; color: inherit; font-size: 20px;">
                                         :

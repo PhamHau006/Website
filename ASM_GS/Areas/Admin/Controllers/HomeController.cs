@@ -39,22 +39,40 @@ namespace ASM_GS.Areas.Admin.Controllers
             // Fetch data for statistics
             // Revenue by product
             var doanhThuSanPham = _context.ChiTietHoaDons
-    .Include(c => c.HoaDon)
-    .Include(c => c.SanPham)
-    .GroupBy(c => c.MaSanPham)
-    .Select(g => new
-    {
-        TenSanPham = g.FirstOrDefault() != null && g.FirstOrDefault().SanPham != null
-            ? g.FirstOrDefault().SanPham.TenSanPham
-            : "Không xác định",
-        TongDoanhThu = g.Sum(c => c.SoLuong * c.Gia),
-        TongSoLuong = g.Sum(c => c.SoLuong)
-    })
-    .OrderByDescending(x => x.TongDoanhThu)
-    .ToList();
+            
+            .Include(c => c.HoaDon)
+            .Include(c => c.SanPham)
+             .Where(c => c.HoaDon.TrangThai == 1)
+            .GroupBy(c => c.MaSanPham)
+            .Select(g => new
+            {
+                TenSanPham = g.FirstOrDefault() != null && g.FirstOrDefault().SanPham != null
+                    ? g.FirstOrDefault().SanPham.TenSanPham
+                    : "Combo",
+                TongDoanhThu = g.Sum(c => c.SoLuong * c.Gia),
+                TongSoLuong = g.Sum(c => c.SoLuong)
+            })
+            .OrderByDescending(x => x.TongDoanhThu)
+            .ToList();
 
+            //Revenue by combos
+            var doanhThuCombo = _context.ChiTietHoaDons
+                .Include (c => c.HoaDon)
+                .Include (c => c.Combo)
+                 .Where(c => c.HoaDon.TrangThai == 1)
+                .GroupBy (c => c.MaCombo)
+                .Select(g => new
+                {
+                    TenCombo = g.FirstOrDefault() != null && g.FirstOrDefault().Combo != null
+                    ? g.FirstOrDefault().Combo.TenCombo : "Sản phẩm",
+                    TongDoanhThu = g.Sum (c => c.SoLuong * c.Gia),
+                    TongSoLuong = g.Sum(c => c.SoLuong)
+                })
+                .OrderByDescending (x => x.TongDoanhThu)
+                .ToList();
             // Revenue by day
             var doanhThuTheoNgay = _context.HoaDons
+                .Where(h => h.TrangThai == 1)
                 .GroupBy(h => h.NgayXuatHoaDon)
                 .Select(g => new
                 {
@@ -65,6 +83,7 @@ namespace ASM_GS.Areas.Admin.Controllers
 
             // Revenue by month
             var doanhThuTheoThang = _context.HoaDons
+                .Where(h => h.TrangThai == 1)
                 .GroupBy(h => new { h.NgayXuatHoaDon.Year, h.NgayXuatHoaDon.Month })
                 .Select(g => new
                 {
@@ -75,6 +94,7 @@ namespace ASM_GS.Areas.Admin.Controllers
 
             // Revenue by year
             var doanhThuTheoNam = _context.HoaDons
+                .Where(h => h.TrangThai == 1)
                 .GroupBy(h => h.NgayXuatHoaDon.Year)
                 .Select(g => new
                 {
@@ -82,12 +102,19 @@ namespace ASM_GS.Areas.Admin.Controllers
                     TongDoanhThu = g.Sum(h => h.TongTien),
                     SoHoaDon = g.Count()
                 }).ToList();
+            // Tổng doanh thu của tất cả hóa đơn
+            var tongDoanhThuTatCaHoaDon = _context.HoaDons
+                .Where(h => h.TrangThai == 1) // Chỉ tính các hóa đơn đã hoàn thành (hoặc trạng thái hợp lệ)
+                .Sum(h => h.TongTien);
 
             // Pass data to the view using ViewBag
             ViewBag.DoanhThuSanPham = doanhThuSanPham;
             ViewBag.DoanhThuTheoNgay = doanhThuTheoNgay;
             ViewBag.DoanhThuTheoThang = doanhThuTheoThang;
             ViewBag.DoanhThuTheoNam = doanhThuTheoNam;
+            ViewBag.DoanhThuCombo = doanhThuCombo;
+            ViewBag.TongDoanhThuTatCaHoaDon = tongDoanhThuTatCaHoaDon;
+
 
             return View();
         }

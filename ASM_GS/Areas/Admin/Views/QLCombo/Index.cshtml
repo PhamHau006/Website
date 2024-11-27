@@ -228,8 +228,18 @@
                                 <td>@totalProducts</td>
                                 <td>@(string.IsNullOrEmpty(combo.MoTa) ? "Không có mô tả" : combo.MoTa)</td>
                                 <td>@($"{combo.Gia:N0} VNĐ")</td>
-                                <td>@(combo.TrangThai == 1 ? "Đang Áp Dụng" : "Không Áp Dụng")</td>
                                 <td>
+                                    @if (combo.TrangThai == 1)
+                                    {
+                                        <span class="badge bg-success">Đang Áp Dụng</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Không Áp Dụng</span>
+                                    }
+                                </td>
+@*                              <td>@(combo.TrangThai == 1 ? "Đang Áp Dụng" : "Không Áp Dụng")</td>
+ *@                                <td>
                                     <div class="btn-group">
                                         <button type="button" class="btn btn-sm" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: transparent; border: none; color: inherit; font-size: 20px;">
                                             :
@@ -347,7 +357,7 @@
     <p style="color: red; font-size: 2rem">Vui lòng đăng nhập</p>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-@* <script>
+<script>
     $(document).ready(function () {
         var directUrl = '@Direct';
 
@@ -363,7 +373,7 @@
             });
         }
     });
-</script> *@
+</script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
    @*  // Tự động ẩn thông báo sau 2 giây (2000 ms)

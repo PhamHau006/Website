@@ -138,8 +138,18 @@
                                 <td>@nhanVien.Cccd</td>
                                 <td>@(nhanVien.NgaySinh?.ToShortDateString() ?? "N/A")</td>
                                 <td>@(nhanVien.GioiTinh.HasValue ? (nhanVien.GioiTinh.Value ? "Nam" : "Nữ") : "N/A")</td>
-                                <td>@(nhanVien.TrangThai == 0 ? "Ngừng hoạt động" : "Hoạt động")</td>
                                 <td>
+                                    @if (nhanVien.TrangThai == 0)
+                                    {
+                                        <span class="badge bg-danger">Ngừng hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Hoạt động</span>
+                                    }
+                                </td>
+@*                                 <td>@(nhanVien.TrangThai == 0 ? "Ngừng hoạt động" : "Hoạt động")</td>
+ *@                                <td>
                                     <div class="btn-group">
                                         <button type="button" class="btn btn-sm" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: transparent; border: none; color: inherit; font-size: 20px;">
                                             :

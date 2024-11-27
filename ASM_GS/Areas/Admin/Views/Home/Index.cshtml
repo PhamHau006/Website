@@ -44,10 +44,21 @@
         </li>
     </ul>
 </div>
-
+<br />
 <div class="content-wrapper">
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
+            <div class="col-12 text-end mb-4">
+                <h3>Tổng doanh thu: @ViewBag.TongDoanhThuTatCaHoaDon.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</h3>
+            </div>
+
+            <!-- Revenue by Combo -->
+            <div class="col-12 col-lg-8 mb-4">
+                <div class="card">
+                    <h5 class="card-header">Doanh thu theo Combo</h5>
+                    <div id="doanhThuComboChart"></div>
+                </div>
+            </div>
             <!-- Revenue by Product -->
             <div class="col-12 col-lg-8 mb-4">
                 <div class="card">
@@ -194,7 +205,17 @@
             ]);
         var chartSanPham = new google.visualization.BarChart(document.getElementById('doanhThuSanPhamChart'));
         chartSanPham.draw(dataSanPham, { title: 'Doanh thu theo sản phẩm' });
-
+        // Revenue by Combo
+        // Revenue by Combo
+        var dataCombo = google.visualization.arrayToDataTable([
+            ['Tên Combo', 'Tổng doanh thu'],
+    @foreach (var item in ViewBag.DoanhThuCombo)
+    {
+        @:['@Html.Raw(item.TenCombo)', @item.TongDoanhThu],
+    }
+        ]);
+        var chartCombo = new google.visualization.PieChart(document.getElementById('doanhThuComboChart'));
+        chartCombo.draw(dataCombo, { title: 'Doanh thu theo Combo' });
         // Revenue by Day
         var dataNgay = google.visualization.arrayToDataTable([
             ['Ngày', 'Tổng doanh thu'],
@@ -323,6 +344,33 @@
         font-size: 18px;
         font-weight: bold;
     }
+
+    #doanhThuComboChart {
+        width: 100%;
+        height: 300px;
+        margin: 0 auto;
+    }
+
+    h3 {
+        font-size: 1.75rem; /* Tăng kích thước font */
+        font-weight: bold; /* Đậm chữ */
+        color: #4CAF50; /* Màu sắc tươi sáng */
+        text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1); /* Tạo hiệu ứng bóng cho chữ */
+        margin-bottom: 0; /* Loại bỏ margin dưới */
+    }
+
+    .text-end {
+        display: flex;
+        justify-content: flex-end; /* Căn phải */
+        align-items: center; /* Căn giữa theo chiều dọc */
+        padding: 10px 15px; /* Thêm khoảng cách xung quanh */
+        background-color: #f4f4f4; /* Màu nền sáng cho khung chứa */
+        border-radius: 8px; /* Bo góc nhẹ cho khung */
+    }
+
+        .text-end h3 {
+            margin-right: 10px; /* Khoảng cách giữa chữ và viền */
+        }
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

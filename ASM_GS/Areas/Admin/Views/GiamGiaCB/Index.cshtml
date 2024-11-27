@@ -210,8 +210,18 @@
                             <td>@discount.NgayBatDau.ToShortDateString()</td>
                             <td>@discount.NgayKetThuc.ToShortDateString()</td>
                             <td>@discount.SoLuongMaNhapToiDa</td>
-                            <td>@(discount.TrangThai == 1 ? "Đang Áp Dụng" : "Không Áp Dụng")</td>
                             <td>
+                                @if (discount.TrangThai == 1)
+                                {
+                                    <span class="badge bg-success">Đang Áp Dụng</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Không Áp Dụng</span>
+                                }
+                            </td>
+@*                             <td>@(discount.TrangThai == 1 ? "Đang Áp Dụng" : "Không Áp Dụng")</td>
+ *@                            <td>
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-sm" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: transparent; border: none; color: inherit; font-size: 20px;">
                                         :

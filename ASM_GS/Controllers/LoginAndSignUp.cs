@@ -536,7 +536,7 @@ namespace ASM_GS.Controllers
         {
             if(AuthenChangPass==false)
             {
-                return RedirectToAction("Index", "LoginAndSignUp");
+                return Redirect("https://localhost:7265/LoginAndSignUp");
             }    
             var TaiKhoan = _context.TaiKhoans.Where(tk => tk.Email==email).FirstOrDefault();
             ViewData["tk"] = TaiKhoan;

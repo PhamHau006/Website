@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ASM_GS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241125071214_DLSS")]
-    partial class DLSS
+    [Migration("20241126043046_ldt")]
+    partial class ldt
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

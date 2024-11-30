@@ -28,6 +28,15 @@
             // Xóa thông báo lỗi trước đó
             $('.text-danger').text('');
 
+            // Kiểm tra và thay đổi thông báo lỗi của trường TenDanhMuc
+            var tenDanhMuc = $('#TenDanhMuc')[0];
+            if (!tenDanhMuc.value) {
+                tenDanhMuc.setCustomValidity('Tên danh mục là bắt buộc.');
+            } else {
+                tenDanhMuc.setCustomValidity('');
+            }
+
+            // Gửi AJAX
             $.ajax({
                 url: '/Admin/DanhMuc/Create', // Đường dẫn đến action Create
                 type: 'POST',
@@ -42,7 +51,7 @@
                             text: response.message,
                             confirmButtonText: 'OK'
                         }).then(() => {
-                             // Đóng modal
+                            // Đóng modal
                             location.reload(); // Tải lại trang
                         });
                         $('#modalAddCategory').modal('hide');
@@ -63,6 +72,11 @@
                     });
                 }
             });
+        });
+
+        // Khi người dùng bỏ qua trường và nhấn submit, sẽ hiển thị thông báo yêu cầu
+        $('#TenDanhMuc').on('invalid', function () {
+            this.setCustomValidity('Tên danh mục là bắt buộc.');
         });
     });
 </script>

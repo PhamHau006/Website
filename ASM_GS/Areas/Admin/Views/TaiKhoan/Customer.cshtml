@@ -206,7 +206,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick="updateAccount()">Thay Đổi</button>
+                <button type="button" class="btn btn-primary" onclick="updateAccount1()">Thay Đổi</button>
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">HỦy</button>
             </div>
 
@@ -475,7 +475,7 @@
             }
         });
     }
-    function updateAccount() {
+    function updateAccount1() {
         const maTaiKhoan = $('#MaTaiKhoan').val();
         const matKhau = $('#MatKhau').val();
         const email = $('#Email').val();
@@ -504,6 +504,7 @@
                         timer: 2000,
                         showConfirmButton: false
                     });
+                    setTimeout(() => location.reload(), 2000);
                 } else {
                     // Hiển thị lỗi
                     if (response.errors) {
@@ -643,6 +644,8 @@
             data: data,
             success: function (response) {
                 if (response.success) {
+                    $('#myModal2').modal('hide'); 
+                    $('.modal-backdrop').remove();
                     Swal.fire({
                         icon: "success",
                         title: "Thành công!",

@@ -10,10 +10,15 @@ using System.Text.Json;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using System.Security.Principal;
 using static System.Net.WebRequestMethods;
+using System.Net;
+using System.Net.Mail;
 namespace ASM_GS.Controllers
 {
     public class LoginAndSignUp : Controller
     {
+        public static bool AuthenChangPass = false;
+        private static readonly Dictionary<string, (string Code, DateTime Expiry)> verificationCodes = new();
+
         private readonly ApplicationDbContext _context;
         private string MaTaiKhoanDuocTao;
         public LoginAndSignUp(ApplicationDbContext context, IConfiguration configuration)
@@ -26,6 +31,11 @@ namespace ASM_GS.Controllers
             public string Name { get; set; }
             public string Email { get; set; }
             public string Picture { get; set; }
+        }
+        public class UpdatePasswordRequest
+        {
+            public string Email { get; set; }
+            public string NewPassword { get; set; }
         }
         private readonly IConfiguration _configuration;
         private string GenerateNewAccountId()
@@ -357,7 +367,7 @@ namespace ASM_GS.Controllers
                     VaiTro = "Customer",
                     Email = user.Email,
                     MaKhachHang = maKhachHang,
-                    TinhTrang = 1
+                    TinhTrang = 2
                 };
                 _context.TaiKhoans.Add(newAccount);
                 await _context.SaveChangesAsync();
@@ -415,6 +425,142 @@ namespace ASM_GS.Controllers
                     return Json(new { Message = "Cập nhật tên cho khách hàng hiện có." });
                 }
             }
+        }
+        [HttpPost]
+        public IActionResult SendVerificationCode([FromBody] EmailRequest request)
+        {
+            if (string.IsNullOrEmpty(request.Email) || !IsValidEmail(request.Email))
+            {
+                return Json(new { success = false, message = "Email không hợp lệ." });
+            }
+
+            var code = new Random().Next(100000, 999999).ToString();
+
+            verificationCodes[request.Email] = (Code: code, Expiry: DateTime.Now.AddMinutes(30));
+
+            SendEmail(request.Email, code);
+
+            return Json(new { success = true, message = "Mã xác nhận đã được gửi đến email của bạn." });
+        }
+        public class VerifyCodeRequest
+        {
+            public string Email { get; set; }
+            public string Code { get; set; }
+        }
+
+        [HttpPost]
+        public IActionResult VerifyCode([FromBody] VerifyCodeRequest request)
+        {
+            if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Code))
+            {
+                return Json(new { success = false, message = "Email và mã xác nhận không được để trống." });
+            }
+            var tk = _context.TaiKhoans.Where(tk => tk.Email == request.Email && tk.TinhTrang != 0 && tk.VaiTro.Trim() == "Customer").FirstOrDefault();
+            if(tk != null)
+            {
+                if (verificationCodes.TryGetValue(request.Email, out var data) && data.Code == request.Code)
+                {
+                    if (DateTime.Now <= data.Expiry)
+                    {
+                        verificationCodes.Remove(request.Email);
+                        var redirectUrl = Url.Action("DoiMatKhau", "LoginAndSignUp", new { email = request.Email });
+                        AuthenChangPass = true;
+                        return Json(new { success = true, redirectUrl });
+                    }
+
+                    return Json(new { success = false, message = "Mã xác nhận đã hết hạn." });
+                }
+
+                return Json(new { success = false, message = "Mã xác nhận không hợp lệ." });
+            }    
+            else
+            {
+                return Json(new { success = false, message = "Không tìm thấy tài khoản tương ứng" });
+            }    
+        }
+
+
+        private void SendEmail(string email, string code)
+        {
+            Console.WriteLine($"Gửi mã xác nhận: {code} tới email: {email}");
+
+            string from = "nguyenquangquyx@gmail.com";
+            string appPassword = "rqyl dsfd mlvw vums";
+            string text = $"Mã xác nhận của bạn là {code}. Mã này sẽ hết hạn sau 30 phút.";
+
+            MailMessage mail = new MailMessage
+            {
+                From = new MailAddress(from),
+                Subject = "Xác nhận thay đổi mật khẩu",
+                Body = text,
+                IsBodyHtml = true
+            };
+            mail.To.Add(email);
+
+            SmtpClient smtp = new SmtpClient("smtp.gmail.com")
+            {
+                EnableSsl = true,
+                Port = 587,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                Credentials = new NetworkCredential(from, appPassword)
+            };
+
+            try
+            {
+                smtp.Send(mail);
+                Console.WriteLine("Email đã được gửi thành công.");
+            }
+            catch (SmtpException ex)
+            {
+                Console.WriteLine($"Lỗi khi gửi email: {ex.Message}");
+                throw;
+            }
+        }
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public class EmailRequest
+        {
+            public string Email { get; set; }
+        }
+        public IActionResult DoiMatKhau(string email)
+        {
+            if(AuthenChangPass==false)
+            {
+                return RedirectToAction("Index", "LoginAndSignUp");
+            }    
+            var TaiKhoan = _context.TaiKhoans.Where(tk => tk.Email==email).FirstOrDefault();
+            ViewData["tk"] = TaiKhoan;
+            return View();
+        }
+        [HttpPost]
+        public IActionResult UpdatePassword([FromBody] UpdatePasswordRequest request)
+        {
+            if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.NewPassword))
+            {
+                return Json(new { success = false, message = "Email và mật khẩu mới không được để trống." });
+            }
+
+            var tk = _context.TaiKhoans.FirstOrDefault(t => t.Email == request.Email);
+            if (tk == null)
+            {
+                return Json(new { success = false, message = "Không tìm thấy tài khoản tương ứng." });
+            }
+
+            tk.MatKhau = request.NewPassword;
+            AuthenChangPass = false;
+            _context.SaveChanges();
+
+            return Json(new { success = true });
         }
 
     }

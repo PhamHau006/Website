@@ -310,7 +310,7 @@ namespace ASM_GS.Areas.Admin.Controllers
         //TaiKhoanStaff
         public IActionResult Staff(string searchTerm, int? pageSize, int page = 1, int? status = null)
         {
-            if (HttpContext.Session.GetString("StaffAccount") == null || authenticatedAdmin == false)
+            if (HttpContext.Session.GetString("StaffAccount") == null)
             {
                 HttpContext.Session.SetString("RedirectUrl", HttpContext.Request.GetDisplayUrl());
                 ViewData["RedirectUrl"] = HttpContext.Session.GetString("RedirectUrl");

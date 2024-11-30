@@ -1,0 +1,754 @@
+﻿@{
+    Layout = null;
+    var tk = ViewData["tk"] as TaiKhoan;
+}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+
+<head>
+    <title>Care - Beauty Store Bootstrap 5 HTML CSS Template</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="author" content="TemplatesJungle">
+    <meta name="keywords" content="ecommerce,fashion,store">
+    <meta name="description" content="Beauty Store Bootstrap 5 HTML CSS Template">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="icomoon/icomoon.css">
+    <link rel="stylesheet" type="text/css" href="css/vendor.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&family=Prata&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Dancing+Script:wght@400..700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Playball&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="google-signin-client_id" content="@ViewData["GoogleClientId"]">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+          rel="stylesheet" />
+
+    <!-- Icons. Uncomment required icon fonts -->
+    <link rel="stylesheet" href="@Url.Content("~/assets/vendor/fonts/boxicons.css")" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="@Url.Content("~/assets/vendor/css/core.css")" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/vendor/css/theme-default.css")" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/demo.css")" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="@Url.Content("~/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css")" />
+
+    <!-- Page CSS -->
+    <!-- Helpers -->
+    <script src="@Url.Content("~/assets/vendor/js/helpers.js")"></script>
+
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="@Url.Content("~/assets/js/config.js")"></script>
+</head>
+<body>
+    <div>
+        <h1>Đổi mật khẩu</h1>
+        <h7>Tên Tài Khoản</h7>
+        <input id="TenTaiKhoan" value="@tk?.TenTaiKhoan" disabled />
+        <h7>Email</h7>
+        <input id="Email" value="@tk?.Email" disabled />
+        <h7>Mật khẩu mới</h7>
+        <input id="newpassword" type="password" placeholder="Nhập mật khẩu mới" />
+        <h7>Nhập lại mật khẩu</h7>
+        <input id="Renewpassword" type="password" placeholder="Nhập lại mật khẩu mới" />
+        <button class="btn btn-primary" onclick="changePassword()">Đổi Mật Khẩu</button>
+        <p id="statusMessage" style="color: red; margin-top: 10px;"></p>
+    </div>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="js/SmoothScroll.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+    <script src="js/script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function changePassword() {
+            const email = document.getElementById('Email').value;
+            const newPassword = document.getElementById('newpassword').value;
+            const renewPassword = document.getElementById('Renewpassword').value;
+            const statusMessage = document.getElementById('statusMessage');
+            if (newPassword.length < 6) {
+                statusMessage.textContent = 'Mật khẩu mới phải có ít nhất 6 ký tự.';
+                return;
+            }
+            if (newPassword !== renewPassword) {
+                statusMessage.textContent = 'Mật khẩu mới và nhập lại mật khẩu không trùng khớp.';
+                return;
+            }
+            $.ajax({
+                url: '/LoginAndSignUp/UpdatePassword', 
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ email: email, newPassword: newPassword }),
+                success: function (response) {
+                    if (response.success) {
+                        alert("Đổi mật khẩu thành công, bạn sẽ trở lại trang đăng nhập")
+                        location.href="Index"
+                    } else {
+                        statusMessage.textContent = response.message;
+                    }
+                },
+                error: function () {
+                    statusMessage.textContent = 'Có lỗi xảy ra. Vui lòng thử lại.';
+                }
+            });
+        }
+
+    </script>
+</body>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh; 
+        display: flex;
+        justify-content: center;
+        align-items: center; 
+        background-color: #f5f5f5;
+    }
+
+    div {
+        width: 400px; 
+        padding: 20px;
+        border-radius: 10px;
+        background-color: white; 
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+        display: flex;
+        flex-direction: column;
+        align-items: center; 
+    }
+
+    h1 {
+        margin-bottom: 20px;
+        color: #333; 
+    }
+
+    h7 {
+        align-self: flex-start;
+        margin-bottom: 10px;
+        color: #666;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    input:disabled {
+        background-color: #f9f9f9; 
+    }
+</style>
+<style>
+    .background-video, .background-image {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -9999;
+    }
+</style>
+<style>
+    *,
+    *:before,
+    *:after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    .fade-in {
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+    }
+
+    .show-opacity {
+        opacity: 1;
+    }
+
+    body {
+        font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+        background: #ffffff;
+    }
+
+    .pinyon-script-regular {
+        font-family: "Pinyon Script", cursive;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    .poppins-thin {
+        font-family: "Poppins", sans-serif;
+        font-weight: 100;
+        font-style: normal;
+    }
+
+    .poppins-extralight {
+        font-family: "Poppins", sans-serif;
+        font-weight: 200;
+        font-style: normal;
+    }
+
+    .poppins-light {
+        font-family: "Poppins", sans-serif;
+        font-weight: 300;
+        font-style: normal;
+    }
+
+    .poppins-regular {
+        font-family: "Poppins", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    .poppins-medium {
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+        font-style: normal;
+    }
+
+    .poppins-semibold {
+        font-family: "Poppins", sans-serif;
+        font-weight: 600;
+        font-style: normal;
+    }
+
+    .poppins-bold {
+        font-family: "Poppins", sans-serif;
+        font-weight: 700;
+        font-style: normal;
+    }
+
+    .poppins-extrabold {
+        font-family: "Poppins", sans-serif;
+        font-weight: 800;
+        font-style: normal;
+    }
+
+    .poppins-black {
+        font-family: "Poppins", sans-serif;
+        font-weight: 900;
+        font-style: normal;
+    }
+
+    .poppins-thin-italic {
+        font-family: "Poppins", sans-serif;
+        font-weight: 100;
+        font-style: italic;
+    }
+
+    .poppins-extralight-italic {
+        font-family: "Poppins", sans-serif;
+        font-weight: 200;
+        font-style: italic;
+    }
+
+    .poppins-light-italic {
+        font-family: "Poppins", sans-serif;
+        font-weight: 300;
+        font-style: italic;
+    }
+
+    .poppins-regular-italic {
+        font-family: "Poppins", sans-serif;
+        font-weight: 400;
+        font-style: italic;
+    }
+
+    .poppins-medium-italic {
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+        font-style: italic;
+    }
+
+    .poppins-semibold-italic {
+        font-family: "Poppins", sans-serif;
+        font-weight: 600;
+        font-style: italic;
+    }
+
+    .poppins-bold-italic {
+        font-family: "Poppins", sans-serif;
+        font-weight: 700;
+        font-style: italic;
+    }
+
+    .poppins-extrabold-italic {
+        font-family: "Poppins", sans-serif;
+        font-weight: 800;
+        font-style: italic;
+    }
+
+    .poppins-black-italic {
+        font-family: "Poppins", sans-serif;
+        font-weight: 900;
+        font-style: italic;
+    }
+
+    input,
+    button {
+        border: none;
+        outline: none;
+        background: none;
+        font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+    }
+
+    .tip {
+        font-size: 20px;
+        margin: 40px auto 50px;
+        text-align: center;
+    }
+
+    .cont {
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+        width: 900px;
+        height: 750px;
+        margin: 0 auto 100px;
+        background: #fff;
+        box-shadow: -10px -10px 15px rgba(255, 255, 255, 0.5), 10px 10px 15px rgba(70, 70, 70, 0.15), inset -10px -10px 15px rgba(255, 255, 255, 0.5), inset 10px 10px 15px rgba(70, 70, 70, 0.15);
+    }
+
+    .form {
+        position: relative;
+        width: 640px;
+        height: 100%;
+        -webkit-transition: -webkit-transform 1.2s ease-in-out;
+        transition: -webkit-transform 1.2s ease-in-out;
+        transition: transform 1.2s ease-in-out;
+        transition: transform 1.2s ease-in-out, -webkit-transform 1.2s ease-in-out;
+        padding: 50px 30px 0;
+        background-color: #fef4f3;
+    }
+
+    .sub-cont {
+        overflow: hidden;
+        position: absolute;
+        left: 640px;
+        top: 0;
+        width: 900px;
+        height: 100%;
+        padding-left: 260px;
+        background: #fff;
+        -webkit-transition: -webkit-transform 1.2s ease-in-out;
+        transition: -webkit-transform 1.2s ease-in-out;
+        transition: transform 1.2s ease-in-out;
+        transition: transform 1.2s ease-in-out, -webkit-transform 1.2s ease-in-out;
+    }
+
+    .cont.s--signup .sub-cont {
+        -webkit-transform: translate3d(-640px, 0, 0);
+        transform: translate3d(-640px, 0, 0);
+    }
+
+    button {
+        display: block;
+        margin: 0 auto;
+        width: 260px;
+        height: 36px;
+        border-radius: 30px;
+        color: #fff;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+    .img {
+        overflow: hidden;
+        z-index: 2;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 260px;
+        height: 100%;
+        padding-top: 360px;
+        background: rgba(140, 137, 137, 0);
+    }
+
+        .img:before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 900px;
+            height: 100%;
+            background-image: url("ext.jpg");
+            opacity: .8;
+            background-size: cover;
+            -webkit-transition: -webkit-transform 1.2s ease-in-out;
+            transition: transform 1.2s ease-in-out;
+            transition: transform 1.2s ease-in-out, -webkit-transform 1.2s ease-in-out;
+            background: rgba(140, 137, 137, 0.6);
+        }
+
+        .img:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            background: rgba(140, 137, 137, 0.6);
+        }
+
+    .cont.s--signup .img:before {
+        -webkit-transform: translate3d(640px, 0, 0);
+        transform: translate3d(640px, 0, 0);
+        background: rgba(140, 137, 137, 0.6);
+    }
+
+    .img__text {
+        z-index: 2;
+        display: flex;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        padding: 0 20px;
+        text-align: center;
+        align-items: center;
+        color: #000000;
+        -webkit-transition: -webkit-transform 1.2s ease-in-out;
+        transition: -webkit-transform 1.2s ease-in-out;
+        transition: transform 1.2s ease-in-out;
+        transition: transform 1.2s ease-in-out, -webkit-transform 1.2s ease-in-out;
+    }
+
+        .img__text h2 {
+            margin-bottom: 10px;
+            font-weight: normal;
+        }
+
+        .img__text p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+    .cont.s--signup .img__text.m--up {
+        -webkit-transform: translateX(520px);
+        transform: translateX(520px);
+    }
+
+    .img__text.m--in {
+        -webkit-transform: translateX(-520px);
+        transform: translateX(-520px);
+    }
+
+    .cont.s--signup .img__text.m--in {
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+    }
+
+    .img__btn {
+        overflow: hidden;
+        z-index: 2;
+        position: relative;
+        width: 150px;
+        height: 36px;
+        margin: 0 auto;
+        background: transparent;
+        color: #fff;
+        text-transform: uppercase;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+        .img__btn:after {
+            content: '';
+            z-index: 2;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid #fff;
+            border-radius: 30px;
+        }
+
+        .img__btn span {
+            position: absolute;
+            left: 0;
+            top: 0;
+            display: -webkit-box;
+            display: flex;
+            -webkit-box-pack: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            -webkit-transition: -webkit-transform 1.2s;
+            transition: -webkit-transform 1.2s;
+            transition: transform 1.2s;
+            transition: transform 1.2s, -webkit-transform 1.2s;
+        }
+
+            .img__btn span.m--in {
+                -webkit-transform: translateY(-72px);
+                transform: translateY(-72px);
+            }
+
+    .cont.s--signup .img__btn span.m--in {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+
+    .cont.s--signup .img__btn span.m--up {
+        -webkit-transform: translateY(72px);
+        transform: translateY(72px);
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    h2 {
+        width: 100%;
+        font-size: 26px;
+        text-align: center;
+    }
+
+    h3 {
+        transform: translateY(-150px);
+    }
+
+    label {
+        display: block;
+        width: 260px;
+        margin: 25px auto 0;
+        text-align: left;
+    }
+
+        label span {
+            font-size: 12px;
+            color: #cfcfcf;
+            text-transform: uppercase;
+        }
+
+    input {
+        display: block;
+        width: 100%;
+        margin-top: 5px;
+        padding-left: 15px;
+        padding-bottom: 5px;
+        font-size: 16px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+        text-align: left;
+    }
+
+    .forgot-pass {
+        margin-top: 15px;
+        text-align: center;
+        font-size: 12px;
+        color: #cfcfcf;
+    }
+
+    .submit {
+        margin-top: 40px;
+        margin-bottom: 20px;
+        background: #d4af7a;
+        text-transform: uppercase;
+    }
+
+    .fb-btn {
+        border: 2px solid #d3dae9;
+        color: #8fa1c7;
+    }
+
+        .fb-btn span {
+            font-weight: bold;
+            color: #455a81;
+        }
+
+    .sign-in {
+        -webkit-transition-timing-function: ease-out;
+        transition-timing-function: ease-out;
+    }
+
+    .cont.s--signup .sign-in {
+        -webkit-transition-timing-function: ease-in-out;
+        transition-timing-function: ease-in-out;
+        -webkit-transition-duration: 1.2s;
+        transition-duration: 1.2s;
+        -webkit-transform: translate3d(640px, 0, 0);
+        transform: translate3d(640px, 0, 0);
+    }
+
+    .sign-up {
+        -webkit-transform: translate3d(-900px, 0, 0);
+        transform: translate3d(-900px, 0, 0);
+    }
+
+    .cont.s--signup .sign-up {
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+
+    .tangerine-regular {
+        font-family: "Tangerine", cursive;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    .tangerine-bold {
+        font-family: "Tangerine", cursive;
+        font-weight: 700;
+        font-style: normal;
+    }
+</style>
+<style>
+    #loginForm {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 400px;
+        margin: auto;
+    }
+
+    #my-signin2 {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    #Logined {
+        font-size: 1.2em;
+        color: green;
+    }
+
+    #errorMessages {
+        color: red;
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    .HienThi {
+        color: black;
+    }
+</style>
+<style>
+    #tawk-bubble-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        cursor: pointer;
+    }
+    /* Định dạng cho hộp thoại */
+    .chat-box {
+        position: fixed;
+        bottom: 110px;
+        right: 20px;
+        width: 500px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        z-index: 10000;
+        font-family: Arial, sans-serif;
+        width: 500px;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .chat-header {
+        padding: 10px;
+        font-weight: bold;
+        text-align: center;
+        background-color: #0078d4;
+        color: #fff;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .chat-body {
+        max-height: 150px;
+        overflow-y: auto;
+        padding: 10px;
+        font-size: 14px;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .chat-message {
+        margin-bottom: 8px;
+    }
+
+    .chat-input-container {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #ddd;
+    }
+
+    .chat-input {
+        flex: 1;
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .chat-send-button {
+        padding: 5px 10px;
+        margin-left: 5px;
+        background-color: #0078d4;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .open-sans-<uniquifier > {
+        font-family: "Open Sans", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: <weight>;
+        font-style: normal;
+        font-variation-settings: "wdth" 100;
+    }
+
+    .cont {
+        background: rgba(255, 255, 255, 0.6);
+    }
+
+    .form {
+        background: rgba(254, 244, 243, 0.6);
+    }
+
+    .HienThi {
+        color: black;
+    }
+
+    .show-opacity {
+        opacity: 1;
+    }
+</style>

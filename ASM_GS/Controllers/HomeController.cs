@@ -119,6 +119,13 @@ namespace ASM_GS.Controllers
         [HttpPost]
         public async Task<IActionResult> TraLoi([FromBody] string userInput)
         {
+            string Openning = "Dưới đây là danh sách sản phẩm và combo chứa các sản phẩm của cửa hàng của tôi: \n Danh Sách sản phẩm: ";
+            var ListSanPham = _context.SanPhams.ToList();
+            var ListCombo = _context.ChiTietCombos.ToList();
+            for(int i=0;i<ListSanPham.Count();i++) {
+                Openning += (i + 1).ToString() + ". Mã:" + ListSanPham[i].MaSanPham + ", Tên:" + ListSanPham[i].TenSanPham + ", Mô tả:" + ListSanPham[i].MoTa + ", Giá:"+ ListSanPham[i].Gia + "\n";
+            }
+
             var Test = userInput;
             var GoogleAPIKey = _authSettings.Google.GoogleAPIKey;
             var GoogleAPIUrl = _authSettings.Google.GoogleAPIUrl;
@@ -130,7 +137,7 @@ namespace ASM_GS.Controllers
                 {
                     parts = new[]
                     {
-                        new { text ="Hãy xưng hô với tôi là Chủ nhân còn bạn là Rem và trả lời giúp tôi câu hỏi sau: " +userInput }
+                        new { text =Openning +"\nHãy đóng vai là 1 chuyên viên bán hàng, hãy tư vấn cho khách hàng giúp tôi và nếu có thể hãy viết thêm link cho loại sản phẩm ấy với dạng là https://localhost:7265/Detail/Index/ + mã sản phẩm giúp tôi. Câu hỏi của khách hàng là: "+userInput }
                     },
                 }
             }

@@ -94,7 +94,7 @@
                     <span id="errorPassword" class="text-danger"></span>
                 </label>
 
-                <p class="forgot-pass" style="color:black">Quên mật Khẩu?</p>
+                <a class="forgot-pass" style="color:black" data-bs-toggle="modal" data-bs-target="#myModal3">Quên mật Khẩu?</a>
                 <button type="button" class="submit" onclick="submitLogin()" style="background-color:lightpink">Đăng Nhập</button>
                 <br>
                 <span id="errorMessages" class="text-danger"></span>
@@ -225,7 +225,37 @@
             </div>
         </div>
     </div>
+    <div class="modal" id="myModal3">
+        <div class="modal-dialog">
+            <div class="modal-content">
 
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Quên mật khẩu</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div style="margin-bottom: 15px;">
+                        <input type="email" id="emailInput" placeholder="Nhập email của bạn" style="width: 100%; margin-bottom: 10px;" />
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="verificationCode" placeholder="Nhập mã xác nhận" style="flex: 1;" />
+                        <button id="sendCodeButton" onclick="sendVerificationCode()" style="border: 1px solid grey; border-radius: 10px; color: black; background-color: deepskyblue">
+                            Gửi mã xác nhận
+                        </button>
+                    </div>
+                    <p id="statusMessage" style="color: black; margin-top: 10px;"></p>
+                </div>
+               <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button id="verifyButton" onclick="verifyCode()" style="color: black; border: 1px solid grey; border-radius: 10px">Xác nhận</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
     <div style="width: 100%; height: 100%;">
         <div id="tawk-bubble-container" role="button" tabindex="0" class="tawk-bubble-container" onclick="toggleChatBox()">
@@ -507,6 +537,33 @@
     <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
+
+        function verifyCode() {
+            const email = document.getElementById('emailInput').value;
+            const code = document.getElementById('verificationCode').value;
+            const statusMessage = document.getElementById('statusMessage');
+            if (!email || !code) {
+                statusMessage.textContent = 'Email và mã xác nhận không được để trống.';
+                return;
+            }
+            $.ajax({
+                url: '/LoginAndSignUp/VerifyCode', 
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ email: email, code: code }),
+                success: function (response) {
+                    if (response.success) {
+                        window.location.href = response.redirectUrl;
+                    } else {
+                        // Hiển thị thông báo lỗi
+                        statusMessage.textContent = response.message;
+                    }
+                },
+                error: function () {
+                    statusMessage.textContent = 'Có lỗi xảy ra. Vui lòng thử lại.';
+                }
+            });
+        }
         function submitLogin() {
             $('#errorEmailOrUsername').empty();
             $('#errorPassword').empty();
@@ -657,6 +714,71 @@
     <script src="@Url.Content("~/assets/js/main.js")"></script>
     <script src="@Url.Content("~/assets/js/pages-account-settings-account.js")"></script>
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script>
+        let countdownInterval;
+
+        function sendVerificationCode() {
+            const emailInput = document.getElementById("emailInput");
+            const sendCodeButton = document.getElementById("sendCodeButton");
+            const statusMessage = document.getElementById("statusMessage");
+            const email = emailInput.value;
+
+
+            if (!email.trim()) {
+                statusMessage.textContent = "Email không được để trống.";
+                return;
+            }
+            fetch("/LoginAndSignUp/SendVerificationCode", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        statusMessage.textContent = data.message;
+
+                        emailInput.disabled = true;
+                        emailInput.style.backgroundColor = "grey";
+                        sendCodeButton.disabled = true;
+                        sendCodeButton.style.backgroundColor = "grey";
+
+                        startCountdown(60, () => {
+                            emailInput.disabled = false;
+                            emailInput.style.backgroundColor = "white";
+                            sendCodeButton.disabled = false;
+                            sendCodeButton.style.backgroundColor = "deepskyblue";
+                            sendCodeButton.textContent = "Gửi mã xác nhận";
+                        });
+                    } else {
+                        // Hiển thị thông báo lỗi
+                        statusMessage.textContent = data.message;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error sending verification code:", error);
+                    statusMessage.textContent = "Có lỗi xảy ra. Vui lòng thử lại.";
+                });
+        }
+
+        function startCountdown(seconds, onCountdownEnd) {
+            let timer = seconds;
+            const sendCodeButton = document.getElementById("sendCodeButton");
+
+            sendCodeButton.textContent = `${timer}s`;
+
+            countdownInterval = setInterval(() => {
+                timer--;
+                sendCodeButton.textContent = `${timer}s`;
+
+                if (timer <= 0) {
+                    clearInterval(countdownInterval);
+                    onCountdownEnd();
+                }
+            }, 1000);
+        }
+
+    </script>
 </body>
 
 </html>

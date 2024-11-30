@@ -85,16 +85,106 @@ namespace ASM_GS.Controllers
             );
             // Seed Data cho SanPham (10 sản phẩm skincare)
             modelBuilder.Entity<SanPham>().HasData(
-                new SanPham { MaSanPham = "SP001", TenSanPham = "Kem dưỡng ẩm", Gia = 300000, MaDanhMuc = "DM001", SoLuong = 100, TrangThai = 1 },
-                new SanPham { MaSanPham = "SP002", TenSanPham = "Sữa rửa mặt", Gia = 200000, MaDanhMuc = "DM003", SoLuong = 150, TrangThai = 1 },
-                new SanPham { MaSanPham = "SP003", TenSanPham = "Nước hoa hồng", Gia = 250000, MaDanhMuc = "DM001", SoLuong = 120, TrangThai = 1 },
-                new SanPham { MaSanPham = "SP004", TenSanPham = "Serum dưỡng trắng", Gia = 500000, MaDanhMuc = "DM001", SoLuong = 80, TrangThai = 1 },
-                new SanPham { MaSanPham = "SP005", TenSanPham = "Mặt nạ cấp ẩm", Gia = 150000, MaDanhMuc = "DM001", SoLuong = 200, TrangThai = 1 },
-                new SanPham { MaSanPham = "SP006", TenSanPham = "Kem chống nắng", Gia = 350000, MaDanhMuc = "DM002", SoLuong = 90, TrangThai = 1 },
-                new SanPham { MaSanPham = "SP007", TenSanPham = "Tẩy trang", Gia = 180000, MaDanhMuc = "DM003", SoLuong = 110, TrangThai = 1 },
-                new SanPham { MaSanPham = "SP008", TenSanPham = "Tinh chất ngừa mụn", Gia = 400000, MaDanhMuc = "DM001", SoLuong = 70, TrangThai = 1 },
-                new SanPham { MaSanPham = "SP009", TenSanPham = "Xịt khoáng", Gia = 220000, MaDanhMuc = "DM002", SoLuong = 90, TrangThai = 1 },
-                new SanPham { MaSanPham = "SP010", TenSanPham = "Kem dưỡng da ban đêm", Gia = 450000, MaDanhMuc = "DM001", SoLuong = 50, TrangThai = 1 }
+                new SanPham
+                {
+                    MaSanPham = "SP001",
+                    TenSanPham = "Kem dưỡng ẩm",
+                    Gia = 300000,
+                    MaDanhMuc = "DM001",
+                    SoLuong = 100,
+                    TrangThai = 1,
+                    MoTa = "Chứa hyaluronic acid và glycerin, giúp cấp ẩm sâu. Sử dụng sau khi rửa mặt, thoa đều lên da sáng và tối."
+                },
+new SanPham
+{
+    MaSanPham = "SP002",
+    TenSanPham = "Sữa rửa mặt",
+    Gia = 200000,
+    MaDanhMuc = "DM003",
+    SoLuong = 150,
+    TrangThai = 1,
+    MoTa = "Thành phần trà xanh và vitamin E, làm sạch da và kiểm soát dầu. Dùng 2 lần/ngày, tạo bọt và massage nhẹ nhàng."
+},
+new SanPham
+{
+    MaSanPham = "SP003",
+    TenSanPham = "Nước hoa hồng",
+    Gia = 250000,
+    MaDanhMuc = "DM001",
+    SoLuong = 120,
+    TrangThai = 1,
+    MoTa = "Chiết xuất hoa hồng và vitamin C, cân bằng độ pH và se khít lỗ chân lông. Dùng bông thấm và lau nhẹ sau rửa mặt."
+},
+new SanPham
+{
+    MaSanPham = "SP004",
+    TenSanPham = "Serum dưỡng trắng",
+    Gia = 500000,
+    MaDanhMuc = "DM001",
+    SoLuong = 80,
+    TrangThai = 1,
+    MoTa = "Thành phần niacinamide và alpha arbutin, dưỡng sáng da. Thoa vài giọt lên mặt buổi tối sau bước nước hoa hồng."
+},
+new SanPham
+{
+    MaSanPham = "SP005",
+    TenSanPham = "Mặt nạ cấp ẩm",
+    Gia = 150000,
+    MaDanhMuc = "DM001",
+    SoLuong = 200,
+    TrangThai = 1,
+    MoTa = "Chiết xuất lô hội và collagen, giúp da mềm mịn. Đắp mặt nạ 15-20 phút, không cần rửa lại với nước."
+},
+new SanPham
+{
+    MaSanPham = "SP006",
+    TenSanPham = "Kem chống nắng",
+    Gia = 350000,
+    MaDanhMuc = "DM002",
+    SoLuong = 90,
+    TrangThai = 1,
+    MoTa = "SPF50+ và PA+++, bảo vệ da khỏi tia UV. Thoa đều lên mặt và cổ 20 phút trước khi ra ngoài."
+},
+new SanPham
+{
+    MaSanPham = "SP007",
+    TenSanPham = "Tẩy trang",
+    Gia = 180000,
+    MaDanhMuc = "DM003",
+    SoLuong = 110,
+    TrangThai = 1,
+    MoTa = "Chứa dầu jojoba và chiết xuất cúc La Mã, làm sạch sâu lớp trang điểm. Thấm bông tẩy trang và lau sạch da."
+},
+new SanPham
+{
+    MaSanPham = "SP008",
+    TenSanPham = "Tinh chất ngừa mụn",
+    Gia = 400000,
+    MaDanhMuc = "DM001",
+    SoLuong = 70,
+    TrangThai = 1,
+    MoTa = "Salicylic acid và tinh dầu tràm trà, giảm sưng mụn hiệu quả. Thoa lên vùng mụn sáng và tối sau khi rửa mặt."
+},
+new SanPham
+{
+    MaSanPham = "SP009",
+    TenSanPham = "Xịt khoáng",
+    Gia = 220000,
+    MaDanhMuc = "DM002",
+    SoLuong = 90,
+    TrangThai = 1,
+    MoTa = "Chứa khoáng chất tự nhiên, giúp làm dịu và cấp nước. Xịt nhẹ lên da mặt cách 20cm khi da khô hoặc sau trang điểm."
+},
+new SanPham
+{
+    MaSanPham = "SP010",
+    TenSanPham = "Kem dưỡng da ban đêm",
+    Gia = 450000,
+    MaDanhMuc = "DM001",
+    SoLuong = 50,
+    TrangThai = 1,
+    MoTa = "Chứa retinol và vitamin E, tái tạo da vào ban đêm. Thoa đều lên mặt trước khi ngủ, tránh vùng mắt."
+}
             );
 
             modelBuilder.Entity<AnhSanPham>().HasData(
@@ -212,25 +302,28 @@ namespace ASM_GS.Controllers
                     MatKhau = "123456",
                     VaiTro = "Admin",
                     MaNhanVien = "NV001",
-                    Email = "admin@example.com"
-                },
+                    Email = "admin@example.com",
+                    TinhTrang = 1
+                },              
                 new TaiKhoan
                 {
                     MaTaiKhoan = "TK001",
                     TenTaiKhoan = "customer1",
-                    MatKhau = "123",
+                    MatKhau = "123456",
                     VaiTro = "Customer",
                     MaKhachHang = "KH001",
-                    Email = "customer1@example.com"
+                    Email = "customer1@example.com",
+                    TinhTrang = 1
                 },
                 new TaiKhoan
                 {
                     MaTaiKhoan = "TK002",
                     TenTaiKhoan = "customer2",
-                    MatKhau = "123",
+                    MatKhau = "123456",
                     VaiTro = "Customer",
                     MaKhachHang = "KH002",
-                    Email = "customer2@example.com"
+                    Email = "customer2@example.com",
+                    TinhTrang = 1
                 });
 
 

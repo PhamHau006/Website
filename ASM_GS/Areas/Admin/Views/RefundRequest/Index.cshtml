@@ -8,6 +8,21 @@
     var selectedSortBy = ViewBag.SortBy as string;
     var selectedPageSize = ViewBag.PageSize as int?;
 }
+@* Thêm SweetAlert vào file của bạn *@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <text>
+                Swal.fire({
+                    title: 'Thành công!',
+                text: '@Html.Raw(TempData["SuccessMessage"])',
+                icon: 'success'
+                });
+        </text>
+    }
+</script>
 
 <h1>@ViewData["Title"]</h1>
 
@@ -227,7 +242,7 @@
         };
     }
 }
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <style>
     .badge {
         padding: 0.5rem 1rem;

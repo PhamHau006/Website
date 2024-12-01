@@ -159,7 +159,7 @@ namespace ASM_GS.Controllers
             _context.ChiTietGioHangs.Update(cartItem);
             await _context.SaveChangesAsync();
 
-            return Json(new { success = true, message = "Quantity updated successfully." });
+            return Json(new { success = true, message = "Cập nhật số lượng thành công" });
         }
 
         [HttpPost]
@@ -194,5 +194,33 @@ namespace ASM_GS.Controllers
 
             return gioHang;
         }
+        public async Task<IActionResult> Checkout()
+        {
+            // Lấy mã khách hàng từ session
+            var maKhachHang = HttpContext.Session.GetString("User");
+
+            if (string.IsNullOrEmpty(maKhachHang))
+            {
+                return RedirectToAction("Index", "LoginAndSignUp");
+            }
+
+            // Lấy giỏ hàng của khách hàng
+            var cartItems = await _context.GioHangs
+                .Where(g => g.MaKhachHang == maKhachHang)
+                .SelectMany(g => g.ChiTietGioHangs)
+                .ToListAsync();
+
+            // Kiểm tra xem giỏ hàng có sản phẩm không
+            if (!cartItems.Any())
+            {
+                // Nếu giỏ hàng trống, thông báo và quay lại trang giỏ hàng
+                TempData["Error"] = "Vui lòng chọn sản phẩm trước khi thanh toán.";
+                return RedirectToAction("Index");
+            }
+
+            // Nếu giỏ hàng có sản phẩm, tiếp tục với checkout
+            return View(); // Hoặc chuyển đến trang thanh toán của bạn
+        }
+
     }
 }

@@ -1,5 +1,21 @@
 ﻿@model ASM_GS.Models.RefundRequest
+@* Thêm SweetAlert vào file của bạn *@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<script>
+    // Kiểm tra xem có thông báo thành công trong TempData không
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <text>
+                Swal.fire({
+                    title: 'Thành công!',
+                text: '@TempData["SuccessMessage"]',
+                icon: 'success',
+                confirmButtonText: 'OK'
+                    });
+        </text>
+    }
+</script>
 <div class="container mt-4">
     <h3 class="mb-4 text-primary">Chi tiết Yêu cầu Hoàn trả</h3>
 
@@ -22,12 +38,16 @@
             <div class="mt-3">
                 @if (Model.TrangThai == "Đang chờ")
                 {
-                    <button class="btn btn-success" id="approveButton" data-id="@Model.Id">
-                        Đồng ý hoàn trả
-                    </button>
-                    <button class="btn btn-danger" id="rejectButton" data-id="@Model.Id">
-                        Hủy hoàn trả
-                    </button>
+                    <!-- Nút Đồng ý hoàn trả -->
+                    <form method="post" asp-action="Approve" asp-route-id="@Model.Id" class="d-inline">
+                        <button type="submit" class="btn btn-success">Đồng ý hoàn trả</button>
+                    </form>
+
+                    <!-- Nút Không hoàn trả -->
+                    <form method="post" asp-action="Reject" asp-route-id="@Model.Id" class="d-inline">
+                        <button type="submit" class="btn btn-danger">Không hoàn trả</button>
+                    </form>
+
                 }
                 else
                 {

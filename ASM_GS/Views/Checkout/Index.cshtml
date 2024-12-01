@@ -2,6 +2,7 @@
 @{
     Layout = "~/Views/Shared/_LayoutPhu.cshtml";
 }
+
 <section class="checkout-wrap pb-5" style="margin-top: 10px">
     <div class="container">
         <form class="form-group" method="post" action="@Url.Action("Index", "Checkout")">
@@ -10,25 +11,28 @@
                     <h4 class="text-dark pb-4">Thông Tin Thanh Toán</h4>
                     <div class="billing-details">
                         <label for="fname">Tên Khách Hàng*</label>
-                        <input type="text" id="fname" name="TenKhachHang" value="@Model.TenKhachHang" class="form-control mt-2 mb-4 ps-3">
+                        <input type="text" id="fname" name="TenKhachHang" value="@Model.TenKhachHang" class="form-control mt-2 mb-4 ps-3" required title="Vui lòng nhập tên khách hàng">
 
                         <label for="phone">Số Điện Thoại*</label>
-                        <input type="text" id="phone" name="SoDienThoai" value="@Model.SoDienThoai" class="form-control mt-2 mb-4 ps-3">
+                        <input type="text" id="phone" name="SoDienThoai" value="@Model.SoDienThoai" class="form-control mt-2 mb-4 ps-3" required
+                               title="Số điện thoại phải bắt đầu từ 0 và có đủ 10 chữ số."
+                               pattern="^0[0-9]{9}$" placeholder="Vui lòng nhập số điện thoại bắt đầu từ 0 và đủ 10 chữ số">
 
                         <label for="email">Địa Chỉ Email *</label>
-                        <input type="text" id="email" name="Email" value="@Model.Email" class="form-control mt-2 mb-4 ps-3">
+                        <input type="email" id="email" name="Email" value="@Model.Email" class="form-control mt-2 mb-4 ps-3" required
+                               title="Vui lòng nhập địa chỉ email đúng định dạng, ví dụ: example@example.com">
 
                         <label for="address">Địa Chỉ*</label>
-                        <input type="text" id="adr" name="DiaChi" value="@Model.DiaChi" class="form-control mt-2 mb-4 ps-3">
-
+                        <input type="text" id="adr" name="DiaChi" value="@Model.DiaChi" class="form-control mt-2 mb-4 ps-3" required title="Vui lòng nhập địa chỉ giao hàng">
                         <label for="DiscountCode">Mã giảm giá:</label>
                         <div class="input-group">
                             <input type="text" id="DiscountCode" name="DiscountCode" class="form-control" placeholder="Nhập mã giảm giá">
                             <button type="button" id="ApplyDiscountBtn" class="btn btn-dark">Áp dụng</button>
                         </div>
-                        <div id="DiscountMessage" class="text-danger mt-2"></div>   
+                        <div id="DiscountMessage" class="text-danger mt-2"></div>
                     </div>
                 </div>
+
                 
                 <div class="col-lg-6">
                     <h4 class="text-dark pb-4">Thông Tin Đơn Hàng</h4>

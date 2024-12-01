@@ -2,8 +2,6 @@
 @{
     Layout = "~/Views/Shared/_LayoutPhu.cshtml";
 }
-<br />
-<h1 style="margin-left: 50px">Chi tiết đơn hàng</h1>
 <div style="margin-top: 50px; margin-left: 50px; margin-right:50px">
     <h1 style="margin-left: 50px">Chi tiết đơn hàng</h1>
     <table class="table table-bordered">
@@ -79,6 +77,7 @@
                     </div>
                 }
             </div>
+
         }
         else
         {
@@ -103,14 +102,9 @@
     }
     else
     {
-        <script>
-            Swal.fire({
-                icon: 'warning',
-                title: 'Thông báo',
-                text: 'Thời hạn yêu cầu hoàn trả đã hết.',
-                confirmButtonText: 'OK'
-            });
-        </script>
+        <div style="color: red;">
+            Đã hết thời gian hoàn trả
+        </div>
     }
 </div>
 <button style="margin-top:50px; margin-left: 50px;">

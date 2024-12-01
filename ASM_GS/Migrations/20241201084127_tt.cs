@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ASM_GS.Migrations
 {
     /// <inheritdoc />
-    public partial class AddDataToDb : Migration
+    public partial class tt : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -504,23 +504,23 @@ namespace ASM_GS.Migrations
             migrationBuilder.InsertData(
                 table: "TaiKhoans",
                 columns: new[] { "MaTaiKhoan", "Email", "MaKhachHang", "MaNhanVien", "MaNhanVienNavigationMaNhanVien", "MatKhau", "TenTaiKhoan", "TinhTrang", "VaiTro" },
-                values: new object[] { "TK003", "admin@example.com", null, "NV001", null, "123456", "admin", 0, "Admin" });
+                values: new object[] { "TK003", "admin@example.com", null, "NV001", null, "123456", "admin", 1, "Admin" });
 
             migrationBuilder.InsertData(
                 table: "SanPhams",
                 columns: new[] { "MaSanPham", "DonVi", "Gia", "Hsd", "MaDanhMuc", "MoTa", "NgayThem", "Nsx", "SoLuong", "TenSanPham", "TrangThai" },
                 values: new object[,]
                 {
-                    { "SP001", null, 300000m, null, "DM001", null, null, null, 100, "Kem dưỡng ẩm", 1 },
-                    { "SP002", null, 200000m, null, "DM003", null, null, null, 150, "Sữa rửa mặt", 1 },
-                    { "SP003", null, 250000m, null, "DM001", null, null, null, 120, "Nước hoa hồng", 1 },
-                    { "SP004", null, 500000m, null, "DM001", null, null, null, 80, "Serum dưỡng trắng", 1 },
-                    { "SP005", null, 150000m, null, "DM001", null, null, null, 200, "Mặt nạ cấp ẩm", 1 },
-                    { "SP006", null, 350000m, null, "DM002", null, null, null, 90, "Kem chống nắng", 1 },
-                    { "SP007", null, 180000m, null, "DM003", null, null, null, 110, "Tẩy trang", 1 },
-                    { "SP008", null, 400000m, null, "DM001", null, null, null, 70, "Tinh chất ngừa mụn", 1 },
-                    { "SP009", null, 220000m, null, "DM002", null, null, null, 90, "Xịt khoáng", 1 },
-                    { "SP010", null, 450000m, null, "DM001", null, null, null, 50, "Kem dưỡng da ban đêm", 1 }
+                    { "SP001", null, 300000m, null, "DM001", "Chứa hyaluronic acid và glycerin, giúp cấp ẩm sâu. Sử dụng sau khi rửa mặt, thoa đều lên da sáng và tối.", null, null, 100, "Kem dưỡng ẩm", 1 },
+                    { "SP002", null, 200000m, null, "DM003", "Thành phần trà xanh và vitamin E, làm sạch da và kiểm soát dầu. Dùng 2 lần/ngày, tạo bọt và massage nhẹ nhàng.", null, null, 150, "Sữa rửa mặt", 1 },
+                    { "SP003", null, 250000m, null, "DM001", "Chiết xuất hoa hồng và vitamin C, cân bằng độ pH và se khít lỗ chân lông. Dùng bông thấm và lau nhẹ sau rửa mặt.", null, null, 120, "Nước hoa hồng", 1 },
+                    { "SP004", null, 500000m, null, "DM001", "Thành phần niacinamide và alpha arbutin, dưỡng sáng da. Thoa vài giọt lên mặt buổi tối sau bước nước hoa hồng.", null, null, 80, "Serum dưỡng trắng", 1 },
+                    { "SP005", null, 150000m, null, "DM001", "Chiết xuất lô hội và collagen, giúp da mềm mịn. Đắp mặt nạ 15-20 phút, không cần rửa lại với nước.", null, null, 200, "Mặt nạ cấp ẩm", 1 },
+                    { "SP006", null, 350000m, null, "DM002", "SPF50+ và PA+++, bảo vệ da khỏi tia UV. Thoa đều lên mặt và cổ 20 phút trước khi ra ngoài.", null, null, 90, "Kem chống nắng", 1 },
+                    { "SP007", null, 180000m, null, "DM003", "Chứa dầu jojoba và chiết xuất cúc La Mã, làm sạch sâu lớp trang điểm. Thấm bông tẩy trang và lau sạch da.", null, null, 110, "Tẩy trang", 1 },
+                    { "SP008", null, 400000m, null, "DM001", "Salicylic acid và tinh dầu tràm trà, giảm sưng mụn hiệu quả. Thoa lên vùng mụn sáng và tối sau khi rửa mặt.", null, null, 70, "Tinh chất ngừa mụn", 1 },
+                    { "SP009", null, 220000m, null, "DM002", "Chứa khoáng chất tự nhiên, giúp làm dịu và cấp nước. Xịt nhẹ lên da mặt cách 20cm khi da khô hoặc sau trang điểm.", null, null, 90, "Xịt khoáng", 1 },
+                    { "SP010", null, 450000m, null, "DM001", "Chứa retinol và vitamin E, tái tạo da vào ban đêm. Thoa đều lên mặt trước khi ngủ, tránh vùng mắt.", null, null, 50, "Kem dưỡng da ban đêm", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -528,8 +528,8 @@ namespace ASM_GS.Migrations
                 columns: new[] { "MaTaiKhoan", "Email", "MaKhachHang", "MaNhanVien", "MaNhanVienNavigationMaNhanVien", "MatKhau", "TenTaiKhoan", "TinhTrang", "VaiTro" },
                 values: new object[,]
                 {
-                    { "TK001", "customer1@example.com", "KH001", null, null, "123", "customer1", 0, "Customer" },
-                    { "TK002", "customer2@example.com", "KH002", null, null, "123", "customer2", 0, "Customer" }
+                    { "TK001", "customer1@example.com", "KH001", null, null, "123456", "customer1", 1, "Customer" },
+                    { "TK002", "customer2@example.com", "KH002", null, null, "123456", "customer2", 1, "Customer" }
                 });
 
             migrationBuilder.InsertData(

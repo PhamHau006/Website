@@ -25,5 +25,5 @@ public partial class ChiTietHoaDon
 
     [ForeignKey("MaCombo")]
     public virtual Combo? Combo { get; set; }
-
+    
 }

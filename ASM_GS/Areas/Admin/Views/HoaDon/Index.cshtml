@@ -44,8 +44,8 @@
         </select>
         <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm kiếm mã hóa đơn hoặc khách hàng" />
         <br />
-@*         <button type="submit" class="btn btn-primary">Tìm kiếm</button>*@     
-         <select name="trangThai" id="trangThai" class="form-control" onchange="this.form.submit()">
+        @*         <button type="submit" class="btn btn-primary">Tìm kiếm</button>*@
+        <select name="trangThai" id="trangThai" class="form-control" onchange="this.form.submit()">
             @if (ViewBag.TrangThai == null || ViewBag.TrangThai.ToString() == "")
             {
                 <option value="" selected>Tất cả trạng thái</option>
@@ -74,6 +74,9 @@
             }
         </select>
     </div>
+    <br />
+    <button class="btn btn-success mb-4" onclick="exportAllHoaDons()">Xuất toàn bộ hóa đơn</button>
+
 </form>
 
 
@@ -126,22 +129,22 @@
 <!-- Hiển thị phân trang -->
 <div class="d-flex justify-content-center">
     @Html.PagedListPager(Model, page => Url.Action("Index", new { page, pageSize = ViewBag.PageSize, search = ViewBag.Search, trangThai = ViewData["CurrentTrangThai"] }),
-        new PagedListRenderOptions
-        {
-            DisplayLinkToFirstPage = PagedListDisplayMode.Always,
-            DisplayLinkToLastPage = PagedListDisplayMode.Always,
-            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
-            DisplayLinkToNextPage = PagedListDisplayMode.Always,
-            LinkToFirstPageFormat = "Trang đầu",
-            LinkToLastPageFormat = "Trang cuối",
-            LinkToPreviousPageFormat = "«",
-            LinkToNextPageFormat = "»",
-            MaximumPageNumbersToDisplay = 5,
-            ContainerDivClasses = new[] { "pagination" },
-            UlElementClasses = new[] { "pagination" },
-            LiElementClasses = new[] { "page-item" },
-            PageClasses = new[] { "page-link" }
-        })
+            new PagedListRenderOptions
+    {
+        DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+        DisplayLinkToLastPage = PagedListDisplayMode.Always,
+        DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+        DisplayLinkToNextPage = PagedListDisplayMode.Always,
+        LinkToFirstPageFormat = "Trang đầu",
+        LinkToLastPageFormat = "Trang cuối",
+        LinkToPreviousPageFormat = "«",
+        LinkToNextPageFormat = "»",
+        MaximumPageNumbersToDisplay = 5,
+        ContainerDivClasses = new[] { "pagination" },
+        UlElementClasses = new[] { "pagination" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" }
+    })
 </div>
 
 <!-- Modal chi tiết hóa đơn -->
@@ -205,6 +208,7 @@
 
 </style>
 
+
 <script>
     function inHoaDon() {
         // Lấy mã hóa đơn từ modal
@@ -257,15 +261,15 @@
                 total += thanhTien;
 
                 content += `
-                    <tr>
-                        <td>
-                            <img src="${hinhAnh}" alt="Hình ảnh sản phẩm" style="width: 80px; height: 80px; object-fit: cover;">
-                            </td>
-                        <td>${tenSanPham}</td>
-                        <td>${soLuong}</td>
-                        <td>${gia.toLocaleString()} VNĐ</td>
-                            <td>${thanhTien.toLocaleString()} VNĐ</td>
-                    </tr>`;
+                        <tr>
+                            <td>
+                                <img src="${hinhAnh}" alt="Hình ảnh sản phẩm" style="width: 80px; height: 80px; object-fit: cover;">
+                                </td>
+                            <td>${tenSanPham}</td>
+                            <td>${soLuong}</td>
+                            <td>${gia.toLocaleString()} VNĐ</td>
+                                <td>${thanhTien.toLocaleString()} VNĐ</td>
+                        </tr>`;
             });
 
             // Hiển thị chi tiết hóa đơn
@@ -278,9 +282,6 @@
             Swal.fire('Lỗi', 'Không thể tải chi tiết hóa đơn. Vui lòng thử lại.', 'error');
         });
     }
-
-
-
 
     // Gọi lại khi trang được tải
     $(document).ready(function () {
@@ -319,9 +320,6 @@
             }
         });
     }
-
-
-
     function capNhatTrangThai() {
         const maHoaDon = $('#maHoaDonSua').val();
         const trangThai = $('#trangThaiSua').val();
@@ -337,5 +335,19 @@
             alert("Có lỗi xảy ra. Vui lòng thử lại.");
         });
     }
-
+    function exportAllHoaDons() {
+        // Gửi yêu cầu đến action ExportAllHoaDons trong controller
+        window.open('/Admin/HoaDon/ExportAllHoaDons', '_blank');
+    }
+    @if (TempData["SearchMessage"] != null)
+    {
+            <script>
+                Swal.fire({
+                    title: 'Thông báo',
+                text: '@TempData["SearchMessage"]',
+                icon: 'warning',
+                confirmButtonText: 'Đồng ý'
+                });
+    </script>
+    }
 </script>

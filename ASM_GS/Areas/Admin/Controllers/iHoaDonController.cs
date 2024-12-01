@@ -1,8 +1,10 @@
 ﻿using ASM_GS.Controllers;
+using ASM_GS.Models;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 class SanPhamViewModel
 {
@@ -219,5 +221,68 @@ public class iHoaDonController : Controller
                 new Run(runProperties, new Text(text))
             )
         );
+    }
+    [HttpPost]
+    public IActionResult ExportAllInvoices()
+    {
+        // Lấy tất cả hóa đơn
+        var invoices = _context.HoaDons
+            .Include(h => h.KhachHang)
+            .Include(h => h.ChiTietHoaDons)
+            .ThenInclude(cd => cd.SanPham) // Giả sử hóa đơn có liên kết với sản phẩm
+            .Where(h => h.TrangThai == 1) // Chỉ lấy hóa đơn có trạng thái "Hoàn tất"
+            .ToList();
+
+        var filePath = GenerateInvoiceWordFile(invoices);
+
+        return File(System.IO.File.ReadAllBytes(filePath), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "All_Invoices.docx");
+    }
+
+    private string GenerateInvoiceWordFile(List<HoaDon> invoices)
+    {
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "exports", "All_Invoices.docx");
+
+        // Tạo tài liệu Word sử dụng Open XML SDK
+        using (WordprocessingDocument wordDocument = WordprocessingDocument.Create(filePath, WordprocessingDocumentType.Document))
+        {
+            MainDocumentPart mainPart = wordDocument.AddMainDocumentPart();
+            mainPart.Document = new Document();
+            Body body = new Body();
+
+            foreach (var invoice in invoices)
+            {
+                body.Append(new Paragraph(new Run(new Text($"Hóa đơn ID: {invoice.MaHoaDon}"))));
+                body.Append(new Paragraph(new Run(new Text($"Khách hàng: {invoice.KhachHang.TenKhachHang}"))));
+                body.Append(new Paragraph(new Run(new Text($"Địa chỉ: {invoice.KhachHang.DiaChi}"))));
+                body.Append(new Paragraph(new Run(new Text($"Ngày xuất hóa đơn: {invoice.NgayXuatHoaDon:dd/MM/yyyy}"))));
+
+                body.Append(new Paragraph(new Run(new Text("Danh sách sản phẩm:"))));
+
+                // Duyệt qua các sản phẩm trong hóa đơn
+                foreach (var item in invoice.ChiTietHoaDons)
+                {
+                    body.Append(new Paragraph(new Run(new Text($"Tên sản phẩm: {item.SanPham.TenSanPham}"))));
+                    body.Append(new Paragraph(new Run(new Text($"Số lượng: {item.SoLuong}"))));
+                    body.Append(new Paragraph(new Run(new Text($"Đơn giá: {item.Gia:N0} VND"))));
+                    body.Append(new Paragraph(new Run(new Text($"Thành tiền: {item.SoLuong * item.Gia:N0} VND"))));
+                }
+
+                body.Append(new Paragraph(new Run(new Text($"Tổng tiền: {invoice.TongTien:N0} VND"))));
+                body.Append(new Paragraph(new Run(new Text("--------------------------------------------------"))));
+            }
+
+            mainPart.Document.Append(body);
+            mainPart.Document.Save();
+        }
+
+        return filePath;
+    }
+
+    [HttpPost]
+    public IActionResult RemoveStaffAccount()
+    {
+        HttpContext.Session.Remove("StaffAccount");
+        HttpContext.Session.Remove("Staff");
+        return RedirectToAction("Index", "LoginAdmin", new { area = "" });
     }
 }

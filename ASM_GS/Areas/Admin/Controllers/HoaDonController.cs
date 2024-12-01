@@ -1,10 +1,14 @@
-﻿using ASM_GS.Controllers;
-using ASM_GS.Models;
+﻿using ASM_GS.Models;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using DocumentFormat.OpenXml;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using X.PagedList;
 using X.PagedList.Extensions;
+using System.IO;
+using ASM_GS.Controllers;
 
 namespace ASM_GS.Areas.Admin.Controllers
 {
@@ -18,10 +22,12 @@ namespace ASM_GS.Areas.Admin.Controllers
             _context = context;
         }
 
-        // Hiển thị danh sách hóa đơn với phân trang
-        [HttpGet]
-        public IActionResult Index(string? search, int? trangThai, int? page, int pageSize = 10)
+        // Index - Hiển thị danh sách hóa đơn với tìm kiếm, phân trang và sắp xếp
+        // Index - Hiển thị danh sách hóa đơn với tìm kiếm, phân trang và sắp xếp
+        public IActionResult Index(string? search, int? trangThai, int? page, int pageSize = 10, string sortOrder = "Descending")
         {
+            ViewBag.SortOrder = sortOrder;
+
             var hoaDons = _context.HoaDons.Include(hd => hd.KhachHang).AsQueryable();
 
             // Tìm kiếm
@@ -35,121 +41,128 @@ namespace ASM_GS.Areas.Admin.Controllers
             {
                 hoaDons = hoaDons.Where(hd => hd.TrangThai == trangThai);
             }
-            // Lọc trạng thái
-            if (trangThai.HasValue && (trangThai == 0 || trangThai == 1)) // Kiểm tra trạng thái hợp lệ
-            {
-                hoaDons = hoaDons.Where(hd => hd.TrangThai == trangThai);
-            }
 
             // Sắp xếp theo ngày xuất hóa đơn
-            hoaDons = hoaDons.OrderByDescending(hd => hd.NgayXuatHoaDon);
+            if (sortOrder == "Descending")
+            {
+                hoaDons = hoaDons.OrderByDescending(hd => hd.NgayXuatHoaDon);
+            }
+            else
+            {
+                hoaDons = hoaDons.OrderBy(hd => hd.NgayXuatHoaDon);
+            }
 
             // Phân trang
             int pageNumber = page ?? 1;
             var pagedHoaDons = hoaDons.ToPagedList(pageNumber, pageSize);
 
-            // Truyền dữ liệu cho View
             ViewBag.Search = search;
             ViewBag.PageSize = pageSize;
             ViewData["CurrentTrangThai"] = trangThai;
-            ViewBag.TrangThai = trangThai; // Truyền giá trị trạng thái vào ViewBag
+
+            // Kiểm tra nếu không có kết quả tìm kiếm
+            if (!hoaDons.Any() && !string.IsNullOrEmpty(search))
+            {
+                TempData["SearchMessage"] = "Không tìm thấy kết quả với từ khóa: " + search;
+            }
 
             return View(pagedHoaDons); // Trả về IPagedList
         }
 
-        // API lấy chi tiết hóa đơn
+
+        // GetChiTietHoaDon - Lấy chi tiết hóa đơn theo mã hóa đơn
         [HttpGet]
         public IActionResult GetChiTietHoaDon(string maHoaDon)
         {
-            // Lấy chi tiết hóa đơn
-            var chiTiet = _context.ChiTietHoaDons
-                .Where(ct => ct.MaHoaDon == maHoaDon)
-                .Select(ct => new
+            var hoaDon = _context.HoaDons.Include(h => h.ChiTietHoaDons)
+                                         .ThenInclude(ct => ct.SanPham)
+                                         .FirstOrDefault(h => h.MaHoaDon == maHoaDon);
+            if (hoaDon == null)
+            {
+                return NotFound();
+            }
+
+            var chiTietHtml = hoaDon.ChiTietHoaDons.Select(ct => new
+            {
+                ct.SanPham.TenSanPham,
+                ct.SanPham.AnhSanPhams,
+                ct.SoLuong,
+                ct.Gia,
+                ThanhTien = ct.SoLuong * ct.Gia
+            }).ToList();
+
+            var tongTien = chiTietHtml.Sum(x => x.ThanhTien);
+            return Json(new { chiTietHtml, tongTien });
+        }
+
+        // ChangeStatus - Cập nhật trạng thái của hóa đơn
+        [HttpPost]
+        public IActionResult ChangeStatus(string maHoaDon, int trangThai)
+        {
+            var hoaDon = _context.HoaDons.FirstOrDefault(h => h.MaHoaDon == maHoaDon);
+            if (hoaDon != null)
+            {
+                hoaDon.TrangThai = trangThai == 1 ? 0 : 1; // Đổi trạng thái
+                _context.SaveChanges();
+            }
+            return NoContent();
+        }
+
+        // Enum trạng thái hóa đơn
+        public enum TrangThaiHoaDon
+        {
+            ChuaThanhToan = 0,
+            DaThanhToan = 1
+        }
+
+        // ExportAllHoaDons - Xuất toàn bộ hóa đơn ra file Word
+        public IActionResult ExportAllHoaDons()
+        {
+            var hoaDons = _context.HoaDons.ToList();
+            var fileBytes = ExportHoaDonsToWord(hoaDons);
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "ToanBoHoaDon.docx");
+        }
+
+        // ExportHoaDonsToWord - Hàm xuất hóa đơn ra file Word
+        private byte[] ExportHoaDonsToWord(List<HoaDon> hoaDons)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                // Sử dụng thư viện Open XML SDK để tạo file Word
+                using (var document = WordprocessingDocument.Create(memoryStream, WordprocessingDocumentType.Document))
                 {
-                    // Thông tin sản phẩm (nếu không phải combo)
-                    sanPham = ct.SanPham == null ? null : new
+                    var mainPart = document.AddMainDocumentPart();
+                    mainPart.Document = new Document(new Body());
+
+                    // Thêm tiêu đề cho bảng
+                    var table = new Table();
+                    table.AppendChild(new TableRow(
+                        new TableCell(new Paragraph(new Run(new Text("Mã hóa đơn")))),
+                        new TableCell(new Paragraph(new Run(new Text("Mã khách hàng")))),
+                        new TableCell(new Paragraph(new Run(new Text("Ngày xuất")))),
+                        new TableCell(new Paragraph(new Run(new Text("Tổng tiền")))),
+                        new TableCell(new Paragraph(new Run(new Text("Trạng thái"))))
+                    ));
+
+                    // Thêm dữ liệu hóa đơn
+                    foreach (var hoaDon in hoaDons)
                     {
-                        TenSanPham = ct.SanPham.TenSanPham,
-                        HinhAnh = ct.SanPham.AnhSanPhams.Any()
-                            ? ct.SanPham.AnhSanPhams.FirstOrDefault().UrlAnh
-                            : "/images/default-image.jpg"
-                    },
-                    // Thông tin combo (nếu là combo)
-                    combo = ct.Combo == null ? null : new
-                    {
-                        TenCombo = ct.Combo.TenCombo,
-                        HinhAnh = !string.IsNullOrEmpty(ct.Combo.Anh) ? ct.Combo.Anh : "/images/default-image.jpg",
-                        SanPhamsTrongCombo = _context.ChiTietCombos
-                            .Where(c => c.MaCombo == ct.Combo.MaCombo)
-                            .Select(c => new
-                            {
-                                TenSanPham = c.MaSanPhamNavigation.TenSanPham,
-                                SoLuongTrongCombo = c.SoLuong, // Số lượng của sản phẩm trong combo
-                                GiaSanPham = c.MaSanPhamNavigation.Gia,
-                                HinhAnhSanPham = c.MaSanPhamNavigation.AnhSanPhams.Any()
-                                    ? c.MaSanPhamNavigation.AnhSanPhams.FirstOrDefault().UrlAnh
-                                    : "/images/default-image.jpg"
-                            }).ToList()
-                    },
-                    ct.SoLuong, // Số lượng combo hoặc sản phẩm
-                    Gia = ct.SanPham != null ? ct.SanPham.Gia : (ct.Combo != null ? ct.Combo.Gia : 0),
-                    ThanhTien = ct.SanPham != null
-                        ? ct.SanPham.Gia * ct.SoLuong
-                        : (ct.Combo != null ? ct.Combo.Gia * ct.SoLuong : 0)
-                })
-                .ToList();
+                        table.AppendChild(new TableRow(
+                            new TableCell(new Paragraph(new Run(new Text(hoaDon.MaHoaDon)))),
+                            new TableCell(new Paragraph(new Run(new Text(hoaDon.MaKhachHang)))),
+                            new TableCell(new Paragraph(new Run(new Text(hoaDon.NgayXuatHoaDon.ToShortDateString())))),
+                            new TableCell(new Paragraph(new Run(new Text(hoaDon.TongTien.ToString("N0") + " VNĐ")))),
+                            new TableCell(new Paragraph(new Run(new Text(hoaDon.TrangThai == 1 ? "Đã thanh toán" : "Chưa thanh toán"))))
+                        ));
+                    }
 
-            return Json(chiTiet);
-        }
+                    // Thêm bảng vào body của document
+                    mainPart.Document.Body.Append(table);
+                    mainPart.Document.Save();
+                }
 
-
-
-
-        // API xóa hóa đơn
-        [HttpPost]
-        public IActionResult Delete(string maHoaDon)
-        {
-            var hoaDon = _context.HoaDons.FirstOrDefault(hd => hd.MaHoaDon == maHoaDon);
-            if (hoaDon == null)
-            {
-                return NotFound(new { success = false, message = "Không tìm thấy hóa đơn" });
+                return memoryStream.ToArray();
             }
-
-            _context.HoaDons.Remove(hoaDon);
-            _context.SaveChanges();
-
-            return Json(new { success = true, message = "Đã xóa hóa đơn thành công" });
-        }
-
-        // API cập nhật trạng thái hóa đơn
-        [HttpPost]
-        public IActionResult UpdateTrangThai(string maHoaDon, int trangThai)
-        {
-            var hoaDon = _context.HoaDons.FirstOrDefault(hd => hd.MaHoaDon == maHoaDon);
-            if (hoaDon == null)
-            {
-                return NotFound(new { success = false, message = "Không tìm thấy hóa đơn" });
-            }
-
-            hoaDon.TrangThai = trangThai;
-            _context.SaveChanges();
-
-            return Json(new { success = true, message = "Cập nhật trạng thái thành công" });
-        }
-        // API cập nhật trạng thái hóa đơn (chỉ cập nhật cột Trạng thái)
-        [HttpPost]
-        public IActionResult CapNhatTrangThai(string maHoaDon, int trangThai)
-        {
-            var hoaDon = _context.HoaDons.FirstOrDefault(hd => hd.MaHoaDon == maHoaDon);
-            if (hoaDon == null)
-            {
-                return Json(new { success = false, message = "Không tìm thấy hóa đơn." });
-            }
-
-            hoaDon.TrangThai = trangThai;
-            _context.SaveChanges();
-
-            return Json(new { success = true, message = "Cập nhật trạng thái thành công." });
         }
     }
 }

@@ -139,5 +139,76 @@
             <p>__________________________</p>
         </div>
     </div>
+
+    <div class="header">
+        <div class="company-info">
+            <p><strong>Tuấn Oanh</strong></p>
+            <p><strong>Chuyên:</strong> Máy lọc nước R/O công nghệ USA</p>
+            <p><strong>DC:</strong> Khu Giếng Bìm - HB - TT - HN</p>
+            <p><strong>DT:</strong> 0936.086612 - <strong>KT:</strong> 0904.990.266</p>
+        </div>
+        <div class="invoice-title"><strong>HÓA ĐƠN BÁN HÀNG</strong></div>
+        <p><strong>Mua - Bán - Sửa Chữa</strong></p>
+        <p><strong>Bảo hành các loại máy lọc nước</strong></p>
+    </div>
+
+    <div class="customer-info">
+        <table>
+            <tr>
+                <td><strong>Tên khách hàng:</strong></td>
+                <td>@Model.KhachHang</td>
+            </tr>
+            <tr>
+                <td><strong>Địa chỉ:</strong></td>
+                <td>@Model.DiaChi</td>
+            </tr>
+            <tr>
+                <td><strong>Ngày:</strong></td>
+                <td>@Model.NgayXuatHoaDon.ToString("dd/MM/yyyy")</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="product-table">
+        <table>
+            <thead>
+                <tr>
+                    <th><strong>TT</strong></th>
+                    <th><strong>Tên hàng</strong></th>
+                    <th><strong>Số lượng</strong></th>
+                    <th><strong>Đơn giá (VND)</strong></th>
+                    <th><strong>Thành tiền (VND)</strong></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var sp in Model.SanPhams)
+                {
+                    <tr>
+                        <td>@sp.STT</td>
+                        <td>@sp.TenSanPham</td>
+                        <td>@sp.SoLuong</td>
+                        <td>@sp.Gia.ToString("N0")</td>
+                        <td>@sp.ThanhTien.ToString("N0")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="total-section">
+        <p><strong>Tổng cộng:</strong> @Model.TongTien.ToString("N0") VND</p>
+        <p><strong>Số tiền viết bằng chữ:</strong> @Model.TongTienBangChu</p>
+    </div>
+
+    <div class="footer">
+        <div class="signature">
+            <p><strong>Khách hàng</strong></p>
+            <p>__________________________</p>
+        </div>
+        <div class="signature">
+            <p><strong>Người bán hàng</strong></p>
+            <p>__________________________</p>
+        </div>
+    </div>
 </body>
 </html>

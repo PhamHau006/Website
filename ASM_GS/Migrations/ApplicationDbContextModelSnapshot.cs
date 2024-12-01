@@ -870,6 +870,7 @@ namespace ASM_GS.Migrations
                             MaSanPham = "SP001",
                             Gia = 300000m,
                             MaDanhMuc = "DM001",
+                            MoTa = "Chứa hyaluronic acid và glycerin, giúp cấp ẩm sâu. Sử dụng sau khi rửa mặt, thoa đều lên da sáng và tối.",
                             SoLuong = 100,
                             TenSanPham = "Kem dưỡng ẩm",
                             TrangThai = 1
@@ -879,6 +880,7 @@ namespace ASM_GS.Migrations
                             MaSanPham = "SP002",
                             Gia = 200000m,
                             MaDanhMuc = "DM003",
+                            MoTa = "Thành phần trà xanh và vitamin E, làm sạch da và kiểm soát dầu. Dùng 2 lần/ngày, tạo bọt và massage nhẹ nhàng.",
                             SoLuong = 150,
                             TenSanPham = "Sữa rửa mặt",
                             TrangThai = 1
@@ -888,6 +890,7 @@ namespace ASM_GS.Migrations
                             MaSanPham = "SP003",
                             Gia = 250000m,
                             MaDanhMuc = "DM001",
+                            MoTa = "Chiết xuất hoa hồng và vitamin C, cân bằng độ pH và se khít lỗ chân lông. Dùng bông thấm và lau nhẹ sau rửa mặt.",
                             SoLuong = 120,
                             TenSanPham = "Nước hoa hồng",
                             TrangThai = 1
@@ -897,6 +900,7 @@ namespace ASM_GS.Migrations
                             MaSanPham = "SP004",
                             Gia = 500000m,
                             MaDanhMuc = "DM001",
+                            MoTa = "Thành phần niacinamide và alpha arbutin, dưỡng sáng da. Thoa vài giọt lên mặt buổi tối sau bước nước hoa hồng.",
                             SoLuong = 80,
                             TenSanPham = "Serum dưỡng trắng",
                             TrangThai = 1
@@ -906,6 +910,7 @@ namespace ASM_GS.Migrations
                             MaSanPham = "SP005",
                             Gia = 150000m,
                             MaDanhMuc = "DM001",
+                            MoTa = "Chiết xuất lô hội và collagen, giúp da mềm mịn. Đắp mặt nạ 15-20 phút, không cần rửa lại với nước.",
                             SoLuong = 200,
                             TenSanPham = "Mặt nạ cấp ẩm",
                             TrangThai = 1
@@ -915,6 +920,7 @@ namespace ASM_GS.Migrations
                             MaSanPham = "SP006",
                             Gia = 350000m,
                             MaDanhMuc = "DM002",
+                            MoTa = "SPF50+ và PA+++, bảo vệ da khỏi tia UV. Thoa đều lên mặt và cổ 20 phút trước khi ra ngoài.",
                             SoLuong = 90,
                             TenSanPham = "Kem chống nắng",
                             TrangThai = 1
@@ -924,6 +930,7 @@ namespace ASM_GS.Migrations
                             MaSanPham = "SP007",
                             Gia = 180000m,
                             MaDanhMuc = "DM003",
+                            MoTa = "Chứa dầu jojoba và chiết xuất cúc La Mã, làm sạch sâu lớp trang điểm. Thấm bông tẩy trang và lau sạch da.",
                             SoLuong = 110,
                             TenSanPham = "Tẩy trang",
                             TrangThai = 1
@@ -933,6 +940,7 @@ namespace ASM_GS.Migrations
                             MaSanPham = "SP008",
                             Gia = 400000m,
                             MaDanhMuc = "DM001",
+                            MoTa = "Salicylic acid và tinh dầu tràm trà, giảm sưng mụn hiệu quả. Thoa lên vùng mụn sáng và tối sau khi rửa mặt.",
                             SoLuong = 70,
                             TenSanPham = "Tinh chất ngừa mụn",
                             TrangThai = 1
@@ -942,6 +950,7 @@ namespace ASM_GS.Migrations
                             MaSanPham = "SP009",
                             Gia = 220000m,
                             MaDanhMuc = "DM002",
+                            MoTa = "Chứa khoáng chất tự nhiên, giúp làm dịu và cấp nước. Xịt nhẹ lên da mặt cách 20cm khi da khô hoặc sau trang điểm.",
                             SoLuong = 90,
                             TenSanPham = "Xịt khoáng",
                             TrangThai = 1
@@ -951,6 +960,7 @@ namespace ASM_GS.Migrations
                             MaSanPham = "SP010",
                             Gia = 450000m,
                             MaDanhMuc = "DM001",
+                            MoTa = "Chứa retinol và vitamin E, tái tạo da vào ban đêm. Thoa đều lên mặt trước khi ngủ, tránh vùng mắt.",
                             SoLuong = 50,
                             TenSanPham = "Kem dưỡng da ban đêm",
                             TrangThai = 1
@@ -1004,7 +1014,7 @@ namespace ASM_GS.Migrations
                             MaNhanVien = "NV001",
                             MatKhau = "123456",
                             TenTaiKhoan = "admin",
-                            TinhTrang = 0,
+                            TinhTrang = 1,
                             VaiTro = "Admin"
                         },
                         new
@@ -1012,9 +1022,9 @@ namespace ASM_GS.Migrations
                             MaTaiKhoan = "TK001",
                             Email = "customer1@example.com",
                             MaKhachHang = "KH001",
-                            MatKhau = "123",
+                            MatKhau = "123456",
                             TenTaiKhoan = "customer1",
-                            TinhTrang = 0,
+                            TinhTrang = 1,
                             VaiTro = "Customer"
                         },
                         new
@@ -1022,9 +1032,9 @@ namespace ASM_GS.Migrations
                             MaTaiKhoan = "TK002",
                             Email = "customer2@example.com",
                             MaKhachHang = "KH002",
-                            MatKhau = "123",
+                            MatKhau = "123456",
                             TenTaiKhoan = "customer2",
-                            TinhTrang = 0,
+                            TinhTrang = 1,
                             VaiTro = "Customer"
                         });
                 });

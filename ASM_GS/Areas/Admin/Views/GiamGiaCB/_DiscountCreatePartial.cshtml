@@ -7,62 +7,96 @@
 
     <div class="form-group">
         <label asp-for="TenGiamGia">Tên giảm giá</label>
-        <input asp-for="TenGiamGia" class="form-control" required />
-        <span asp-validation-for="TenGiamGia" class="text-danger"></span>
+        <input asp-for="TenGiamGia" class="form-control" id="TenGiamGia" required />
+        <span id="TenGiamGiaError" class="text-danger"></span>
     </div>
 
     <div class="form-group">
         <label for="GiaTri">Giảm giá (%)</label>
         <input type="number" class="form-control" id="GiaTri" name="GiaTri" value="@Model.GiaTri" min="0" max="100" />
+        <span id="GiaTriError" class="text-danger"></span>
     </div>
-
 
     <div class="form-group">
         <label asp-for="NgayBatDau">Ngày bắt đầu</label>
-        <input asp-for="NgayBatDau" class="form-control" type="date" required />
-        <span asp-validation-for="NgayBatDau" class="text-danger"></span>
+        <input asp-for="NgayBatDau" class="form-control" type="date" id="NgayBatDau" required />
+        <span id="NgayBatDauError" class="text-danger"></span>
     </div>
 
     <div class="form-group">
         <label asp-for="NgayKetThuc">Ngày kết thúc</label>
-        <input asp-for="NgayKetThuc" class="form-control" type="date" required />
-        <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
+        <input asp-for="NgayKetThuc" class="form-control" type="date" id="NgayKetThuc" required />
+        <span id="NgayKetThucError" class="text-danger"></span>
     </div>
-    <!-- Thêm trường cho Số Lượng Mã Nhập Tối Đa -->
     <div class="form-group">
         <label asp-for="SoLuongMaNhapToiDa">Số lượng mã nhập tối đa</label>
-        <input asp-for="SoLuongMaNhapToiDa" class="form-control" type="number" min="1" required />
-        <span asp-validation-for="SoLuongMaNhapToiDa" class="text-danger"></span>
+        <input asp-for="SoLuongMaNhapToiDa" class="form-control" id="SoLuongMaNhapToiDa" />
+        <span id="SoLuongMaNhapToiDaError" class="text-danger"></span>
+
     </div>
-    <div class="form-group">
-        <label asp-for="TrangThai">Trạng thái</label>
-        <select asp-for="TrangThai" class="form-control">
-            <option value="1">Đang áp dụng</option>
-            <option value="0">Không áp dụng</option>
-        </select>
-        <span asp-validation-for="TrangThai" class="text-danger"></span>
-    </div>
-
-
-
     <br />
-    <button type="submit" class="btn btn-primary">Thêm giảm giá</button>
+    <button type="submit" class="btn btn-primary" id="createDiscountBtn">Tạo mã giảm giá</button>
 </form>
 
-<style>
-    /* Thêm con trỏ dạng pointer khi di chuột qua nhãn của checkbox */
-    .form-check-label {
-        cursor: pointer;
-    }
-</style>
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
 <script>
-    // Ghi đè thông báo lỗi mặc định của jQuery Validation bằng tiếng Việt
-    jQuery.extend(jQuery.validator.messages, {
-        range: "Vui lòng nhập giá trị lớn hơn hoặc bằng {0}."
+    // Hàm để kiểm tra lỗi và hiển thị dưới các trường input
+    document.getElementById("createDiscountBtn").addEventListener("click", function (event) {
+        event.preventDefault(); // Ngừng gửi form ngay lập tức
+
+        let hasError = false;
+
+        // Clear previous error messages
+        document.getElementById("TenGiamGiaError").textContent = '';
+        document.getElementById("GiaTriError").textContent = '';
+        document.getElementById("NgayBatDauError").textContent = '';
+        document.getElementById("NgayKetThucError").textContent = '';
+        document.getElementById("SoLuongMaNhapToiDaError").textContent = '';
+
+        // Get values from inputs
+        const tenGiamGia = document.getElementById("TenGiamGia").value;
+        const giaTri = parseFloat(document.getElementById("GiaTri").value);
+        const ngayBatDau = new Date(document.getElementById("NgayBatDau").value);
+        const ngayKetThuc = new Date(document.getElementById("NgayKetThuc").value);
+        const soLuongMaNhapToiDa = document.getElementById("SoLuongMaNhapToiDa").value;
+        // Kiểm tra lỗi cho tên mã giảm giá
+        if (!tenGiamGia || tenGiamGia.length < 3 || /[^a-zA-Z]/.test(tenGiamGia)) {
+            document.getElementById("TenGiamGiaError").textContent = "Tên mã giảm giá phải có ít nhất 3 ký tự và không chứa ký tự đặc biệt.";
+            hasError = true;
+        }
+
+
+        // Kiểm tra lỗi cho giá trị giảm
+        if (isNaN(giaTri) || giaTri <= 0) {
+            document.getElementById("GiaTriError").textContent = "Giá trị giảm phải là số dương và lớn hơn 0.";
+            hasError = true;
+        } else if (giaTri > 100) {
+            document.getElementById("GiaTriError").textContent = "Giá trị giảm không thể vượt quá 100%.";
+            hasError = true;
+        }
+
+        // Kiểm tra lỗi cho ngày bắt đầu và ngày kết thúc
+        if (ngayBatDau >= ngayKetThuc) {
+            document.getElementById("NgayBatDauError").textContent = "Ngày bắt đầu không thể sau ngày kết thúc.";
+            document.getElementById("NgayKetThucError").textContent = "Ngày kết thúc không thể trước ngày bắt đầu.";
+            hasError = true;
+        } else if (ngayBatDau < new Date()) {
+            document.getElementById("NgayBatDauError").textContent = "Ngày bắt đầu không thể trong quá khứ.";
+            hasError = true;
+        } else if (ngayKetThuc < new Date()) {
+            document.getElementById("NgayKetThucError").textContent = "Ngày kết thúc không thể trong quá khứ.";
+            hasError = true;
+        }
+        // Kiểm tra số lượng mã nhập tối đa phải lớn hơn 0
+        if (soLuongMaNhapToiDa <= 0) {
+            document.getElementById("SoLuongMaNhapToiDaError").innerText = "Số lượng mã nhập tối đa phải lớn hơn 0.";
+            isValid = false;
+        }
+        // Nếu có lỗi, không gửi form
+        if (hasError) {
+            return false;
+        }
+
+        // Nếu không có lỗi, gửi form
+        document.getElementById("createDiscountForm").submit();
     });
 </script>

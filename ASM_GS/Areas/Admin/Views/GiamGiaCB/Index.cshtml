@@ -159,7 +159,21 @@
             });
         </script>
     }
-
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <script>
+            // Sử dụng SweetAlert để hiển thị thông báo thành công
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: '@TempData["ErrorMessage"]',
+                    //text: '@TempData["ErrorMessage"]',
+                    //showConfirmButton: false,
+                    //timer: 2000 // Thông báo tự động ẩn sau 2 giây
+                });
+            });
+        </script>
+    }
 </div>
 
 <!-- Modal tạo Giảm Giá -->

@@ -6,17 +6,17 @@
     <div class="form-group">
         <label asp-for="TenCombo">Tên Combo</label>
         <input asp-for="TenCombo" class="form-control" required />
-        <span asp-validation-for="TenCombo" class="text-danger"></span>
+        <span id="TenComboError" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="MoTa">Mô tả</label>
         <textarea asp-for="MoTa" class="form-control" rows="4"></textarea>
-        <span asp-validation-for="MoTa" class="text-danger"></span>
+        <span id="MoTaError" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="Gia">Giá Combo</label>
         <input asp-for="Gia" class="form-control" type="number" required />
-        <span asp-validation-for="Gia" class="text-danger"></span>
+        <span id="GiaError" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label>Chọn Sản Phẩm</label>
@@ -54,6 +54,7 @@
             </tbody>
 
         </table>
+        <span id="SanPhamError" class="text-danger"></span>
         <small class="form-text text-muted">Hiển thị tối đa 5 sản phẩm, tìm kiếm để lọc nhanh.</small>
     </div>
     <div id="selectedProducts">
@@ -90,6 +91,8 @@
         {
             <span>Không có ảnh</span>
         }
+        <span id="ImageError" class="text-danger"></span>
+
     </div>
     <div class="form-group">
         <label asp-for="TrangThai">Trạng thái</label>
@@ -100,7 +103,7 @@
         <span asp-validation-for="TrangThai" class="text-danger"></span>
     </div>
     <br />
-    <button type="submit" class="btn btn-primary">Cập nhật</button>
+    <button type="submit" id="eidtComboButton" class="btn btn-primary">Cập nhật</button>
 </form>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
@@ -108,7 +111,7 @@
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
- <script>
+<script>
     $(document).ready(function () {
         const maxDisplay = 5;
 
@@ -146,11 +149,11 @@
             if (!selectedList.find(`li[data-id="${productId}"]`).length) {
                 selectedList.append(
                     `<li data-id="${productId}">
-                        ${productName} - Số lượng:
-                        <input type="number" class="form-control quantity-input" data-id="${productId}" value="${quantity}" min="1" style="width: 80px; display: inline-block;" />
-                        <button type="button" class="btn btn-sm btn-danger btn-remove">Xóa</button>
-                        <input type="hidden" name="selectedSanPhams" value="${productId}:${quantity}" />
-                    </li>`
+                            ${productName} - Số lượng:
+                            <input type="number" class="form-control quantity-input" data-id="${productId}" value="${quantity}" min="1" style="width: 80px; display: inline-block;" />
+                            <button type="button" class="btn btn-sm btn-danger btn-remove">Xóa</button>
+                            <input type="hidden" name="selectedSanPhams" value="${productId}:${quantity}" />
+                        </li>`
                 );
 
                 // Disable nút "Thêm" sau khi sản phẩm được chọn
@@ -179,4 +182,54 @@
     });
 
 
- </script>
+</script>
+<script>
+    document.getElementById("eidtComboButton").addEventListener("click", function (event) {
+        event.preventDefault(); // Ngừng gửi form để kiểm tra lỗi
+
+        // Reset các thông báo lỗi cũ
+        document.getElementById("TenComboError").innerText = "";
+        document.getElementById("MoTaError").innerText = "";
+        document.getElementById("GiaError").innerText = "";
+        document.getElementById("SanPhamError").innerText = "";
+
+        let isValid = true;
+
+        let tenCombo = document.getElementById("TenCombo").value;
+        if (tenCombo.length < 3) {
+            document.getElementById("TenComboError").innerText = "Tên combo phải có ít nhất 3 ký tự";
+            isValid = false;
+        }
+
+        // Kiểm tra Mô tả
+        let moTa = document.getElementById("MoTa").value;
+        if (moTa.trim() === "") {
+            document.getElementById("MoTaError").innerText = "Mô tả không được để trống";
+            isValid = false;
+        }
+
+        // Kiểm tra Giá
+        let gia = document.getElementById("Gia").value;
+        if (gia <= 0) {
+            document.getElementById("GiaError").innerText = "Giá combo phải lớn hơn 0";
+            isValid = false;
+        }
+
+        // Kiểm tra sản phẩm
+        const selectedList = $('#selectedProductList');
+        const errorSpan = $('#SanPhamError');
+
+        if (selectedList.children('li').length === 0) {
+            errorSpan.text('Vui lòng chọn ít nhất một sản phẩm.');
+            isValid = false;
+        } else {
+            errorSpan.text('');
+        }
+
+        // Chỉ submit form nếu tất cả đều hợp lệ
+        if (isValid) {
+            document.getElementById("editComboForm").submit();
+        }
+    });
+
+</script>

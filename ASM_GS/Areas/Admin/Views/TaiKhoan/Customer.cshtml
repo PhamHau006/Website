@@ -644,8 +644,9 @@
             data: data,
             success: function (response) {
                 if (response.success) {
-                    $('#myModal2').modal('hide'); 
-                    $('.modal-backdrop').remove();
+                    document.getElementById('myModal2').style.display = 'none';
+                    document.body.classList.remove('modal-open'); 
+                    document.querySelector('.modal-backdrop').remove();
                     Swal.fire({
                         icon: "success",
                         title: "Thành công!",

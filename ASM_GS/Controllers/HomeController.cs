@@ -125,7 +125,6 @@ namespace ASM_GS.Controllers
             for(int i=0;i<ListSanPham.Count();i++) {
                 Openning += (i + 1).ToString() + ". Mã:" + ListSanPham[i].MaSanPham + ", Tên:" + ListSanPham[i].TenSanPham + ", Mô tả:" + ListSanPham[i].MoTa + ", Giá:"+ ListSanPham[i].Gia + "\n";
             }
-
             var Test = userInput;
             var GoogleAPIKey = _authSettings.Google.GoogleAPIKey;
             var GoogleAPIUrl = _authSettings.Google.GoogleAPIUrl;
@@ -154,7 +153,7 @@ namespace ASM_GS.Controllers
                 var responseObject = JsonConvert.DeserializeObject<dynamic>(responseString);
 
 
-                string answer = responseObject?.candidates[0].content?.parts[0]?.text ?? "Xin lỗi, câu hỏi của chủ nhân đã vi phạm chính sách của Google hoặc câu trở lời quá dài nên Rem không hiển thị cho bạn được";
+                string answer = responseObject?.candidates[0].content?.parts[0]?.text ?? "Xin lỗi, câu hỏi của bạn đã vi phạm chính sách của Google hoặc câu trở lời quá dài nên Rem không hiển thị cho bạn được";
                 return Json(new { response = answer });
             }
         }

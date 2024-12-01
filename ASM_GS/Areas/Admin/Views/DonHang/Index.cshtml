@@ -24,6 +24,12 @@
         });
     </script>
 }
+<div class="text-end mb-3">
+    <a href="@Url.Action("ExportToExcel", "DonHang", new { area = "Admin", searchTerm = ViewData["searchTerm"] })" class="btn btn-success">
+        Xuất Excel
+    </a>
+</div>
+
 
 @if (TempData["ErrorMessage"] != null)
 {
@@ -72,6 +78,7 @@
         }
     </select>
 </div>
+
 
 <table class="table">
     <thead>

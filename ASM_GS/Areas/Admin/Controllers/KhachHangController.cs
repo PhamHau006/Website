@@ -117,6 +117,9 @@ namespace ASM_GS.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+
+
         public async Task<IActionResult> Edit(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -231,6 +234,11 @@ namespace ASM_GS.Areas.Admin.Controllers
             {
                 errors.Add("TenKhachHang", "Tên khách hàng không được để trống.");
             }
+            else if (!Regex.IsMatch(customer.TenKhachHang, @"^[a-zA-Z\s]+$"))
+            {
+                // Kiểm tra nếu tên chỉ chứa chữ cái và khoảng trắng
+                errors.Add("TenKhachHang", "Tên khách hàng không được chứa ký tự đặc biệt.");
+            }
 
             if (string.IsNullOrEmpty(customer.SoDienThoai))
             {
@@ -239,6 +247,16 @@ namespace ASM_GS.Areas.Admin.Controllers
             else if (!Regex.IsMatch(customer.SoDienThoai, @"^\d{10,11}$"))
             {
                 errors.Add("SoDienThoai", "Số điện thoại không hợp lệ.");
+            }
+            else
+            {
+                var existingCustomer = await _context.KhachHangs
+                    .FirstOrDefaultAsync(kh => kh.SoDienThoai == customer.SoDienThoai);
+
+                if (existingCustomer != null)
+                {
+                    errors.Add("SoDienThoai", "Số điện thoại này đã được sử dụng.");
+                }
             }
 
             if (string.IsNullOrEmpty(customer.DiaChi))
@@ -266,22 +284,21 @@ namespace ASM_GS.Areas.Admin.Controllers
             if(customer.GioiTinh!=true && customer.GioiTinh!=false)
             {
                 errors.Add("GioiTinh", "Vui lòng chọn giới tính");
-            }    
-            
-            // Handle file upload for the image (Anh)
-            if (Anh != null && Anh.Length > 0)
+            }
+
+            if (Anh != null)
             {
-                string fileName = Guid.NewGuid() + Path.GetExtension(Anh.FileName);
-                string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/AnhKhachHang", fileName);
-                using (var stream = new FileStream(path, FileMode.Create))
+                var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".img" };
+                var fileExtension = Path.GetExtension(Anh.FileName).ToLower();
+
+                if (!validExtensions.Contains(fileExtension))
                 {
-                    await Anh.CopyToAsync(stream);
+                    errors.Add("Anh", "Vui lòng chọn hình ảnh có định dạng .jpg, .jpeg, .png, .img.");
                 }
-                customer.HinhAnh = "/img/AnhKhachHang/" + fileName;
             }
             else
             {
-                errors.Add("Anh", "Vui lòng tải lên hình ảnh hợp lệ.");
+                errors.Add("Anh", "Vui lòng chọn hình ảnh.");
             }
             if (errors.Any())
             {
@@ -345,6 +362,17 @@ namespace ASM_GS.Areas.Admin.Controllers
             {
                 errors.Add("SoDienThoai", "Số điện thoại không hợp lệ.");
             }
+            else
+            {
+                // Kiểm tra số điện thoại có bị trùng không
+                var existingPhoneNumber = await _context.KhachHangs
+                    .FirstOrDefaultAsync(kh => kh.SoDienThoai == updatedCustomer.SoDienThoai);
+
+                if (existingPhoneNumber != null && existingPhoneNumber.MaKhachHang != updatedCustomer.MaKhachHang)
+                {
+                    errors.Add("SoDienThoai", "Số điện thoại này đã được sử dụng.");
+                }
+            }
 
             if (string.IsNullOrEmpty(updatedCustomer.DiaChi))
             {
@@ -375,22 +403,15 @@ namespace ASM_GS.Areas.Admin.Controllers
             }
 
             // Handle file upload for the image (Anh)
-            if (Anh != null && Anh.Length > 0)
+            if (Anh != null)
             {
-                string fileName = Guid.NewGuid() + Path.GetExtension(Anh.FileName);
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+                var fileExtension = Path.GetExtension(Anh.FileName).ToLower();
 
-                string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/AnhKhachHang", fileName);
-
-                using (var stream = new FileStream(path, FileMode.Create))
+                if (!allowedExtensions.Contains(fileExtension))
                 {
-                    await Anh.CopyToAsync(stream);
+                    errors.Add("Anh", "Vui lòng chọn hình ảnh có định dạng .jpg, .jpeg, .png, .gif, .bmp.");
                 }
-
-                updatedCustomer.HinhAnh = "/img/AnhKhachHang/" + fileName;
-            }
-            else
-            {
-                errors.Add("Anh", "Vui lòng tải lên hình ảnh hợp lệ.");
             }
 
             if (errors.Any())

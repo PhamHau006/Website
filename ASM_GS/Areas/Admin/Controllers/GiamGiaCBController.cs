@@ -31,6 +31,15 @@ namespace ASM_GS.Areas.Admin.Controllers
                 .Include(d => d.MaNhapGiamGias) // Bao gồm mã nhập chi tiết nếu cần
                 .AsQueryable();
 
+            // Cập nhật trạng thái của các mã giảm giá đã hết hạn
+            var currentDate = DateOnly.FromDateTime(DateTime.Now); // Chuyển đổi DateTime sang DateOnly
+            var expiredDiscounts = discounts.Where(d => d.NgayKetThuc < currentDate).ToList();
+
+            foreach (var discount in expiredDiscounts)
+            {
+                discount.TrangThai = 0;  // Đặt trạng thái là không áp dụng
+            }
+            _context.SaveChanges(); // Lưu các thay đổi trạng thái
             // Lọc theo từ khóa tìm kiếm nếu có
             if (!string.IsNullOrEmpty(searchTerm))
             {
@@ -225,12 +234,25 @@ namespace ASM_GS.Areas.Admin.Controllers
 
             var giamgia = _context.GiamGia.FirstOrDefault(g => g.MaGiamGia == id);
 
+            if (giamgia == null)
+            {
+                return NotFound();
+            }
+
+            // Kiểm tra trạng thái
+            if (giamgia.TrangThai == 1) // 1: Đang áp dụng
+            {
+                TempData["ErrorMessage"] = "Không thể xóa mã giảm giá đang được áp dụng!";
+                return RedirectToAction("Index");
+            }
+
             _context.GiamGia.Remove(giamgia);
             _context.SaveChanges();
 
             TempData["SuccessMessage"] = "Xóa giảm giá thành công!";
             return RedirectToAction("Index");
         }
+
 
         public IActionResult UseCode(string maNhap)
         {

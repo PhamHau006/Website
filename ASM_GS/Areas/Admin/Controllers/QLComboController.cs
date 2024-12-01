@@ -28,8 +28,8 @@ namespace ASM_GS.Areas.Admin.Controllers
             if (HttpContext.Session.GetString("StaffAccount") == null)
             {
                 HttpContext.Session.SetString("RedirectUrl", HttpContext.Request.GetDisplayUrl());
-				ViewData["RedirectUrl"] = HttpContext.Session.GetString("RedirectUrl");
-			}
+                ViewData["RedirectUrl"] = HttpContext.Session.GetString("RedirectUrl");
+            }
             var combos = _context.Combos
                                  .Include(c => c.ChiTietCombos)
                                  .AsQueryable();
@@ -73,39 +73,12 @@ namespace ASM_GS.Areas.Admin.Controllers
             return PartialView("_ComboCreatePartial", new Combo());
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Combo combo, List<string>? selectedSanPhams)
         {
             Random random = new Random();
             string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             string maCombo = "CB" + string.Concat(Enumerable.Range(0, 6).Select(_ => characters[random.Next(characters.Length)]));
             combo.MaCombo = maCombo;
-
-
-            // Kiểm tra danh sách sản phẩm được chọn
-            if (selectedSanPhams == null || !selectedSanPhams.Any())
-            {
-                ModelState.AddModelError("selectedSanPhams", "Vui lòng chọn ít nhất một sản phẩm.");
-            }
-
-            // Kiểm tra tệp ảnh
-            if (combo.anhcombo == null || combo.anhcombo.Length == 0)
-            {
-                ModelState.AddModelError("anhcombo", "Vui lòng chọn một tệp ảnh.");
-            }
-
-            // Kiểm tra giá trị âm
-            if (combo.Gia < 0)
-            {
-                ModelState.AddModelError("Gia", "Giá không thể là số âm.");
-            }
-
-            // Nếu ModelState không hợp lệ, trả lại view với thông báo lỗi
-            if (ModelState.IsValid)
-            {
-                ViewBag.SanPhams = _context.SanPhams?.ToList();
-                return PartialView("_ComboCreatePartial", combo);
-            }
 
             // Xử lý lưu ảnh
             if (combo.anhcombo != null && combo.anhcombo.Length > 0)
@@ -215,24 +188,8 @@ namespace ASM_GS.Areas.Admin.Controllers
             return PartialView("_ComboEditPartial", combo); // Trả về PartialView để tải vào modal
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Combo combo, List<string> selectedSanPhams)
         {
-            if (!ModelState.IsValid)
-            {
-                ViewBag.SanPhams = _context.SanPhams.ToList();
-                return PartialView("_ComboEditPartial", combo); // Trả về partial view với thông tin lỗi
-            }
-            if (selectedSanPhams == null || !selectedSanPhams.Any())
-            {
-                ModelState.AddModelError("selectedSanPhams", "Vui lòng chọn ít nhất một sản phẩm.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                ViewBag.SanPhams = _context.SanPhams.ToList();
-                return PartialView("_ComboEditPartial", combo);
-            }
 
             var existingCombo = _context.Combos.Include(c => c.ChiTietCombos).FirstOrDefault(c => c.MaCombo == combo.MaCombo);
             if (existingCombo == null) return NotFound();
@@ -257,12 +214,12 @@ namespace ASM_GS.Areas.Admin.Controllers
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await combo.anhcombo.CopyToAsync(stream);
-                }   
+                }
 
                 // Cập nhật đường dẫn ảnh
                 existingCombo.Anh = fileName;
             }
-    
+
             _context.ChiTietCombos.RemoveRange(existingCombo.ChiTietCombos);
 
             foreach (var item in selectedSanPhams)

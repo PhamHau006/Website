@@ -183,6 +183,8 @@ namespace ASM_GS.Controllers
             }
         }
 
+
+
         [HttpDelete("RemoveItem/{id}")]
         public async Task<IActionResult> RemoveItem(int id)
         {

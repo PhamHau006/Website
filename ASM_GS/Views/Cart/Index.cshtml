@@ -17,11 +17,19 @@
                     <div class="cart-table">
                         <div class="cart-header">
                             <div class="row d-flex border-bottom">
-                                <h6 class="cart-title text-uppercase col-lg-4 pb-3">Sản Phẩm</h6>
-                                <h6 class="cart-title text-uppercase col-lg-3 pb-3">Số Lượng</h6>
-                                <h6 class="cart-title text-uppercase col-lg-4 pb-3">Thành Tiền</h6>
+                                <h6 class="cart-title text-uppercase col-lg-4 pb-2">Sản Phẩm</h6>
+                                <h6 class="cart-title text-uppercase col-lg-3 pb-2">Số Lượng</h6>
+                                <h6 class="cart-title text-uppercase col-lg-4 pb-2">Thành Tiền</h6>
                             </div>
                         </div>
+
+                        <!-- Kiểm tra nếu giỏ hàng trống -->
+                        @if (Model.Items == null || !Model.Items.Any())
+                        {
+                            <div class="alert alert-warning">
+                                Giỏ hàng của bạn hiện tại chưa có sản phẩm. Vui lòng thêm sản phẩm vào giỏ hàng.
+                            </div>
+                        }
 
                         @foreach (var item in Model.Items)
                         {
@@ -34,50 +42,26 @@
                                                     <img src="@Url.Content(item.ImageUrl)" alt="Product Image" class="img-fluid" />
                                                 </div>
                                             </div>
-                                            <div class="col-lg-7">
-                                                <div class="card-detail ps-3">
-                                                    <h5 class="card-title">
-                                                        <a href="#" class="text-decoration-none">@item.ProductName</a>
-                                                    </h5>
-                                                    <div class="card-price">
-                                                        <span class="money gia" data-price="@item.Price">@item.Price.ToString("N0") VNĐ</span>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6 col-md-7">
-                                        <div class="row d-flex">
-                                            <div class="col-md-4">
-                                                <div class="input-group product-qty">
-                                                    <button type="button" class="btn btn-light btn-number quantity-left-minus" onclick="updateQuantity(@item.ItemId, -1)">
-                                                        <svg width="5" height="5"><use xlink:href="#minus"></use></svg>
-                                                    </button>
-                                                    <div class="col-md-4">
-                                                        <div class="input-group product-qty" style="width:70px;">
-                                                            @*   <button type="button" class="btn btn-light btn-number quantity-left-minus" onclick="updateQuantity(@item.ItemId, -1)">
-                                                        <svg width="10" height="10"><use xlink:href="#minus"></use></svg>
-                                                        </button> *@
-                                                            <input type="number" id="quantity-@item.ItemId" class="so-luong form-control" data-price="@item.Price" value="@item.Quantity" min="1" />
-                                                            @*        <button type="button" class="btn btn-light btn-number quantity-right-plus" onclick="updateQuantity(@item.ItemId, 1)">
-                                                        <svg width="10" height="10"><use xlink:href="#plus"></use></svg>
-                                                        </button> *@
-                                                        </div>
-                                                    </div>
 
-
-
-                                                    <button type="button" class="btn btn-light btn-number quantity-right-plus" onclick="updateQuantity(@item.ItemId, 1)">
-                                                        <svg width="5" height="5"><use xlink:href="#plus"></use></svg>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-8 text-center">
-                                                <div class="total-price">
-                                                    <span class="money text-dark thanh-tien">@item.Subtotal.ToString("N0") VND</span>
-                                                </div>
-                                            </div>
+                                    <!-- Số lượng sản phẩm -->
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="input-group product-qty">
+                                            <button type="button" class="btn btn-light btn-number quantity-left-minus" onclick="updateQuantity(@item.ItemId, -1, @item.MaxQuantity)">
+                                                <svg width="5" height="5"><use xlink:href="#minus"></use></svg>
+                                            </button>
+                                            <input type="number" id="quantity-@item.ItemId" class="form-control" value="@item.Quantity" min="1" max="@item.MaxQuantity" onchange="updateQuantityManually(@item.ItemId, @item.MaxQuantity)" />
+                                            <button type="button" class="btn btn-light btn-number quantity-right-plus" onclick="updateQuantity(@item.ItemId, 1, @item.MaxQuantity)">
+                                                <svg width="5" height="5"><use xlink:href="#plus"></use></svg>
+                                            </button>
                                         </div>
+                                    </div>
+
+
+                                    <!-- Thành tiền -->
+                                    <div class="col-lg-4 col-md-3">
+                                        <span>@(item.Subtotal.ToString("N0"))</span>
                                     </div>
                                     <div class="col-lg-1 col-md-2">
                                         <div class="cart-remove">
@@ -121,11 +105,19 @@
                             </table>
                         </div>
                         <div class="button-wrap row g-2">
-                            <div class="col-md-6"><button class="btn btn-dark text-uppercase btn-rounded-none w-100">Cập Nhật Giỏ Hàng</button></div>
-                            <div class="col-md-6"> <button class="btn btn-dark text-uppercase btn-rounded-none w-100" href=""@Url.Action("Index", "Detail")">Tiếp Tục Mua Sắm</button></div>
-                            <div class="col-md-12">
-                                <a href="@Url.Action("Index", "Checkout")" class="btn btn-primary text-uppercase btn-rounded-none w-100">Thanh Toán</a>
+                            <div class="col-md-6">
+                                <button class="btn btn-primary text-uppercase btn-rounded-none w-100" id="updateCartButton">Cập Nhật Giỏ Hàng</button>
                             </div>
+
+                            <div class="col-md-6"> <a href=" @Url.Action("Index", "Shop")" class="btn btn-primary text-uppercase btn-rounded-none w-100">Tiếp Tục Mua Hàng </a></div>
+                                @if (Model.Items != null && Model.Items.Any())
+                                {
+                                <div class="col-md-12">
+                                    <a href="@Url.Action("Index", "Checkout")" class="btn btn-primary text-uppercase btn-rounded-none w-100">Thanh Toán</a>
+                                </div>
+
+                                }
+
                         </div>
                     </div>
                 </div>
@@ -133,10 +125,86 @@
         </div>
     </section>
 </div>
-
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        $(document).ready(function () {
+            $('#updateCartButton').click(function (e) {
+                e.preventDefault(); // Ngừng hành động mặc định của nút (không reload trang ngay lập tức)
+
+                // Gửi yêu cầu AJAX (nếu cần) để cập nhật giỏ hàng ở đây, ví dụ như cập nhật số lượng sản phẩm.
+
+                // Sau khi cập nhật giỏ hàng, làm mới trang
+                location.reload(); // Tương tự như bấm F5, trang sẽ được tải lại
+            });
+        });
+
+
+        // Hàm cập nhật số lượng khi nhấn cộng hoặc trừ
+        function updateQuantity(itemId, change, maxQuantity) {
+            var quantityInput = document.getElementById('quantity-' + itemId);
+            var currentQuantity = parseInt(quantityInput.value);
+            var newQuantity = currentQuantity + change;
+
+            // Kiểm tra số lượng nhỏ hơn 1
+            if (newQuantity < 1) {
+                newQuantity = 1;
+                Swal.fire('Lỗi', 'Số lượng phải lớn hơn 0', 'error');
+            }
+            // Kiểm tra số lượng vượt quá tồn kho
+            else if (newQuantity > maxQuantity) {
+                newQuantity = maxQuantity;
+                Swal.fire('Lỗi', `Số lượng không được vượt quá tồn kho (${maxQuantity})`, 'error');
+            }
+
+            // Cập nhật lại giá trị trong input
+            quantityInput.value = newQuantity;
+
+            // Gọi API để cập nhật giỏ hàng nếu cần
+            updateCart(itemId, newQuantity);
+        }
+
+
+        // Hàm cập nhật số lượng khi người dùng nhập thủ công
+        function updateQuantityManually(itemId) {
+            var quantityInput = document.getElementById('quantity-' + itemId);
+            var newQuantity = parseInt(quantityInput.value);
+
+            // Đảm bảo số lượng không nhỏ hơn 1
+            if (newQuantity >= 1) {
+                updateCart(itemId, newQuantity);
+            } else {
+                quantityInput.value = 1;
+            }
+        }
+
+        // Hàm gửi thông tin số lượng mới lên server để cập nhật giỏ hàng
+        function updateCart(itemId, quantity) {
+            // Gửi AJAX request đến server để cập nhật giỏ hàng
+            $.ajax({
+                url: '/Cart/UpdateQuantity', // URL của hành động controller
+                type: 'POST',
+                data: { itemId: itemId, quantity: quantity },
+                success: function (response) {
+                    // Hiển thị thông báo thành công
+                    if (response.success) {
+                        Swal.fire('Thành công', response.message, 'success');
+
+                        // Làm mới trang sau 2 giây
+                        setTimeout(function () {
+                            location.reload();  // Làm mới trang để cập nhật dữ liệu giỏ hàng
+                        }, 1000); // 2 giây (2000 ms)
+                    } else {
+                        Swal.fire('Lỗi', response.message, 'error');
+                    }
+                },
+                error: function (error) {
+                    Swal.fire('Lỗi', 'Có lỗi xảy ra khi cập nhật số lượng sản phẩm.', 'error');
+                }
+            });
+        }
+
+
         // Function to confirm product removal
         function confirmRemove(itemId) {
             Swal.fire({
@@ -190,13 +258,7 @@
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({ id: itemId, quantity: newQuantity }),
-                success: function (response) {
-                    if (response.success) {
-                        Swal.fire('Thành công', 'Số lượng đã được cập nhật', 'success');
-                    } else {
-                        Swal.fire('Lỗi', response.message || 'Không thể cập nhật giỏ hàng', 'error');
-                    }
-                },
+                
                 error: function () {
                     Swal.fire('Lỗi', 'Có lỗi xảy ra khi cập nhật giỏ hàng', 'error');
                 }

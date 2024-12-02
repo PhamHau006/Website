@@ -146,7 +146,6 @@
             }
 
 
-
         [HttpPost]
         public IActionResult Approve(int id)
         {
@@ -170,7 +169,10 @@
 
             _context.SaveChanges();
 
-            return Ok("Yêu cầu hoàn trả đã được duyệt và trạng thái đơn hàng đã được cập nhật.");
+            // Lưu thông báo vào TempData
+            TempData["SuccessMessage"] = "Yêu cầu hoàn trả đã được duyệt thành công và trạng thái đơn hàng đã được cập nhật.";
+
+            return RedirectToAction("Index"); // Quay lại danh sách yêu cầu hoàn trả
         }
 
 
@@ -196,9 +198,12 @@
             }
 
             _context.SaveChanges();
+            TempData["SuccessMessage"] = "Yêu cầu hoàn trả KHÔNG ĐƯỢC DUYỆT và trạng thái đơn hàng đã được cập nhật.";
 
-            return Ok("Yêu cầu hoàn trả đã bị từ chối và trạng thái đơn hàng đã được cập nhật.");
+            return RedirectToAction("Index"); // Quay lại danh sách yêu cầu hoàn trả
+
         }
+
 
     }
 }

@@ -109,13 +109,16 @@ namespace ASM_GS.Controllers
                             : (item.Combo != null ? $"/img/AnhCombo/{item.Combo.Anh}" : "/images/default-product.jpg")
                     }).ToListAsync();
             }
+
             decimal totalAmount = 0;
             if (TempTong == 0)
             {
                 totalAmount = model.CartItems.Sum(i => i.Price * i.Quantity);
             }
             else
+            {
                 totalAmount = (decimal)TempTong;
+            }
             // Tạo mã hóa đơn mới
             var lastInvoice = await _context.HoaDons.OrderByDescending(h => h.MaHoaDon).FirstOrDefaultAsync();
             string newInvoiceId = "HD" + ((lastInvoice != null ? int.Parse(lastInvoice.MaHoaDon.Substring(2)) : 0) + 1).ToString("D3");
@@ -123,8 +126,7 @@ namespace ASM_GS.Controllers
             // Tạo mã đơn hàng mới
             var lastOrder = await _context.DonHangs.OrderByDescending(d => d.MaDonHang).FirstOrDefaultAsync();
             string newOrderId = "DH" + ((lastOrder != null ? int.Parse(lastOrder.MaDonHang.Substring(2)) : 0) + 1).ToString("D3");
-
-            // Tạo hóa đơn và đơn hàng
+            // Tạo đơn hàng và hóa đơn
             var hoaDon = new HoaDon
             {
                 MaHoaDon = newInvoiceId,
@@ -135,7 +137,9 @@ namespace ASM_GS.Controllers
             };
             MaHoaDonTemp = newInvoiceId;
             _context.HoaDons.Add(hoaDon);
+            await _context.SaveChangesAsync();
 
+            // Tạo đơn hàng
             var donHang = new DonHang
             {
                 MaDonHang = newOrderId,
@@ -146,68 +150,39 @@ namespace ASM_GS.Controllers
             };
             MaDonhangTemp = newOrderId;
             _context.DonHangs.Add(donHang);
+            await _context.SaveChangesAsync();
 
+            // Lưu các chi tiết đơn hàng
             foreach (var item in model.CartItems)
             {
-                if (!string.IsNullOrEmpty(item.ProductId))
+                var chiTietDonHang = new ChiTietDonHang
                 {
-                    _context.ChiTietHoaDons.Add(new ChiTietHoaDon
-                    {
-                        MaHoaDon = hoaDon.MaHoaDon,
-                        MaSanPham = item.ProductId,
-                        SoLuong = item.Quantity,
-                        Gia = item.Price
-                    });
+                    MaDonHang = donHang.MaDonHang,
+                    MaSanPham = item.ProductId,
+                    SoLuong = item.Quantity,
+                    Gia = item.Price
+                };
+                _context.ChiTietDonHangs.Add(chiTietDonHang);
 
-                    _context.ChiTietDonHangs.Add(new ChiTietDonHang
-                    {
-                        MaDonHang = donHang.MaDonHang,
-                        MaSanPham = item.ProductId,
-                        SoLuong = item.Quantity,
-                        Gia = item.Price
-                    });
-                }
-                else if (!string.IsNullOrEmpty(item.ComboId))
+                // Giảm số lượng sản phẩm trong kho
+                var sanPham = await _context.SanPhams.FirstOrDefaultAsync(p => p.MaSanPham == item.ProductId);
+                if (sanPham != null)
                 {
-                    _context.ChiTietHoaDons.Add(new ChiTietHoaDon
-                    {
-                        MaHoaDon = hoaDon.MaHoaDon,
-                        MaCombo = item.ComboId,
-                        SoLuong = item.Quantity,
-                        Gia = item.Price
-                    });
-
-                    _context.ChiTietDonHangs.Add(new ChiTietDonHang
-                    {
-                        MaDonHang = donHang.MaDonHang,
-                        MaCombo = item.ComboId,
-                        SoLuong = item.Quantity,
-                        Gia = item.Price
-                    });
+                    sanPham.SoLuong -= item.Quantity;
+                    _context.SanPhams.Update(sanPham);
                 }
             }
 
             await _context.SaveChangesAsync();
 
-            if (payment == "VNPay")
-            {
-                var vnPayModel = new VnPaymentRequestModel
-                {
-                    Amount = (float)totalAmount,
-                    CreatedDate = DateTime.Now,
-                    Description = $"{model.SoDienThoai} {model.TenKhachHang}",
-                    FullName = model.TenKhachHang,
-                    OrderId = (new Random().Next(1000, 100000)).ToString()
-                };
-                return Redirect(_vnPayServices.CreatePaymentUrl(HttpContext, vnPayModel));
-            }
-
-            // Xoá giỏ hàng sau khi thanh toán COD thành công
+            // Xoá giỏ hàng của khách hàng sau khi thanh toán thành công
             await ClearCart(maKhachHang);
 
-            TempData["SuccessMessage"] = "Đặt hàng thành công! Đơn hàng của bạn đang được xử lý.";
+            // Thanh toán thành công, chuyển hướng đến trang xác nhận đơn hàng
+            TempData["SuccessMessage"] = "Thanh toán thành công! Đơn hàng của bạn đang được xử lý.";
             return RedirectToAction("OrderConfirmation", new { orderId = donHang.MaDonHang });
         }
+
 
 
 
@@ -316,34 +291,58 @@ namespace ASM_GS.Controllers
 
 
         public async Task<IActionResult> PaymentCallBack()
-{
-    // Xử lý phản hồi từ VNPay
-    var response = _vnPayServices.PaymentExcute(Request.Query);
-    if (response == null || response.VnPayResponseCode != "00")
-    {
-        TempData["ErrorMessage"] = "Thanh toán VNPay không thành công. Vui lòng thử lại.";
-        return RedirectToAction("Index", "Checkout");
-    }
+        {
+            // Xử lý phản hồi từ VNPay
+            var response = _vnPayServices.PaymentExcute(Request.Query);
+            if (response == null || response.VnPayResponseCode != "00")
+            {
+                TempData["ErrorMessage"] = "Thanh toán VNPay không thành công. Vui lòng thử lại.";
+                return RedirectToAction("Index", "Checkout");
+            }
 
-    var hoaDon = await _context.HoaDons.FirstOrDefaultAsync(a => a.MaHoaDon == MaHoaDonTemp);
-    if (hoaDon != null)
-    {
-        hoaDon.TrangThai = 1; // Đánh dấu hóa đơn đã thanh toán
-        await _context.SaveChangesAsync();
-    }
+            // Lấy hóa đơn từ cơ sở dữ liệu
+            var hoaDon = await _context.HoaDons.FirstOrDefaultAsync(a => a.MaHoaDon == MaHoaDonTemp);
+            if (hoaDon != null)
+            {
+                hoaDon.TrangThai = 1; // Đánh dấu hóa đơn đã thanh toán
+                await _context.SaveChangesAsync();
+            }
 
-    var donHang = await _context.DonHangs.FirstOrDefaultAsync(b => b.MaDonHang == MaDonhangTemp);
+            // Lấy đơn hàng từ cơ sở dữ liệu
+            var donHang = await _context.DonHangs.FirstOrDefaultAsync(b => b.MaDonHang == MaDonhangTemp);
 
-    // Xoá giỏ hàng sau khi thanh toán thành công
-    var maKhachHang = HttpContext.Session.GetString("User");
-    if (!string.IsNullOrEmpty(maKhachHang))
-    {
-        await ClearCart(maKhachHang); // Xoá giỏ hàng của khách hàng hiện tại
-    }
+            // Cập nhật số lượng sản phẩm trong kho sau khi thanh toán thành công
+            var cartItems = await _context.GioHangs
+                .Where(g => g.MaKhachHang == HttpContext.Session.GetString("User"))
+                .SelectMany(g => g.ChiTietGioHangs)
+                .ToListAsync();
 
-    TempData["SuccessMessage"] = "Thanh toán VNPay thành công! Đơn hàng của bạn đang được xử lý.";
-    return RedirectToAction("OrderConfirmation", new { orderId = donHang.MaDonHang });
-}
+            foreach (var item in cartItems)
+            {
+                // Tìm sản phẩm trong kho
+                var product = await _context.SanPhams.FirstOrDefaultAsync(p => p.MaSanPham == item.MaSanPham);
+                if (product != null)
+                {
+                    // Giảm số lượng sản phẩm trong kho
+                    product.SoLuong -= item.SoLuong;
+                    _context.SanPhams.Update(product);
+                }
+            }
+
+            // Lưu thay đổi vào cơ sở dữ liệu
+            await _context.SaveChangesAsync();
+
+            // Xoá giỏ hàng sau khi thanh toán thành công
+            var maKhachHang = HttpContext.Session.GetString("User");
+            if (!string.IsNullOrEmpty(maKhachHang))
+            {
+                await ClearCart(maKhachHang); // Xoá giỏ hàng của khách hàng hiện tại
+            }
+
+            TempData["SuccessMessage"] = "Thanh toán VNPay thành công! Đơn hàng của bạn đang được xử lý.";
+            return RedirectToAction("OrderConfirmation", new { orderId = donHang.MaDonHang });
+        }
+
 
     }
 }

@@ -285,20 +285,30 @@ namespace ASM_GS.Areas.Admin.Controllers
             {
                 errors.Add("GioiTinh", "Vui lòng chọn giới tính");
             }
-
-            if (Anh != null)
+            string fileName = null;
+            // Handle file upload for the image (Anh)
+            if (Anh != null && Anh.Length > 0)
             {
-                var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".img" };
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
                 var fileExtension = Path.GetExtension(Anh.FileName).ToLower();
 
-                if (!validExtensions.Contains(fileExtension))
+                if (!allowedExtensions.Contains(fileExtension))
                 {
-                    errors.Add("Anh", "Vui lòng chọn hình ảnh có định dạng .jpg, .jpeg, .png, .img.");
+                    errors.Add("Anh", "Vui lòng chọn hình ảnh có định dạng .jpg, .jpeg, .png, .gif, .bmp.");
+                }
+                else
+                {
+                    fileName = Guid.NewGuid() + Path.GetExtension(Anh.FileName);
+                    string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/AnhKhachHang", fileName);
+                    using (var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await Anh.CopyToAsync(stream);
+                    }
                 }
             }
             else
             {
-                errors.Add("Anh", "Vui lòng chọn hình ảnh.");
+                errors.Add("Anh", "Vui lòng tải lên hình ảnh hợp lệ.");
             }
             if (errors.Any())
             {
@@ -323,7 +333,7 @@ namespace ASM_GS.Areas.Admin.Controllers
 
             customer.TrangThai = 1;
             customer.NgayDangKy = DateOnly.FromDateTime(DateTime.Now);
-
+            customer.HinhAnh = "/img/AnhKhachHang/" + fileName;
 
             _context.KhachHangs.Add(customer);
             await _context.SaveChangesAsync();
@@ -401,6 +411,31 @@ namespace ASM_GS.Areas.Admin.Controllers
             {
                 errors.Add("GioiTinh", "Vui lòng chọn giới tính.");
             }
+            string fileName = null;
+            // Handle file upload for the image (Anh)
+            if (Anh != null && Anh.Length > 0)
+            {
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+                var fileExtension = Path.GetExtension(Anh.FileName).ToLower();
+
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    errors.Add("Anh", "Vui lòng chọn hình ảnh có định dạng .jpg, .jpeg, .png, .gif, .bmp.");
+                }
+                else
+                {
+                    fileName = Guid.NewGuid() + Path.GetExtension(Anh.FileName);
+                    string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/AnhKhachHang", fileName);
+                    using (var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await Anh.CopyToAsync(stream);
+                    }
+                }                
+            }
+            else
+            {
+                errors.Add("Anh", "Vui lòng tải lên hình ảnh hợp lệ.");
+            }
 
             // Handle file upload for the image (Anh)
             if (Anh != null)
@@ -433,6 +468,7 @@ namespace ASM_GS.Areas.Admin.Controllers
             existingCustomer.Cccd = updatedCustomer.Cccd;
             existingCustomer.NgaySinh = updatedCustomer.NgaySinh;
             existingCustomer.GioiTinh = updatedCustomer.GioiTinh;
+            existingCustomer.HinhAnh = "/img/AnhKhachHang/" + fileName;
             if (updatedCustomer.HinhAnh != null)
             {
                 existingCustomer.HinhAnh = updatedCustomer.HinhAnh;

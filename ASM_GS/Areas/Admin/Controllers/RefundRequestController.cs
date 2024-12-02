@@ -91,59 +91,94 @@
 
 
 
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public IActionResult CreateRefundRequest(string MaDonHang, string LyDo)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateRefundRequest(string MaDonHang, string LyDo, List<IFormFile> Images)
+        {
+            try
             {
-                try
+                // Kiểm tra dữ liệu đầu vào
+                if (string.IsNullOrEmpty(MaDonHang) || string.IsNullOrEmpty(LyDo))
                 {
-                    // Kiểm tra dữ liệu đầu vào
-                    if (string.IsNullOrEmpty(MaDonHang) || string.IsNullOrEmpty(LyDo))
+                    return StatusCode(400, "Thông tin không hợp lệ.");
+                }
+
+                // Kiểm tra xem yêu cầu hoàn trả đã được gửi trước đó chưa
+                var existingRequest = _context.RefundRequests
+                    .FirstOrDefault(r => r.MaDonHang == MaDonHang);
+
+                if (existingRequest != null)
+                {
+                    return StatusCode(400, "Đã gửi yêu cầu hoàn trả trước đó.");
+                }
+
+                // Kiểm tra thời hạn hoàn trả (3 ngày)
+                var order = _context.DonHangs.FirstOrDefault(o => o.MaDonHang == MaDonHang);
+                if (order == null)
+                {
+                    return NotFound("Không tìm thấy hóa đơn.");
+                }
+
+                if ((DateTime.Now - order.NgayDatHang.ToDateTime(new TimeOnly(0, 0))).TotalDays > 3)
+                {
+                    return StatusCode(400, "Thời hạn yêu cầu hoàn trả đã hết.");
+                }
+
+                // Tạo mới yêu cầu hoàn trả
+                var refundRequest = new RefundRequest
+                {
+                    MaDonHang = MaDonHang,
+                    LyDo = LyDo,
+                    TrangThai = "Đang chờ",
+                    NgayTao = DateTime.Now
+                };
+
+                _context.RefundRequests.Add(refundRequest);
+                _context.SaveChanges();
+
+                // Lưu hình ảnh và tạo đối tượng RefundRequestImage
+                var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/AnhHoanTra");
+                if (!Directory.Exists(uploadFolder))
+                {
+                    Directory.CreateDirectory(uploadFolder);
+                }
+
+                var refundImages = new List<RefundRequestImage>();
+                foreach (var image in Images)
+                {
+                    if (image.Length > 0)
                     {
-                        return StatusCode(400, "Thông tin không hợp lệ.");
-                    }
+                        var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(image.FileName)}";
+                        var filePath = Path.Combine(uploadFolder, fileName);
 
-                    // Kiểm tra xem yêu cầu hoàn trả đã được gửi trước đó chưa
-                    var existingRequest = _context.RefundRequests
-                        .FirstOrDefault(r => r.MaDonHang == MaDonHang);
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            image.CopyTo(stream);
+                        }
 
-                    if (existingRequest != null)
-                    {
-                        return StatusCode(400, "Đã gửi yêu cầu hoàn trả trước đó.");
-                    }
+                        refundImages.Add(new RefundRequestImage
+                        {
+                            ImageUrl = $"/img/AnhHoanTra/{fileName}",
+                            RefundRequestId = refundRequest.Id
+                        });
+                    } 
+                }
 
-                    // Kiểm tra thời hạn hoàn trả (3 ngày)
-                    var order = _context.DonHangs.FirstOrDefault(o => o.MaDonHang == MaDonHang);
-                    if (order == null)
-                    {
-                        return NotFound("Không tìm thấy hóa đơn.");
-                    }
-
-                    if ((DateTime.Now - order.NgayDatHang.ToDateTime(new TimeOnly(0, 0))).TotalDays > 3)
-                    {
-                        return StatusCode(400, "Thời hạn yêu cầu hoàn trả đã hết.");
-                    }
-
-                    // Tạo mới yêu cầu hoàn trả
-                    var refundRequest = new RefundRequest
-                    {
-                        MaDonHang = MaDonHang,
-                        LyDo = LyDo,
-                        TrangThai = "Đang chờ",
-                        NgayTao = DateTime.Now
-                    };
-
-                    _context.RefundRequests.Add(refundRequest);
+                if (refundImages.Any())
+                {
+                    _context.RefundRequestImages.AddRange(refundImages);
                     _context.SaveChanges();
+                }
 
-                    return Ok("Yêu cầu hoàn trả đã được xử lý thành công.");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Lỗi: {ex.Message}");
-                    return StatusCode(500, "Lỗi không xác định trên server.");
-                }
+                return Ok("Yêu cầu hoàn trả đã được xử lý thành công.");
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi: {ex.Message}");
+                return StatusCode(500, "Lỗi không xác định trên server.");
+            }
+        }
+
 
 
         [HttpPost]

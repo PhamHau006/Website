@@ -44,6 +44,7 @@
     <Folder Include="wwwroot\img\AnhKhachHang\" />
     <Folder Include="wwwroot\Avatar\" />
     <Folder Include="wwwroot\img\AnhNhanVien\" />
+    <Folder Include="wwwroot\img\AnhHoanTra\" />
   </ItemGroup>
 
 </Project>

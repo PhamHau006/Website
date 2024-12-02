@@ -237,8 +237,8 @@
 @*                             <td>@(discount.TrangThai == 1 ? "Đang Áp Dụng" : "Không Áp Dụng")</td>
  *@                            <td>
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-sm" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: transparent; border: none; color: inherit; font-size: 20px;">
-                                        :
+                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                        <i class="bx bx-dots-vertical-rounded"></i>
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li>
@@ -440,5 +440,3 @@
         document.getElementById('searchForm').submit(); // Gửi biểu mẫu khi thay đổi sắp xếp
     });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -54,7 +54,6 @@
             </tbody>
         </table>
         <span id="SanPhamError" class="text-danger"></span>
-        <small class="form-text text-muted">Vui lòng chọn ít nhất 1 sản phẩm.</small>
         <small class="form-text text-muted">Hiển thị tối đa 5 sản phẩm, tìm kiếm để lọc nhanh.</small>
     </div>
     <div id="selectedProducts">
@@ -182,8 +181,8 @@
         let isValid = true;
 
         let tenCombo = document.getElementById("TenCombo").value;
-        if (tenCombo.length < 3) {
-            document.getElementById("TenComboError").innerText = "Tên combo phải có ít nhất 3 ký tự";
+        if (tenCombo.length < 3 || /^[a-zA-Z0-9\s]+$/.test(tenCombo)) {
+            document.getElementById("TenComboError").innerText = "Tên combo phải có ít nhất 3 ký tự và không chứa ký tự đặc biệt.";
             isValid = false;
         }
 

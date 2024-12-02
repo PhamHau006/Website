@@ -46,14 +46,21 @@ namespace ASM_GS.Areas.Admin.Controllers
 
             switch (sortBy)
             {
+                case "Gia_Desc":
+                    combos = combos.OrderByDescending(c => c.Gia); // Sắp xếp theo giá từ cao đến thấp
+                    break;
                 case "Gia":
-                    combos = combos.OrderBy(c => c.Gia);
+                    combos = combos.OrderBy(c => c.Gia); // Sắp xếp theo giá từ thấp đến cao
+                    break;
+                case "TenCombo_Desc":
+                    combos = combos.OrderByDescending(c => c.TenCombo); // Sắp xếp theo tên từ Z-A
                     break;
                 case "TenCombo":
                 default:
-                    combos = combos.OrderBy(c => c.TenCombo);
+                    combos = combos.OrderBy(c => c.TenCombo); // Sắp xếp theo tên từ A-Z
                     break;
             }
+
 
             var pageNumber = page ?? 1;
             var pagedCombos = combos.ToPagedList(pageNumber, pageSize);

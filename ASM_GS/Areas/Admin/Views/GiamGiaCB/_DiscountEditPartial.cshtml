@@ -8,7 +8,7 @@
     <form asp-action="Edit" method="post" id="createDiscountForm">
         <input type="hidden" asp-for="MaGiamGia" />
         <div class="mb-3">
-            <label asp-for="TenGiamGia" class="form-label"></label>
+            <label asp-for="TenGiamGia" class="form-label">Tên giảm giá</label>
             <input asp-for="TenGiamGia" class="form-control" />
             <span id="TenGiamGiaError" class="text-danger"></span>
         </div>
@@ -67,7 +67,7 @@
         const ngayKetThuc = new Date(document.getElementById("NgayKetThuc").value);
         const soLuongMaNhapToiDa = document.getElementById("SoLuongMaNhapToiDa").value;
         // Kiểm tra lỗi cho tên mã giảm giá
-        if (!tenGiamGia || tenGiamGia.length < 3 || /[^a-zA-Z]/.test(tenGiamGia)) {
+        if (!tenGiamGia || tenGiamGia.length < 3 || /^[a-zA-Z0-9\s]+$/.test(tenGiamGia)) {
             document.getElementById("TenGiamGiaError").textContent = "Tên mã giảm giá phải có ít nhất 3 ký tự và không chứa ký tự đặc biệt.";
             hasError = true;
         }
@@ -97,7 +97,7 @@
         // Kiểm tra số lượng mã nhập tối đa phải lớn hơn 0
         if (soLuongMaNhapToiDa <= 0) {
             document.getElementById("SoLuongMaNhapToiDaError").innerText = "Số lượng mã nhập tối đa phải lớn hơn 0.";
-            isValid = false;
+            hasError = true;
         }
         // Nếu có lỗi, không gửi form
         if (hasError) {

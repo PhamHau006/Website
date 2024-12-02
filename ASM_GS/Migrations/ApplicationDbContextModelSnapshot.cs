@@ -403,8 +403,7 @@ namespace ASM_GS.Migrations
 
                     b.Property<string>("TenCombo")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TrangThai")
                         .HasColumnType("int");
@@ -819,7 +818,7 @@ namespace ASM_GS.Migrations
 
                     b.HasIndex("RefundRequestId");
 
-                    b.ToTable("RefundRequestImage");
+                    b.ToTable("RefundRequestImages");
                 });
 
             modelBuilder.Entity("ASM_GS.Models.SanPham", b =>

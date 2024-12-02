@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ASM_GS.Migrations
 {
     /// <inheritdoc />
-    public partial class tt : Migration
+    public partial class AddDuLieuToDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,7 +18,7 @@ namespace ASM_GS.Migrations
                 columns: table => new
                 {
                     MaCombo = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TenCombo = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    TenCombo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MoTa = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Gia = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
@@ -439,7 +439,7 @@ namespace ASM_GS.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RefundRequestImage",
+                name: "RefundRequestImages",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -449,9 +449,9 @@ namespace ASM_GS.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RefundRequestImage", x => x.Id);
+                    table.PrimaryKey("PK_RefundRequestImages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RefundRequestImage_RefundRequests_RefundRequestId",
+                        name: "FK_RefundRequestImages_RefundRequests_RefundRequestId",
                         column: x => x.RefundRequestId,
                         principalTable: "RefundRequests",
                         principalColumn: "Id",
@@ -692,8 +692,8 @@ namespace ASM_GS.Migrations
                 column: "MaGiamGia");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RefundRequestImage_RefundRequestId",
-                table: "RefundRequestImage",
+                name: "IX_RefundRequestImages_RefundRequestId",
+                table: "RefundRequestImages",
                 column: "RefundRequestId");
 
             migrationBuilder.CreateIndex(
@@ -742,7 +742,7 @@ namespace ASM_GS.Migrations
                 name: "MaNhapGiamGia");
 
             migrationBuilder.DropTable(
-                name: "RefundRequestImage");
+                name: "RefundRequestImages");
 
             migrationBuilder.DropTable(
                 name: "TaiKhoans");

@@ -12,6 +12,7 @@ using ASM_GS.Controllers;
 using X.PagedList;
 using X.PagedList.Extensions;
 using Microsoft.AspNetCore.Http.Extensions;
+using System.Text.RegularExpressions;
 
 
 namespace ASM_GS.Areas.Admin.Controllers
@@ -34,8 +35,10 @@ namespace ASM_GS.Areas.Admin.Controllers
             {
                 HttpContext.Session.SetString("RedirectUrl", HttpContext.Request.GetDisplayUrl());
                 ViewData["RedirectUrl"] = HttpContext.Session.GetString("RedirectUrl");
+                return RedirectToAction("Login", "Account");  // Hoặc trang đăng nhập của bạn
             }
 
+            // Cài đặt giá trị mặc định cho phân trang
             int defaultPageSize = pageSize ?? 10;
             int pageNumber = page ?? 1;
 
@@ -51,11 +54,11 @@ namespace ASM_GS.Areas.Admin.Controllers
                 sanPhams = sanPhams.Where(s => s.TenSanPham.Contains(searchName));
             }
 
+            // Lọc theo danh mục
             if (!string.IsNullOrEmpty(categoryId))
             {
                 sanPhams = sanPhams.Where(s => s.MaDanhMuc == categoryId);
             }
-
 
             // Lọc theo trạng thái
             if (status.HasValue)
@@ -90,12 +93,45 @@ namespace ASM_GS.Areas.Admin.Controllers
             ViewBag.SortOrder = sortOrder;
             ViewBag.PageSize = pageSize;
 
+            // Kiểm tra nếu không có sản phẩm nào
+            if (!sanPhams.Any())
+            {
+                ViewBag.NoProductsFound = true; // Thêm thông báo không tìm thấy sản phẩm
+                return View();  // Trả về view mặc định với thông báo
+            }
+
             // Trả về danh sách sản phẩm phân trang
             var pagedList = sanPhams.ToPagedList(pageNumber, defaultPageSize);
             return View(pagedList);
         }
 
 
+
+        [HttpPost]
+        public JsonResult DeleteImage(int imageId)
+        {
+            try
+            {
+                var image = _context.AnhSanPhams.FirstOrDefault(i => i.Id == imageId);
+                if (image == null)
+                {
+                    return Json(new { success = false, message = "Ảnh không tồn tại." });
+                }
+
+                // Xóa ảnh trong cơ sở dữ liệu (hoặc thư mục)
+                _context.AnhSanPhams.Remove(image);
+                _context.SaveChanges();
+
+                // Xóa ảnh từ thư mục nếu cần
+                // File.Delete(Server.MapPath(image.UrlAnh));
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
 
 
 
@@ -110,31 +146,75 @@ namespace ASM_GS.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(SanPham sanPham)
         {
-            // Set NgayThem to today's date
+
+            // Kiểm tra tên sản phẩm không trùng
+            var existingProduct = await _context.SanPhams
+                .FirstOrDefaultAsync(sp => sp.TenSanPham.ToLower() == sanPham.TenSanPham.ToLower());
+
+            // Đặt ngày thêm sản phẩm là ngày hiện tại
             sanPham.NgayThem = DateOnly.FromDateTime(DateTime.Now);
 
-            // Custom validation for required fields
+            // Kiểm tra tên sản phẩm bắt buộc
             if (string.IsNullOrWhiteSpace(sanPham.TenSanPham))
+            {
                 ModelState.AddModelError("TenSanPham", "Tên sản phẩm là bắt buộc.");
+            }
 
+            // Kiểm tra tên sản phẩm không chứa ký tự đặc biệt
+            if (sanPham.TenSanPham != null && Regex.IsMatch(sanPham.TenSanPham, @"^[a-zA-Z0-9\s]+$"))
+            {
+                ModelState.AddModelError("TenSanPham", "Tên sản phẩm không được chứa ký tự đặc biệt.");
+            }
+
+            
+
+            if (existingProduct != null)
+            {
+                ModelState.AddModelError("TenSanPham", "Tên sản phẩm đã tồn tại.");
+            }
+
+            // Kiểm tra giá sản phẩm
             if (sanPham.Gia <= 0)
+            {
                 ModelState.AddModelError("Gia", "Giá phải lớn hơn 0.");
+            }
 
+            // Kiểm tra giá không vượt quá giới hạn tối đa (ví dụ: 1 triệu)
+            decimal maxPrice = 1000000000; // Giới hạn giá tối đa
+            if (sanPham.Gia > maxPrice)
+            {
+                ModelState.AddModelError("Gia", $"Giá không được vượt quá {maxPrice:N0}.");
+            }
+
+            // Kiểm tra mã danh mục
             if (string.IsNullOrWhiteSpace(sanPham.MaDanhMuc))
+            {
                 ModelState.AddModelError("MaDanhMuc", "Danh mục là bắt buộc.");
+            }
 
+            // Kiểm tra số lượng sản phẩm
             if (sanPham.SoLuong < 0)
+            {
                 ModelState.AddModelError("SoLuong", "Số lượng không được nhỏ hơn 0.");
+            }
 
+            // Kiểm tra ngày sản xuất và hạn sử dụng
             if (!sanPham.Nsx.HasValue)
+            {
                 ModelState.AddModelError("Nsx", "Ngày sản xuất (NSX) là bắt buộc.");
+            }
 
             if (!sanPham.Hsd.HasValue)
+            {
                 ModelState.AddModelError("Hsd", "Hạn sử dụng (HSD) là bắt buộc.");
+            }
 
             if (sanPham.Nsx.HasValue && sanPham.Hsd.HasValue && sanPham.Hsd.Value < sanPham.Nsx.Value)
+            {
                 ModelState.AddModelError("Hsd", "Hạn sử dụng (HSD) không được sớm hơn ngày sản xuất (NSX).");
+            }
 
+            // Tạo mã sản phẩm ngẫu nhiên
             string randomMaSanPham;
             do
             {
@@ -147,8 +227,34 @@ namespace ASM_GS.Areas.Admin.Controllers
             ModelState.Remove("MaSanPham");
             sanPham.MaSanPham = randomMaSanPham;
 
-            // Validate ModelState
-            if (!ModelState.IsValid)
+
+            if (sanPham.UploadImages != null && sanPham.UploadImages.Count > 0)
+            {
+                // Kiểm tra ảnh upload
+                foreach (var image in sanPham.UploadImages)
+                {
+                    string fileExtension = Path.GetExtension(image.FileName).ToLower();
+                    // Kiểm tra định dạng tệp ảnh
+                    var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+
+                    if (!validExtensions.Contains(fileExtension))
+                    {
+                        ModelState.AddModelError("UploadImages", "Tệp ảnh phải có định dạng .jpg, .jpeg, .png, hoặc .gif.");
+                        break;
+                    }
+
+                    // Kiểm tra kích thước ảnh không quá 10MB
+                    long maxFileSize = 10 * 1024 * 1024; // 10MB
+                    if (image.Length > maxFileSize)
+                    {
+                        ModelState.AddModelError("UploadImages", "Tệp ảnh không được vượt quá 10MB.");
+                        break;
+                    }
+                }
+            }
+
+                // Validate ModelState
+                if (!ModelState.IsValid)
             {
                 var errors = ModelState.ToDictionary(
                     kvp => kvp.Key,
@@ -159,10 +265,9 @@ namespace ASM_GS.Areas.Admin.Controllers
 
             try
             {
-                
                 sanPham.TrangThai = sanPham.SoLuong == 0 ? 0 : 1;
 
-                // Handle image uploads
+                // Xử lý upload ảnh
                 if (sanPham.UploadImages != null && sanPham.UploadImages.Count > 0)
                 {
                     string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "img/AnhSanPham");
@@ -181,6 +286,7 @@ namespace ASM_GS.Areas.Admin.Controllers
                     }
                 }
 
+                // Lưu sản phẩm vào cơ sở dữ liệu
                 _context.Add(sanPham);
                 await _context.SaveChangesAsync();
 
@@ -191,6 +297,9 @@ namespace ASM_GS.Areas.Admin.Controllers
                 return Json(new { success = false, message = "Đã xảy ra lỗi khi thêm sản phẩm. Vui lòng thử lại!", error = ex.Message });
             }
         }
+
+
+
 
 
         // GET: Admin/SanPham/EditPartial
@@ -218,11 +327,38 @@ namespace ASM_GS.Areas.Admin.Controllers
 
         // POST: Admin/SanPham/Edit
         [HttpPost]
-        public async Task<IActionResult> Edit(SanPham sanPham)
+        public async Task<IActionResult> Edit(SanPham sanPham, List<int> imageIdsToDelete)  
         {
+
+            // Kiểm tra tên sản phẩm không bị trùng
+            var existingProductWithSameName = await _context.SanPhams
+                .Where(s => s.TenSanPham == sanPham.TenSanPham && s.MaSanPham != sanPham.MaSanPham) // Kiểm tra tên sản phẩm trùng, ngoại trừ sản phẩm hiện tại
+                .FirstOrDefaultAsync();
+
             // Custom validation for required fields
             if (string.IsNullOrWhiteSpace(sanPham.TenSanPham))
                 ModelState.AddModelError("TenSanPham", "Tên sản phẩm là bắt buộc.");
+
+            // Kiểm tra tên sản phẩm không chứa ký tự đặc biệt
+            if (sanPham.TenSanPham != null && Regex.IsMatch(sanPham.TenSanPham, @"^[a-zA-Z0-9\s]+$"))
+            {
+                ModelState.AddModelError("TenSanPham", "Tên sản phẩm không được chứa ký tự đặc biệt.");
+            }
+
+            
+
+            if (existingProductWithSameName != null)
+            {
+                ModelState.AddModelError("TenSanPham", "Tên sản phẩm đã tồn tại.");
+            }
+            // Kiểm tra giá không được nhỏ hơn 0 và không vượt quá giới hạn
+            if (sanPham.Gia <= 0)
+                ModelState.AddModelError("Gia", "Giá phải lớn hơn 0.");
+
+            // Kiểm tra giá không vượt quá giới hạn tối đa (ví dụ: 1 triệu)
+            decimal maxPrice = 1000000000; // Giới hạn giá tối đa
+            if (sanPham.Gia > maxPrice)
+                ModelState.AddModelError("Gia", $"Giá không được vượt quá {maxPrice:N0}.");
 
             if (sanPham.Gia <= 0)
                 ModelState.AddModelError("Gia", "Giá phải lớn hơn 0.");
@@ -241,6 +377,33 @@ namespace ASM_GS.Areas.Admin.Controllers
 
             if (sanPham.Nsx.HasValue && sanPham.Hsd.HasValue && sanPham.Hsd.Value < sanPham.Nsx.Value)
                 ModelState.AddModelError("Hsd", "Hạn sử dụng (HSD) không được sớm hơn ngày sản xuất (NSX).");
+
+            // Kiểm tra ảnh tải lên
+            if (sanPham.UploadImages != null && sanPham.UploadImages.Count > 0)
+            {
+                foreach (var image in sanPham.UploadImages)
+                {
+                    string fileExtension = Path.GetExtension(image.FileName).ToLower();
+                    var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+
+                    // Kiểm tra định dạng tệp
+                    if (!validExtensions.Contains(fileExtension))
+                    {
+                        ModelState.AddModelError("UploadImages", "Tệp ảnh phải có định dạng .jpg, .jpeg, .png, hoặc .gif.");
+                        break;
+                    }
+
+                    // Kiểm tra kích thước tệp không quá 10MB
+                    long maxFileSize = 10 * 1024 * 1024; // 10MB
+                    if (image.Length > maxFileSize)
+                    {
+                        ModelState.AddModelError("UploadImages", "Tệp ảnh không được vượt quá 10MB.");
+                        break;
+                    }
+                }
+            }
+
+
 
             if (!ModelState.IsValid)
             {
@@ -274,21 +437,46 @@ namespace ASM_GS.Areas.Admin.Controllers
                 existingSanPham.Hsd = sanPham.Hsd;
                 existingSanPham.TrangThai = sanPham.SoLuong == 0 ? 0 : 1;
 
-                // Kiểm tra nếu có chọn "ReplaceAllImages" và có tải lên ảnh mới
-                // Xóa tất cả các ảnh cũ từ hệ thống tệp và cơ sở dữ liệu
-                foreach (var image in existingSanPham.AnhSanPhams)
+                // ** Xử lý xóa ảnh cũ nếu có ảnh mới tải lên **
+                if (sanPham.UploadImages != null && sanPham.UploadImages.Count > 0)
                 {
-                    string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, image.UrlAnh.TrimStart('/'));
-                    if (System.IO.File.Exists(imagePath))
+                    
+
+                    // Xóa tất cả các ảnh cũ từ hệ thống tệp và cơ sở dữ liệu
+                    foreach (var image in existingSanPham.AnhSanPhams)
                     {
-                        System.IO.File.Delete(imagePath); // Xóa ảnh cũ từ hệ thống tệp
+                        string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, image.UrlAnh.TrimStart('/'));
+                        if (System.IO.File.Exists(imagePath))
+                        {
+                            System.IO.File.Delete(imagePath); // Xóa ảnh cũ từ hệ thống tệp
+                        }
+                    }
+
+                    _context.AnhSanPhams.RemoveRange(existingSanPham.AnhSanPhams); // Xóa ảnh cũ từ cơ sở dữ liệu
+                }
+
+                // ** Xử lý xóa ảnh riêng lẻ được chọn từ phía client **
+                if (imageIdsToDelete != null && imageIdsToDelete.Count > 0)
+                {
+                    foreach (var imageId in imageIdsToDelete)
+                    {
+                        var imageToDelete = existingSanPham.AnhSanPhams.FirstOrDefault(a => a.Id == imageId);
+                        if (imageToDelete != null)
+                        {
+                            // Xóa ảnh từ hệ thống tệp
+                            string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, imageToDelete.UrlAnh.TrimStart('/'));
+                            if (System.IO.File.Exists(imagePath))
+                            {
+                                System.IO.File.Delete(imagePath); // Xóa ảnh từ hệ thống tệp
+                            }
+
+                            // Xóa ảnh khỏi cơ sở dữ liệu
+                            _context.AnhSanPhams.Remove(imageToDelete);
+                        }
                     }
                 }
 
-                _context.AnhSanPhams.RemoveRange(existingSanPham.AnhSanPhams); // Xóa ảnh cũ từ cơ sở dữ liệu
-                await _context.SaveChangesAsync(); // Lưu ngay để đảm bảo ảnh cũ bị xóa
-
-                // Bước 3: Thêm các ảnh mới vào cơ sở dữ liệu và hệ thống tệp
+                // Thêm các ảnh mới vào cơ sở dữ liệu và hệ thống tệp
                 if (sanPham.UploadImages != null && sanPham.UploadImages.Count > 0)
                 {
                     string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "img/AnhSanPham");
@@ -307,7 +495,7 @@ namespace ASM_GS.Areas.Admin.Controllers
                     }
                 }
 
-                // Bước 4: Cập nhật sản phẩm trong cơ sở dữ liệu
+                // Cập nhật sản phẩm trong cơ sở dữ liệu
                 _context.Update(existingSanPham);
                 await _context.SaveChangesAsync();
 
@@ -318,6 +506,7 @@ namespace ASM_GS.Areas.Admin.Controllers
                 return Json(new { success = false, errors = new List<string> { ex.Message } });
             }
         }
+
 
 
         // POST: Admin/SanPham/Delete/5
@@ -377,5 +566,7 @@ namespace ASM_GS.Areas.Admin.Controllers
         {
             return _context.SanPhams.Any(e => e.MaSanPham == id);
         }
+
+
     }
 }

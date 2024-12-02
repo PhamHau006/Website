@@ -120,7 +120,33 @@
         </div>
     </form>
 </div>
+<script>
+    // Hàm xử lý khi nhấn vào nút "Xóa ảnh"
+    $(document).on('click', '.delete-image-btn', function() {
+        // Lấy ID của ảnh cần xóa
+        var imageId = $(this).data('image-id');
 
+        // Gửi yêu cầu AJAX để xóa ảnh
+        $.ajax({
+            url: '/Admin/SanPham/DeleteImage', // Địa chỉ API xóa ảnh
+            type: 'POST',
+            data: { imageId: imageId },
+            success: function(response) {
+                if (response.success) {
+                    // Nếu xóa thành công, loại bỏ ảnh khỏi DOM
+                    $('button[data-image-id="' + imageId + '"]').closest('.position-relative').remove();
+                    alert('Ảnh đã được xóa thành công.');
+                } else {
+                    alert('Xóa ảnh không thành công: ' + response.message);
+                }
+            },
+            error: function() {
+                alert('Có lỗi khi xóa ảnh.');
+            }
+        });
+    });
+
+</script>
 <style>
     .image-stack {
         display: flex;

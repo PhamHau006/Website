@@ -87,7 +87,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
 <script>
-    $(document).on('click', '.btn-add', function () {
+    $(document).on('click', '.btn-add', function() {
         const productId = $(this).data('id');
         const productName = $(this).data('name');
         const quantityInput = $(`input.quantity-input[data-id="${productId}"]`);
@@ -97,9 +97,9 @@
         if (!selectedList.find(`li[data-id="${productId}"]`).length) {
             selectedList.append(
                 `<li data-id="${productId}" data-quantity="${quantity}">
-                        ${productName} - Số lượng: ${quantity}
-                        <button type="button" class="btn btn-sm btn-danger btn-remove">Xóa</button>
-                     </li>`
+                            ${productName} - Số lượng: ${quantity}
+                            <button type="button" class="btn btn-sm btn-danger btn-remove">Xóa</button>
+                         </li>`
             );
             $('<input>').attr({
                 type: 'hidden',
@@ -109,18 +109,18 @@
         }
     });
 
-    $(document).on('click', '.btn-remove', function () {
+    $(document).on('click', '.btn-remove', function() {
         const productId = $(this).closest('li').data('id');
         $(this).closest('li').remove();
         $(`#createComboForm input[name="selectedSanPhams"][value^="${productId}:"]`).remove();
     });
 
 
-    $('#searchSanPham').on('input', function () {
+    $('#searchSanPham').on('input', function() {
         const searchTerm = $(this).val().toLowerCase();
         let count = 0;
 
-        $('#sanPhamTable tr').each(function () {
+        $('#sanPhamTable tr').each(function() {
             if (count >= maxDisplay) {
                 $(this).hide();
                 return;
@@ -142,17 +142,17 @@
         }
     });
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         const maxDisplay = 5;
 
         $('#sanPhamTable tr').hide(); // Ẩn toàn bộ sản phẩm ban đầu
         $('#sanPhamTable tr').slice(0, maxDisplay).show(); // Hiển thị tối đa 10 sản phẩm đầu tiên
 
-        $('#searchSanPham').on('input', function () {
+        $('#searchSanPham').on('input', function() {
             const searchTerm = $(this).val().toLowerCase();
             let count = 0;
 
-            $('#sanPhamTable tr').each(function () {
+            $('#sanPhamTable tr').each(function() {
                 const productName = $(this).find('td:first').text().toLowerCase();
                 if (productName.includes(searchTerm)) {
                     if (count < maxDisplay) {
@@ -170,7 +170,7 @@
 </script>
 <script>
     // JavaScript kiểm tra lỗi khi nhấn nút "Tạo combo"
-    document.getElementById("createComboButton").addEventListener("click", function (event) {
+    document.getElementById("createComboButton").addEventListener("click", function(event) {
         event.preventDefault(); // Ngừng gửi form để kiểm tra lỗi
 
         // Reset các thông báo lỗi cũ
@@ -201,17 +201,16 @@
             isValid = false;
         }
 
+        // Kiểm tra sản phẩm
         const selectedList = $('#selectedProductList');
         const errorSpan = $('#SanPhamError');
 
-        // Kiểm tra xem danh sách có sản phẩm nào không
         if (selectedList.children('li').length === 0) {
-            event.preventDefault();  // Ngừng gửi form
             errorSpan.text('Vui lòng chọn ít nhất một sản phẩm.');
+            isValid = false;
         } else {
-            errorSpan.text('');  // Xóa thông báo lỗi nếu có sản phẩm được chọn
+            errorSpan.text('');
         }
-
         // Nếu tất cả các điều kiện đều hợp lệ, submit form
         if (isValid) {
             document.getElementById("createComboForm").submit();

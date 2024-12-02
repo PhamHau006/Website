@@ -146,32 +146,23 @@ namespace ASM_GS.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(SanPham sanPham)
         {
-
-            // Kiểm tra tên sản phẩm không trùng
-            var existingProduct = await _context.SanPhams
-                .FirstOrDefaultAsync(sp => sp.TenSanPham.ToLower() == sanPham.TenSanPham.ToLower());
-
-            // Đặt ngày thêm sản phẩm là ngày hiện tại
-            sanPham.NgayThem = DateOnly.FromDateTime(DateTime.Now);
-
-            // Kiểm tra tên sản phẩm bắt buộc
             if (string.IsNullOrWhiteSpace(sanPham.TenSanPham))
             {
                 ModelState.AddModelError("TenSanPham", "Tên sản phẩm là bắt buộc.");
             }
-
-            // Kiểm tra tên sản phẩm không chứa ký tự đặc biệt
-            if (sanPham.TenSanPham != null && Regex.IsMatch(sanPham.TenSanPham, @"^[a-zA-Z0-9\s]+$"))
+            else if (!Regex.IsMatch(sanPham.TenSanPham, @"^[a-zA-Z0-9\s]+$"))
             {
                 ModelState.AddModelError("TenSanPham", "Tên sản phẩm không được chứa ký tự đặc biệt.");
             }
-
-            
-
-            if (existingProduct != null)
+            else if (await _context.SanPhams.AnyAsync(sp => sp.TenSanPham.ToLower() == sanPham.TenSanPham.ToLower()))
             {
                 ModelState.AddModelError("TenSanPham", "Tên sản phẩm đã tồn tại.");
             }
+
+            // Đặt ngày thêm sản phẩm là ngày hiện tại
+            sanPham.NgayThem = DateOnly.FromDateTime(DateTime.Now);
+
+
 
             // Kiểm tra giá sản phẩm
             if (sanPham.Gia <= 0)
@@ -253,8 +244,8 @@ namespace ASM_GS.Areas.Admin.Controllers
                 }
             }
 
-                // Validate ModelState
-                if (!ModelState.IsValid)
+            // Validate ModelState
+            if (!ModelState.IsValid)
             {
                 var errors = ModelState.ToDictionary(
                     kvp => kvp.Key,
@@ -327,7 +318,7 @@ namespace ASM_GS.Areas.Admin.Controllers
 
         // POST: Admin/SanPham/Edit
         [HttpPost]
-        public async Task<IActionResult> Edit(SanPham sanPham, List<int> imageIdsToDelete)  
+        public async Task<IActionResult> Edit(SanPham sanPham, List<int> imageIdsToDelete)
         {
 
             // Kiểm tra tên sản phẩm không bị trùng
@@ -345,7 +336,7 @@ namespace ASM_GS.Areas.Admin.Controllers
                 ModelState.AddModelError("TenSanPham", "Tên sản phẩm không được chứa ký tự đặc biệt.");
             }
 
-            
+
 
             if (existingProductWithSameName != null)
             {
@@ -440,7 +431,7 @@ namespace ASM_GS.Areas.Admin.Controllers
                 // ** Xử lý xóa ảnh cũ nếu có ảnh mới tải lên **
                 if (sanPham.UploadImages != null && sanPham.UploadImages.Count > 0)
                 {
-                    
+
 
                     // Xóa tất cả các ảnh cũ từ hệ thống tệp và cơ sở dữ liệu
                     foreach (var image in existingSanPham.AnhSanPhams)

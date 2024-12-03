@@ -79,12 +79,12 @@ namespace ASM_GS.Controllers
             // Chỉ cập nhật ảnh nếu có tệp mới được tải lên
             if (Anh != null && Anh.Length > 0)
             {
-                var filePath = Path.Combine("wwwroot/AnhKhachHang", Anh.FileName);
+                var filePath = Path.Combine("wwwroot/img/AnhKhachHang", Anh.FileName);
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await Anh.CopyToAsync(stream);
                 }
-                khachHang.HinhAnh = $"/AnhKhachHang/{Anh.FileName}";
+                khachHang.HinhAnh = $"/img/AnhKhachHang/{Anh.FileName}";
             }
 
             // Cập nhật các thông tin khác

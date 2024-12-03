@@ -24,11 +24,8 @@
         });
     </script>
 }
-<div class="text-end mb-3">
-    <a href="@Url.Action("ExportToExcel", "DonHang", new { area = "Admin", searchTerm = ViewData["searchTerm"] })" class="btn btn-success">
-        Xuất Excel
-    </a>
-</div>
+
+
 
 
 @if (TempData["ErrorMessage"] != null)
@@ -49,6 +46,20 @@
     <a href="@Url.Action("Index", "DonHang", new { area = "Admin", trangThai = "shipped" })" class="btn btn-info" style="margin-right:20px;">Vận Chuyển</a>
     <a href="@Url.Action("Index", "DonHang", new { area = "Admin", trangThai = "completed" })" class="btn btn-success">Đã Giao</a>
 </div>
+<br />
+<br />
+<br />
+<!-- Search Input and Button -->
+<div class="mb-3">
+    <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm theo mã đơn hàng, tên khách hàng..." />
+    <button class="btn btn-primary mt-2" id="searchBtn">Tìm kiếm</button>
+    <div class="text-end mb-3">
+        <a href="@Url.Action("ExportToExcel", "DonHang", new { area = "Admin", searchTerm = ViewData["searchTerm"] })" class="btn btn-success">
+            Xuất Excel
+        </a>
+    </div>
+</div>
+
 <div class="col-1">
     <label for="pageSize" class="form-label">Hiển thị:</label>
     <select name="pageSize" id="pageSize" class="form-select">
@@ -79,8 +90,8 @@
     </select>
 </div>
 
-
-<table class="table">
+<!-- Table with Orders -->
+<table class="table" id="orderTable">
     <thead>
         <tr>
             <th>Mã Đơn Hàng</th>
@@ -130,7 +141,6 @@
                     }
                 </td>
 
-
                 <td>
                     <button class="btn btn-info btn-details" data-id="@order.MaDonHang">Chi Tiết</button>
                 </td>
@@ -155,7 +165,8 @@
         }
     </tbody>
 </table>
-<!-- Phân trang -->
+
+<!-- Pagination -->
 <div class="d-flex justify-content-center">
     @Html.PagedListPager(Model, page => Url.Action("Index", new { page, pageSize = ViewBag.PageSize, trangThai = ViewBag.TrangThai }),
             new PagedListRenderOptions
@@ -175,6 +186,7 @@
         PageClasses = new[] { "page-link" }
     })
 </div>
+
 <!-- Modal -->
 <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -192,6 +204,87 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        // Handle the search button click event
+        $('#searchBtn').click(function () {
+            var searchTerm = $('#searchInput').val().toLowerCase(); // Get search term
+            $('#orderTable tbody tr').each(function () {
+                var row = $(this);
+                var text = row.text().toLowerCase();
+                if (text.indexOf(searchTerm) === -1) {
+                    row.hide(); // Hide rows that do not match
+                } else {
+                    row.show(); // Show rows that match
+                }
+            });
+        });
+
+        // Detail modal functionality
+        $(".btn-details").click(function () {
+            var orderId = $(this).data("id"); // Lấy mã đơn hàng từ data-id
+
+            $.ajax({
+                url: '@Url.Action("GetOrderDetails", "DonHang", new { area = "Admin" })', // Thay đổi URL tương ứng với route của bạn
+                type: 'GET',
+                data: { maDonHang: orderId },
+                success: function (response) {
+                    $('#orderDetailBody').html(response); // Gán dữ liệu chi tiết vào modal
+                    $('#orderDetailModal').modal('show'); // Hiển thị modal
+                },
+                error: function () {
+                    alert("Có lỗi xảy ra khi tải chi tiết đơn hàng.");
+                }
+            });
+        });
+    });
+    $(document).ready(function () {
+        // Theo dõi sự thay đổi của dropdown "Hiển thị"
+        $('#pageSize').change(function () {
+            // Lấy giá trị mới của pageSize
+            var pageSize = $(this).val();
+
+            // Lấy giá trị của trang hiện tại từ URL (hoặc giá trị mặc định là 1)
+            var currentPage = new URLSearchParams(window.location.search).get('page') || 1;
+
+            // Thực hiện chuyển hướng với pageSize mới
+            window.location.href = '@Url.Action("Index", "DonHang", new { area = "Admin", trangThai = ViewBag.TrangThai })' + '?page=' + currentPage + '&pageSize=' + pageSize;
+        });
+
+        // Phần tìm kiếm đơn hàng
+        $('#searchBtn').click(function () {
+            var searchTerm = $('#searchInput').val().toLowerCase();
+            $('#orderTable tbody tr').each(function () {
+                var row = $(this);
+                var text = row.text().toLowerCase();
+                if (text.indexOf(searchTerm) === -1) {
+                    row.hide();
+                } else {
+                    row.show();
+                }
+            });
+        });
+
+        // Chi tiết đơn hàng
+        $(".btn-details").click(function () {
+            var orderId = $(this).data("id");
+            $.ajax({
+                url: '@Url.Action("GetOrderDetails", "DonHang", new { area = "Admin" })',
+                type: 'GET',
+                data: { maDonHang: orderId },
+                success: function (response) {
+                    $('#orderDetailBody').html(response);
+                    $('#orderDetailModal').modal('show');
+                },
+                error: function () {
+                    alert("Có lỗi xảy ra khi tải chi tiết đơn hàng.");
+                }
+            });
+        });
+    });
+
+</script>
 
 <style>
     /* Định dạng chung cho trạng thái */
@@ -234,40 +327,3 @@
     }
 
 </style>
-<script>
-    $(document).ready(function () {
-        $(".btn-details").click(function () {
-            var orderId = $(this).data("id"); // Lấy mã đơn hàng từ data-id
-
-            $.ajax({
-                url: '@Url.Action("GetOrderDetails", "DonHang", new { area = "Admin" })', // Thay đổi URL tương ứng với route của bạn
-                type: 'GET',
-                data: { maDonHang: orderId },
-                success: function (response) {
-                    $('#orderDetailBody').html(response); // Gán dữ liệu chi tiết vào modal
-                    $('#orderDetailModal').modal('show'); // Hiển thị modal
-                },
-                error: function () {
-                    alert("Có lỗi xảy ra khi tải chi tiết đơn hàng.");
-                }
-            });
-        });
-    });
-</script>
-<script>
-    $(document).ready(function () {
-        var directUrl = '@Direct';
-
-        if (directUrl) {
-            Swal.fire({
-                icon: 'info',
-                title: 'Thông báo',
-                text: 'Bạn sẽ được chuyển đến trang đăng nhập.',
-                showConfirmButton: false,
-                timer: 3000
-            }).then(() => {
-                window.location.href = '/LoginAdmin';
-            });
-        }
-    });
-</script>

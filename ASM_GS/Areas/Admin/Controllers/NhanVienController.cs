@@ -127,7 +127,25 @@ namespace ASM_GS.Areas.Admin.Controllers
             {
                 errors.Add("VaiTro", "Vui lòng chọn vai trò.");
             }
-            string fileName=null;
+
+            // Kiểm tra trùng số điện thoại
+            var isPhoneExist = await _context.NhanViens
+                .AnyAsync(nv => nv.SoDienThoai == SoDienThoai);
+            if (isPhoneExist)
+            {
+                errors.Add("SoDienThoai", "Số điện thoại đã tồn tại.");
+            }
+
+            // Kiểm tra trùng căn cước công dân
+            var isCccdExist = await _context.NhanViens
+                .AnyAsync(nv => nv.Cccd == Cccd);
+            if (isCccdExist)
+            {
+                errors.Add("Cccd", "Căn cước công dân đã tồn tại.");
+            }
+
+            string fileName = null;
+
             // Handle file upload for the image (Anh)
             if (Anh != null && Anh.Length > 0)
             {
@@ -147,6 +165,7 @@ namespace ASM_GS.Areas.Admin.Controllers
             {
                 return Json(new { success = false, errors = errors });
             }
+
             var lastStaff = await _context.NhanViens
                                             .OrderByDescending(kh => kh.MaNhanVien)
                                             .FirstOrDefaultAsync();
@@ -164,7 +183,7 @@ namespace ASM_GS.Areas.Admin.Controllers
             // Create new NhanVien object and save to DB
             var staff = new NhanVien
             {
-                MaNhanVien = "NV"+ nextId.ToString("D3"),
+                MaNhanVien = "NV" + nextId.ToString("D3"),
                 TenNhanVien = TenNhanVien,
                 SoDienThoai = SoDienThoai,
                 DiaChi = DiaChi,
@@ -181,6 +200,7 @@ namespace ASM_GS.Areas.Admin.Controllers
 
             return Json(new { success = true, message = "Nhân viên đã được thêm thành công!" });
         }
+
         [HttpGet]
         public async Task<IActionResult> EditStaff(string id)
         {

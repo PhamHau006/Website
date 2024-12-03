@@ -70,42 +70,63 @@ namespace ASM_GS.Areas.Admin.Controllers
         }
 
 
-        // GetChiTietHoaDon - Lấy chi tiết hóa đơn theo mã hóa đơn
         [HttpGet]
         public IActionResult GetChiTietHoaDon(string maHoaDon)
         {
-            var hoaDon = _context.HoaDons.Include(h => h.ChiTietHoaDons)
-                                         .ThenInclude(ct => ct.SanPham)
-                                         .FirstOrDefault(h => h.MaHoaDon == maHoaDon);
-            if (hoaDon == null)
-            {
-                return NotFound();
-            }
+            // Lấy chi tiết hóa đơn
+            var chiTiet = _context.ChiTietHoaDons
+                .Where(ct => ct.MaHoaDon == maHoaDon)
+                .Select(ct => new
+                {
+                    // Thông tin sản phẩm (nếu không phải combo)
+                    sanPham = ct.SanPham == null ? null : new
+                    {
+                        TenSanPham = ct.SanPham.TenSanPham,
+                        HinhAnh = ct.SanPham.AnhSanPhams.Any()
+                            ? ct.SanPham.AnhSanPhams.FirstOrDefault().UrlAnh
+                            : "/images/default-image.jpg"
+                    },
+                    // Thông tin combo (nếu là combo)
+                    combo = ct.Combo == null ? null : new
+                    {
+                        TenCombo = ct.Combo.TenCombo,
+                        HinhAnh = !string.IsNullOrEmpty(ct.Combo.Anh) ? ct.Combo.Anh : "/images/default-image.jpg",
+                        SanPhamsTrongCombo = _context.ChiTietCombos
+                            .Where(c => c.MaCombo == ct.Combo.MaCombo)
+                            .Select(c => new
+                            {
+                                TenSanPham = c.MaSanPhamNavigation.TenSanPham,
+                                SoLuongTrongCombo = c.SoLuong, // Số lượng của sản phẩm trong combo
+                                GiaSanPham = c.MaSanPhamNavigation.Gia,
+                                HinhAnhSanPham = c.MaSanPhamNavigation.AnhSanPhams.Any()
+                                    ? c.MaSanPhamNavigation.AnhSanPhams.FirstOrDefault().UrlAnh
+                                    : "/images/default-image.jpg"
+                            }).ToList()
+                    },
+                    ct.SoLuong, // Số lượng combo hoặc sản phẩm
+                    Gia = ct.SanPham != null ? ct.SanPham.Gia : (ct.Combo != null ? ct.Combo.Gia : 0),
+                    ThanhTien = ct.SanPham != null
+                        ? ct.SanPham.Gia * ct.SoLuong
+                        : (ct.Combo != null ? ct.Combo.Gia * ct.SoLuong : 0)
+                })
+                .ToList();
 
-            var chiTietHtml = hoaDon.ChiTietHoaDons.Select(ct => new
-            {
-                ct.SanPham.TenSanPham,
-                ct.SanPham.AnhSanPhams,
-                ct.SoLuong,
-                ct.Gia,
-                ThanhTien = ct.SoLuong * ct.Gia
-            }).ToList();
-
-            var tongTien = chiTietHtml.Sum(x => x.ThanhTien);
-            return Json(new { chiTietHtml, tongTien });
+            return Json(chiTiet);
         }
 
-        // ChangeStatus - Cập nhật trạng thái của hóa đơn
         [HttpPost]
         public IActionResult ChangeStatus(string maHoaDon, int trangThai)
         {
             var hoaDon = _context.HoaDons.FirstOrDefault(h => h.MaHoaDon == maHoaDon);
-            if (hoaDon != null)
+            if (hoaDon == null)
             {
-                hoaDon.TrangThai = trangThai == 1 ? 0 : 1; // Đổi trạng thái
-                _context.SaveChanges();
+                return Json(new { success = false, message = "Không tìm thấy hóa đơn!" });
             }
-            return NoContent();
+
+            hoaDon.TrangThai = trangThai; // Cập nhật trạng thái
+            _context.SaveChanges(); // Lưu thay đổi vào database
+
+            return Json(new { success = true, message = "Cập nhật trạng thái thành công!" });
         }
 
         // Enum trạng thái hóa đơn

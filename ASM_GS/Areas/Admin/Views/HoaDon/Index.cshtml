@@ -282,18 +282,31 @@
             Swal.fire('Lỗi', 'Không thể tải chi tiết hóa đơn. Vui lòng thử lại.', 'error');
         });
     }
-
+    function changeStatus(maHoaDon, trangThai) {
+        Swal.fire({
+            title: 'Xác nhận',
+            text: "Bạn có chắc chắn muốn thay đổi trạng thái?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.post('/Admin/HoaDon/ChangeStatus', { maHoaDon: maHoaDon, trangThai: trangThai }, function (response) {
+                    Swal.fire(response.message, '', response.success ? 'success' : 'error')
+                        .then(() => location.reload());
+                });
+            }
+        });
+    }
     // Gọi lại khi trang được tải
     $(document).ready(function () {
         loadHoaDonList();
     });
-    // Hàm mở modal sửa trạng thái
     function xacNhanDoiTrangThai(maHoaDon, trangThaiHienTai) {
-        // Xác định trạng thái mới
         const trangThaiMoi = trangThaiHienTai === 1 ? 0 : 1;
         const trangThaiText = trangThaiMoi === 1 ? "Đã thanh toán" : "Chưa thanh toán";
 
-        // Hiển thị hộp thoại xác nhận bằng SweetAlert
         Swal.fire({
             title: 'Xác nhận thay đổi trạng thái',
             text: `Bạn có chắc chắn muốn đổi trạng thái hóa đơn sang "${trangThaiText}" không?`,
@@ -303,23 +316,14 @@
             cancelButtonText: 'Hủy',
         }).then((result) => {
             if (result.isConfirmed) {
-                // Gửi yêu cầu cập nhật trạng thái
-                $.post('/Admin/HoaDon/UpdateTrangThai', { maHoaDon: maHoaDon, trangThai: trangThaiMoi }, function (response) {
-                    Swal.fire({
-                        title: response.success ? 'Thành công' : 'Thất bại',
-                        text: response.message,
-                        icon: response.success ? 'success' : 'error',
-                    }).then(() => {
-                        if (response.success) {
-                            location.reload(); // Tải lại trang sau khi cập nhật thành công
-                        }
-                    });
-                }).fail(function () {
-                    Swal.fire('Lỗi', 'Không thể cập nhật trạng thái. Vui lòng thử lại.', 'error');
+                $.post('/Admin/HoaDon/ChangeStatus', { maHoaDon: maHoaDon, trangThai: trangThaiMoi }, function (response) {
+                    Swal.fire(response.message, '', response.success ? 'success' : 'error')
+                        .then(() => location.reload()); // Tải lại trang sau khi cập nhật thành công
                 });
             }
         });
     }
+
     function capNhatTrangThai() {
         const maHoaDon = $('#maHoaDonSua').val();
         const trangThai = $('#trangThaiSua').val();

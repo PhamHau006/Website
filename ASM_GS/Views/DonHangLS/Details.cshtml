@@ -49,7 +49,6 @@
             }
         </tbody>
     </table>
-
     <!-- Kiểm tra trạng thái đơn hàng -->
     @if (Model.TrangThai == 0) // Trạng thái "Đang xử lý"
     {
@@ -63,49 +62,53 @@
     {
         <p style="color: orange; font-weight: bold;">Đơn hàng đang vận chuyển. Không thể hủy hoặc hoàn trả.</p>
     }
-    else if ((DateTime.Now - Model.NgayXuatHoaDon.ToDateTime(new TimeOnly(0, 0))).TotalDays <= 3)
+    else if (Model.TrangThai == 2) // Trạng thái "Đã hoàn tất"
     {
-        @if (Model.IsRefunded)
+        // Kiểm tra nếu đơn hàng đã hoàn tất và thời gian từ ngày xuất hóa đơn không quá 3 ngày
+        if ((DateTime.Now - Model.NgayXuatHoaDon.ToDateTime(new TimeOnly(0, 0))).TotalDays <= 3)
         {
-            <p class="text-success">Đã gửi yêu cầu hoàn trả trước đó.</p>
-            <h5>Ảnh đính kèm:</h5>
-            <div class="row">
-                @foreach (var image in Model.RefundRequestImages)
-                {
-                    <div class="col-md-3">
-                        <img src="@image.ImageUrl" class="img-thumbnail" alt="Ảnh hoàn trả" />
-                    </div>
-                }
-            </div>
-
+            @if (Model.IsRefunded)
+            {
+                <p class="text-success">Đã gửi yêu cầu hoàn trả trước đó.</p>
+                <h5>Ảnh đính kèm:</h5>
+                <div class="row">
+                    @foreach (var image in Model.RefundRequestImages)
+                    {
+                        <div class="col-md-3">
+                            <img src="@image.ImageUrl" class="img-thumbnail" alt="Ảnh hoàn trả" />
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div id="refundSection">
+                    <h4>Hoàn trả hóa đơn</h4>
+                    <form id="refundForm" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="MaDonHang" value="@Model.MaDonHang" />
+                        <div class="form-group">
+                            <label for="LyDo">Lý do hoàn trả:</label>
+                            <textarea id="LyDo" name="LyDo" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="Images">Tải lên ảnh:</label>
+                            <input type="file" id="Images" name="Images" class="form-control" multiple accept="image/*" />
+                        </div>
+                        <div id="imagePreview" class="row mt-3"></div>
+                        <button type="button" class="btn btn-danger mt-3" id="submitRefund">Yêu cầu hoàn trả</button>
+                    </form>
+                </div>
+            }
         }
         else
         {
-            <div id="refundSection">
-                <h4>Hoàn trả hóa đơn</h4>
-                <form id="refundForm" enctype="multipart/form-data">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="MaDonHang" value="@Model.MaDonHang" />
-                    <div class="form-group">
-                        <label for="LyDo">Lý do hoàn trả:</label>
-                        <textarea id="LyDo" name="LyDo" class="form-control" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="Images">Tải lên ảnh:</label>
-                        <input type="file" id="Images" name="Images" class="form-control" multiple accept="image/*" />
-                    </div>
-                    <div id="imagePreview" class="row mt-3"></div>
-                    <button type="button" class="btn btn-danger mt-3" id="submitRefund">Yêu cầu hoàn trả</button>
-                </form>
+            <div style="color: red;">
+                Đã hết thời gian hoàn trả (quá 3 ngày).
             </div>
         }
     }
-    else
-    {
-        <div style="color: red;">
-            Đã hết thời gian hoàn trả
-        </div>
-    }
+
 </div>
 <button style="margin-top:50px; margin-left: 50px;">
     <a href="@Url.Action("Index", "DonHangLS")">Quay lại danh sách đơn hàng</a>

@@ -3,7 +3,6 @@ using ASM_GS.ViewModels; // Namespace cho ViewModel
 using ASM_GS.Models; // Namespace cho Model
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using System.Drawing.Printing;
 
 namespace ASM_GS.Controllers
 {
@@ -32,6 +31,7 @@ namespace ASM_GS.Controllers
             {
                 products = products.Where(p => p.MaDanhMuc == categoryId);
             }
+
             // Lọc theo khoảng giá
             if (!string.IsNullOrEmpty(priceRange))
             {
@@ -51,6 +51,7 @@ namespace ASM_GS.Controllers
                         break;
                 }
             }
+
             // Lọc theo tiêu chí khác
             switch (filterBy)
             {
@@ -58,7 +59,8 @@ namespace ASM_GS.Controllers
                     products = products.OrderBy(p => p.Gia);
                     break;
                 case "Best Sellers":
-                    products = products.OrderByDescending(p => p.Gia); // Thay đổi theo nhu cầu của bạn
+                    // Thực hiện lọc theo sản phẩm bán chạy. Ví dụ: dựa trên số lượng bán
+                    products = products.OrderByDescending(p => p.ChiTietHoaDons.Count); // Giả sử bạn có bảng OrderDetails chứa các đơn hàng
                     break;
                 case "New Arrivals":
                     products = products.OrderByDescending(p => p.NgayThem);

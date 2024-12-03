@@ -483,8 +483,9 @@
 <script>
     $(document).ready(function () {
         $("#btnThem").click(function (e) {
-            e.preventDefault();
+            e.preventDefault(); // Ngừng hành động mặc định của nút
 
+            // Lấy dữ liệu từ các trường input
             var staffData = {
                 TenNhanVien: $("#TenNhanVien").val(),
                 SoDienThoai: $("#SoDienThoai").val(),
@@ -492,59 +493,56 @@
                 VaiTro: $("#VaiTro").val(),
                 Cccd: $("#Cccd").val(),
                 NgaySinh: $("#NgaySinh").val(),
-                GioiTinh: $("#GioiTinh").val()
+                GioiTinh: $("#GioiTinh").val(),
+                Anh: $("#Anh")[0].files[0] // Lấy file ảnh
             };
 
             // Tạo đối tượng FormData để gửi dữ liệu bao gồm cả file
             var formData = new FormData();
 
-            // Thêm dữ liệu vào formData
+            // Thêm dữ liệu vào FormData
             for (var key in staffData) {
                 formData.append(key, staffData[key]);
             }
 
-            // Thêm file ảnh vào formData
-            formData.append("Anh", $("#Anh")[0].files[0]);
-
-            // Gửi AJAX POST request đến controller
+            // Gửi AJAX POST request đến server
             $.ajax({
-                url: '/Admin/NhanVien/CreateStaff',
+                url: '/Admin/NhanVien/CreateStaff', // URL đến controller
                 type: 'POST',
                 data: formData,
                 contentType: false,
                 processData: false,
                 success: function (response) {
                     if (response.success) {
-                        // Use SweetAlert for success
+                        // Hiển thị thông báo thành công
                         Swal.fire({
                             icon: 'success',
                             title: 'Thành công!',
                             text: 'Nhân viên đã được thêm thành công!',
                         }).then(() => {
-                            // Close the modal
-                            $("#myModal").modal('hide');
-                            location.reload();
+                            // Đóng modal sau khi thêm thành công
+                            $("#myModal").modal('hide'); // Đảm bảo modal được đóng
+                            location.reload(); // Tải lại trang nếu cần thiết
                         });
                     } else {
-                        $(".text-danger").text("");
-
-                        // Display errors for each field
+                        // Hiển thị các lỗi nếu có
+                        $(".text-danger").text(""); // Xóa các lỗi cũ
                         for (var key in response.errors) {
                             if (response.errors.hasOwnProperty(key)) {
-                                $("#error" + key).text(response.errors[key]);
+                                $("#error" + key).text(response.errors[key]); // Hiển thị lỗi tương ứng với từng trường
                             }
                         }
 
-                        // Use SweetAlert for error
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Có lỗi xảy ra!',
-                            text: 'Vui lòng kiểm tra lại các thông tin và thử lại.',
-                        });
+                        // Thông báo lỗi nếu có
+                        // Swal.fire({
+                        //     icon: 'error',
+                        //     title: 'Có lỗi xảy ra!',
+                        //     text: 'Vui lòng kiểm tra lại các thông tin và thử lại.',
+                        // });
                     }
                 },
                 error: function (xhr, status, error) {
-                    // Use SweetAlert for error
+                    // Xử lý lỗi trong trường hợp có lỗi AJAX
                     Swal.fire({
                         icon: 'error',
                         title: 'Có lỗi xảy ra!',
@@ -554,6 +552,8 @@
             });
         });
     });
+
+
 
 
 </script>
@@ -606,7 +606,8 @@
                         $('#myModal1').modal('hide');
                         location.reload();
                     });
-                } else {
+                }
+                else {
                     // Show validation errors using SweetAlert
                     for (var key in response.errors) {
                         if (response.errors.hasOwnProperty(key)) {
@@ -622,6 +623,7 @@
                     });
                 }
             },
+
             error: function () {
                 // SweetAlert for AJAX error
                 Swal.fire({

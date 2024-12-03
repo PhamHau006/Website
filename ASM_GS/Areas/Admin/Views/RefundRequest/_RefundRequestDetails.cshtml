@@ -17,13 +17,14 @@
     }
 </script>
 <div class="container mt-4">
-    <h3 class="mb-4 text-primary">Chi tiết Yêu cầu Hoàn trả</h3>
+
 
     <!-- Card Thông tin Yêu cầu Hoàn trả -->
     <div class="card mb-4">
         <div class="card-header bg-primary text-white">
             <h5 class="card-title mb-0">Thông tin Yêu cầu Hoàn trả</h5>
         </div>
+        <br />
         <div class="card-body">
             <p><strong>Mã đơn hàng:</strong> @Model.MaDonHang</p>
             <p><strong>Lý do hoàn trả:</strong> @Model.LyDo</p>
@@ -57,15 +58,16 @@
         </div>
     </div>
 
-
+    
     <!-- Hình ảnh đính kèm -->
     @if (Model.RefundRequestImages != null && Model.RefundRequestImages.Any())
     {
         <div class="card mb-4">
-            <div class="card-header bg-primary text-white">
+            <div class="">
                 <h5 class="card-header bg-primary text-white">Hình ảnh đính kèm</h5>
             </div>
-            <div class="card-header bg-primary text-white">
+            <br />
+            <div class="">
                 <div class="row">
                     @foreach (var image in Model.RefundRequestImages)
                     {
@@ -97,6 +99,7 @@
             <div class="card-header bg-primary text-white">
                 <h5 class="card-title mb-0">Thông tin Đơn hàng</h5>
             </div>
+            <br />
             <div class="card-body">
                 <p><strong>Tên khách hàng:</strong> @Model.DonHang.KhachHang.TenKhachHang</p>
                 <p><strong>Mã đơn hàng:</strong> @Model.DonHang.MaDonHang</p>
@@ -146,6 +149,7 @@
             <div class="card-header bg-primary text-white">
                 <h5 class="card-title mb-0">Danh sách Sản phẩm</h5>
             </div>
+            <br />
             <div class="card-body">
                 <table class="table table-bordered">
                     <thead class="table-light">

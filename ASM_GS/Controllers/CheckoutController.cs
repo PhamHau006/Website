@@ -119,6 +119,7 @@ namespace ASM_GS.Controllers
             {
                 totalAmount = (decimal)TempTong;
             }
+
             // Tạo mã hóa đơn mới
             var lastInvoice = await _context.HoaDons.OrderByDescending(h => h.MaHoaDon).FirstOrDefaultAsync();
             string newInvoiceId = "HD" + ((lastInvoice != null ? int.Parse(lastInvoice.MaHoaDon.Substring(2)) : 0) + 1).ToString("D3");
@@ -126,7 +127,8 @@ namespace ASM_GS.Controllers
             // Tạo mã đơn hàng mới
             var lastOrder = await _context.DonHangs.OrderByDescending(d => d.MaDonHang).FirstOrDefaultAsync();
             string newOrderId = "DH" + ((lastOrder != null ? int.Parse(lastOrder.MaDonHang.Substring(2)) : 0) + 1).ToString("D3");
-            // Tạo đơn hàng và hóa đơn
+
+            // Tạo hóa đơn
             var hoaDon = new HoaDon
             {
                 MaHoaDon = newInvoiceId,
@@ -152,24 +154,60 @@ namespace ASM_GS.Controllers
             _context.DonHangs.Add(donHang);
             await _context.SaveChangesAsync();
 
-            // Lưu các chi tiết đơn hàng
+            // Lưu các chi tiết đơn hàng và chi tiết hóa đơn
             foreach (var item in model.CartItems)
             {
-                var chiTietDonHang = new ChiTietDonHang
+                if (!string.IsNullOrEmpty(item.ProductId)) // Nếu là sản phẩm
                 {
-                    MaDonHang = donHang.MaDonHang,
-                    MaSanPham = item.ProductId,
-                    SoLuong = item.Quantity,
-                    Gia = item.Price
-                };
-                _context.ChiTietDonHangs.Add(chiTietDonHang);
+                    // Thêm vào chi tiết đơn hàng
+                    var chiTietDonHang = new ChiTietDonHang
+                    {
+                        MaDonHang = donHang.MaDonHang,
+                        MaSanPham = item.ProductId,
+                        SoLuong = item.Quantity,
+                        Gia = item.Price
+                    };
+                    _context.ChiTietDonHangs.Add(chiTietDonHang);
 
-                // Giảm số lượng sản phẩm trong kho
-                var sanPham = await _context.SanPhams.FirstOrDefaultAsync(p => p.MaSanPham == item.ProductId);
-                if (sanPham != null)
+                    // Thêm vào chi tiết hóa đơn
+                    var chiTietHoaDon = new ChiTietHoaDon
+                    {
+                        MaHoaDon = hoaDon.MaHoaDon,
+                        MaSanPham = item.ProductId,
+                        SoLuong = item.Quantity,
+                        Gia = item.Price
+                    };
+                    _context.ChiTietHoaDons.Add(chiTietHoaDon);
+
+                    // Cập nhật số lượng sản phẩm trong kho
+                    var sanPham = await _context.SanPhams.FirstOrDefaultAsync(p => p.MaSanPham == item.ProductId);
+                    if (sanPham != null)
+                    {
+                        sanPham.SoLuong -= item.Quantity;
+                        _context.SanPhams.Update(sanPham);
+                    }
+                }
+                else if (!string.IsNullOrEmpty(item.ComboId)) // Nếu là combo
                 {
-                    sanPham.SoLuong -= item.Quantity;
-                    _context.SanPhams.Update(sanPham);
+                    // Thêm vào chi tiết hóa đơn cho combo
+                    var chiTietHoaDon = new ChiTietHoaDon
+                    {
+                        MaHoaDon = hoaDon.MaHoaDon,
+                        MaCombo = item.ComboId,
+                        SoLuong = item.Quantity,
+                        Gia = item.Price
+                    };
+                    _context.ChiTietHoaDons.Add(chiTietHoaDon);
+
+                    // Thêm vào chi tiết đơn hàng cho combo
+                    var chiTietDonHang = new ChiTietDonHang
+                    {
+                        MaDonHang = donHang.MaDonHang,
+                        MaCombo = item.ComboId,
+                        SoLuong = item.Quantity,
+                        Gia = item.Price
+                    };
+                    _context.ChiTietDonHangs.Add(chiTietDonHang);
                 }
             }
 
@@ -180,8 +218,25 @@ namespace ASM_GS.Controllers
 
             // Thanh toán thành công, chuyển hướng đến trang xác nhận đơn hàng
             TempData["SuccessMessage"] = "Thanh toán thành công! Đơn hàng của bạn đang được xử lý.";
+
+            // Nếu thanh toán qua VNPay
+            if (payment == "VNPay")
+            {
+                var vnPayModel = new VnPaymentRequestModel
+                {
+                    Amount = (float)totalAmount,
+                    CreatedDate = DateTime.Now,
+                    Description = $"{model.SoDienThoai} {model.TenKhachHang}",
+                    FullName = model.TenKhachHang,
+                    OrderId = (new Random().Next(1000, 100000)).ToString()
+                };
+                return Redirect(_vnPayServices.CreatePaymentUrl(HttpContext, vnPayModel));
+            }
+
+            // Chuyển hướng đến trang xác nhận đơn hàng
             return RedirectToAction("OrderConfirmation", new { orderId = donHang.MaDonHang });
         }
+
 
 
 
@@ -258,6 +313,8 @@ namespace ASM_GS.Controllers
 
                 if (discount != null)
                 {
+                    discountCodeEntity.IsUsed = true;
+                    await _context.SaveChangesAsync();
                     // Kiểm tra trạng thái của giảm giá
                     if (discount.TrangThai != 1) // Giả sử trạng thái 1 là "áp dụng"
                     {

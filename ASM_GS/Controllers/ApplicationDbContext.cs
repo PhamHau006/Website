@@ -25,6 +25,7 @@ namespace ASM_GS.Controllers
         public virtual DbSet<TaiKhoan> TaiKhoans { get; set; }
         public virtual DbSet<MaNhapGiamGia> MaNhapGiamGias { get; set; } 
         public DbSet<RefundRequest> RefundRequests { get; set; }
+        public DbSet<RefundRequestImage> RefundRequestImage { get; set; }   
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

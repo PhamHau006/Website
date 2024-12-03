@@ -197,18 +197,21 @@ namespace ASM_GS.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetOrderDetails(string maDonHang)
         {
+            // Truy vấn đơn hàng từ cơ sở dữ liệu cùng với chi tiết sản phẩm
             var order = await _context.DonHangs
-                .Include(dh => dh.ChiTietDonHangs)
-                .ThenInclude(ct => ct.MaSanPhamNavigation)
-                .FirstOrDefaultAsync(dh => dh.MaDonHang == maDonHang);
+                .Include(dh => dh.ChiTietDonHangs) // Bao gồm các chi tiết đơn hàng
+                .ThenInclude(ct => ct.MaSanPhamNavigation) // Bao gồm thông tin sản phẩm
+                .FirstOrDefaultAsync(dh => dh.MaDonHang == maDonHang); // Tìm theo mã đơn hàng
 
+            // Kiểm tra nếu không tìm thấy đơn hàng
             if (order == null)
             {
-                return NotFound();
+                return NotFound(); // Trả về lỗi 404 nếu không tìm thấy đơn hàng
             }
 
-            // Trả về một Partial View để hiển thị chi tiết
+            // Trả về Partial View chứa chi tiết đơn hàng
             return PartialView("_OrderDetails", order);
         }
+
     }
 }

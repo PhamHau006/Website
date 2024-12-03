@@ -115,10 +115,10 @@ namespace ASM_GS.Areas.Admin.Controllers
                 ModelState.AddModelError("TenDanhMuc", "Tên danh mục đã tồn tại.");
             }
             // Check if TenDanhMuc contains invalid characters
-            if (!string.IsNullOrEmpty(danhMuc.TenDanhMuc) && !IsValidTenDanhMuc(danhMuc.TenDanhMuc))
-            {
-                ModelState.AddModelError("TenDanhMuc", "Tên danh mục không được chứa ký tự đặc biệt.");
-            }
+            //if (!string.IsNullOrEmpty(danhMuc.TenDanhMuc) && !IsValidTenDanhMuc(danhMuc.TenDanhMuc))
+            //{
+            //    ModelState.AddModelError("TenDanhMuc", "Tên danh mục không được chứa ký tự đặc biệt.");
+            //}
 
             // Generate a random code for the category if no errors
             string randomMaDanhMuc;
@@ -198,10 +198,10 @@ namespace ASM_GS.Areas.Admin.Controllers
             }
 
             // Check if TenDanhMuc contains invalid characters
-            if (!string.IsNullOrEmpty(danhMuc.TenDanhMuc) && !IsValidTenDanhMuc(danhMuc.TenDanhMuc))
-            {
-                ModelState.AddModelError("TenDanhMuc", "Tên danh mục không được chứa ký tự đặc biệt.");
-            }
+            //if (!string.IsNullOrEmpty(danhMuc.TenDanhMuc) && !IsValidTenDanhMuc(danhMuc.TenDanhMuc))
+            //{
+            //    ModelState.AddModelError("TenDanhMuc", "Tên danh mục không được chứa ký tự đặc biệt.");
+            //}
 
             // If there are validation errors, return them
             if (!ModelState.IsValid)

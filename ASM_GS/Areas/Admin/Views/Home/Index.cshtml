@@ -46,50 +46,8 @@
 </div>
 <br />
 <div class="content-wrapper">
-    <div class="container-xxl flex-grow-1 container-p-y">
-        <div class="row">
-            <div class="col-12 text-end mb-4">
-                <h3>Tổng doanh thu: @ViewBag.TongDoanhThuTatCaHoaDon.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</h3>
-            </div>
-
-            <!-- Revenue by Combo -->
-            <div class="col-12 col-lg-8 mb-4">
-                <div class="card">
-                    <h5 class="card-header">Doanh thu theo Combo</h5>
-                    <div id="doanhThuComboChart"></div>
-                </div>
-            </div>
-            <!-- Revenue by Product -->
-            <div class="col-12 col-lg-8 mb-4">
-                <div class="card">
-                    <h5 class="card-header">Doanh thu theo sản phẩm</h5>
-                    <div id="doanhThuSanPhamChart"></div>
-                </div>
-            </div>
-            <!-- Revenue by Day -->
-            <div class="col-12 col-lg-8 mb-4">
-                <div class="card">
-                    <h5 class="card-header">Doanh thu theo ngày</h5>
-                    <div id="doanhThuTheoNgayChart"></div>
-                </div>
-            </div>
-            <!-- Revenue by Month -->
-            <div class="col-12 col-lg-8 mb-4">
-                <div class="card">
-                    <h5 class="card-header">Doanh thu theo tháng</h5>
-                    <div id="doanhThuTheoThangChart"></div>
-                </div>
-            </div>
-            <!-- Revenue by Year -->
-            <div class="col-12 col-lg-8 mb-4">
-                <div class="card">
-                    <h5 class="card-header">Doanh thu theo năm</h5>
-                    <div id="doanhThuTheoNamChart"></div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
+
 
 <div class="content-backdrop fade"></div>
 
@@ -254,10 +212,13 @@
 <style>
     /* Tổng quan container */
     .content-wrapper {
-        background-color: #f5f5f9;
-        padding: 20px;
+        background-image: url('/images/WelcomAdmin.png'); /* Đảm bảo sử dụng đường dẫn chính xác */
+        background-size: cover; /* Làm ảnh bao phủ toàn bộ div */
+        background-position: center; /* Căn giữa ảnh */
+        background-repeat: no-repeat; /* Ngừng lặp lại ảnh */
+        height: 100vh; /* Chiều cao của div là 100% chiều cao màn hình */
+        padding: 0;
         border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         font-family: 'Roboto', sans-serif;
     }
 

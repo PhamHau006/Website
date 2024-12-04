@@ -67,8 +67,8 @@
         const ngayKetThuc = new Date(document.getElementById("NgayKetThuc").value);
         const soLuongMaNhapToiDa = document.getElementById("SoLuongMaNhapToiDa").value;
         // Kiểm tra lỗi cho tên mã giảm giá
-        if (!tenGiamGia || tenGiamGia.length < 3 || /^[a-zA-Z0-9\s]+$/.test(tenGiamGia)) {
-            document.getElementById("TenGiamGiaError").textContent = "Tên mã giảm giá phải có ít nhất 3 ký tự và không chứa ký tự đặc biệt.";
+        if (!tenGiamGia || tenGiamGia.length < 3) {
+            document.getElementById("TenGiamGiaError").textContent = "Tên mã giảm giá phải có ít nhất 3 ký tự.";
             hasError = true;
         }
 

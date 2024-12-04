@@ -1,0 +1,286 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var Direct = ViewData["RedirectUrl"];
+}
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row">
+           <div class="col-12 text-end mb-4 tong-doanh-thu-container">
+            <h3>Tổng doanh thu: <span class="currency">@ViewBag.TongDoanhThuTatCaHoaDon.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</span></h3>
+            </div>
+
+
+            <!-- Revenue Buttons -->
+            <div class="col-12 mb-4">
+                <button class="btn btn-primary" onclick="showChart('doanhThuComboChart')">Doanh thu theo Combo</button>
+                <button class="btn btn-primary" onclick="showChart('doanhThuSanPhamChart')">Doanh thu theo sản phẩm</button>
+                <button class="btn btn-primary" onclick="showChart('doanhThuTheoNgayChart')">Doanh thu theo ngày</button>
+                <button class="btn btn-primary" onclick="showChart('doanhThuTheoThangChart')">Doanh thu theo tháng</button>
+                <button class="btn btn-primary" onclick="showChart('doanhThuTheoNamChart')">Doanh thu theo năm</button>
+            </div>
+
+           <!-- Biểu đồ theo Combo -->
+            <div class="col-12 col-lg-8 mb-4 chart-container" id="doanhThuComboChart">
+                <div class="card">
+                    <h5 class="card-header">Doanh thu theo Combo</h5>
+                    <div>
+                        <!-- Biểu đồ Combo ở đây -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Biểu đồ theo sản phẩm -->
+            <div class="col-12 col-lg-8 mb-4 chart-container" id="doanhThuSanPhamChart">
+                <div class="card">
+                    <h5 class="card-header">Doanh thu theo sản phẩm</h5>
+                    <div>
+                        <!-- Biểu đồ sản phẩm ở đây -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Biểu đồ theo ngày -->
+            <div class="col-12 col-lg-8 mb-4 chart-container" id="doanhThuTheoNgayChart">
+                <div class="card">
+                    <h5 class="card-header">Doanh thu theo ngày</h5>
+                    <div>
+                        <!-- Biểu đồ theo ngày ở đây -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Biểu đồ theo tháng -->
+            <div class="col-12 col-lg-8 mb-4 chart-container" id="doanhThuTheoThangChart">
+                <div class="card">
+                    <h5 class="card-header">Doanh thu theo tháng</h5>
+                    <div>
+                        <!-- Biểu đồ theo tháng ở đây -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Biểu đồ theo năm -->
+            <div class="col-12 col-lg-8 mb-4 chart-container" id="doanhThuTheoNamChart">
+                <div class="card">
+                    <h5 class="card-header">Doanh thu theo năm</h5>
+                    <div>
+                        <!-- Biểu đồ theo năm ở đây -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="content-backdrop fade"></div>
+
+<div id="loginMessage" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);width: 500px; height:300px; text-align:center; align-items: center">
+    <p style="color: red; font-size: 2rem">Vui lòng đăng nhập</p>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+    // $(document).ready(function() {
+    //     var directUrl = '@Direct';
+
+    //     if (directUrl) {
+    //         Swal.fire({
+    //             icon: 'info',
+    //             title: 'Thông báo',
+    //             text: 'Bạn sẽ được chuyển đến trang đăng nhập.',
+    //             showConfirmButton: false,
+    //             timer: 3000
+    //         }).then(() => {
+    //             window.location.href = '/LoginAdmin';
+    //         });
+    //     }
+    // });
+
+    function logoutUser() {
+        fetch('@Url.Action("RemoveStaffAccount", "Home", new { area = "Admin" })', {
+            method: 'POST',
+            headers: {
+                'RequestVerificationToken': '@Html.AntiForgeryToken()'
+            }
+        }).then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            }
+        });
+    }
+
+    function showChart(chartId) {
+    // Ẩn tất cả các biểu đồ
+    const charts = document.querySelectorAll('.chart-container');
+    charts.forEach(chart => {
+        chart.style.display = 'none';
+    });
+
+    // Hiển thị biểu đồ đã chọn
+    const selectedChart = document.getElementById(chartId);
+    if (selectedChart) {
+        selectedChart.style.display = 'block';
+    }
+
+    // Vẽ lại biểu đồ nếu cần thiết
+    drawCharts();
+    }
+
+    // Đảm bảo rằng không có biểu đồ nào được hiển thị khi tải lại trang
+    window.onload = function() {
+        // Ẩn tất cả các biểu đồ khi trang được tải lại
+        const charts = document.querySelectorAll('.chart-container');
+        charts.forEach(chart => {
+            chart.style.display = 'none';
+        });
+    }
+
+    google.charts.load('current', { packages: ['corechart'] });
+    google.charts.setOnLoadCallback(drawCharts);
+
+    function drawCharts() {
+    console.log("Drawing charts...");
+
+    // Revenue by Product
+    var dataSanPham = google.visualization.arrayToDataTable([
+        ['Tên sản phẩm', 'Tổng doanh thu'],
+        @foreach (var item in ViewBag.DoanhThuSanPham)
+        {
+            @: ['@Html.Raw(item.TenSanPham)', @item.TongDoanhThu],
+        }
+    ]);
+    var chartSanPham = new google.visualization.BarChart(document.getElementById('doanhThuSanPhamChart'));
+    chartSanPham.draw(dataSanPham, { title: 'Doanh thu theo sản phẩm' });
+
+    // Revenue by Combo
+    var dataCombo = google.visualization.arrayToDataTable([
+    ['Tên Combo', 'Tổng doanh thu'],
+    @foreach (var item in ViewBag.DoanhThuCombo)
+    {
+        @:['@Html.Raw(item.TenCombo)', @item.TongDoanhThu],
+    }
+    ]);
+   var options = {
+    title: 'Doanh thu theo Combo',
+    pieSliceText: 'percentage',
+    slices: {
+        0: { offset: 0.1 },  // Tùy chỉnh các phần tử nếu cần
+        1: { offset: 0.1 },  // Tùy chỉnh cho từng slice
+    },
+    chartArea: {
+        left: 20, top: 20, width: '80%', height: '80%'
+    },
+    sliceVisibilityThreshold: 0, // Đảm bảo mọi phần nhỏ cũng hiển thị
+    pieSliceTextStyle: {
+        fontSize: 12,
+    },
+    tooltip: { trigger: 'selection' },  // Tooltip khi chọn slice
+};
+
+var chartCombo = new google.visualization.PieChart(document.getElementById('doanhThuComboChart'));
+chartCombo.draw(dataCombo, options);
+
+
+    // Revenue by Day
+    var dataNgay = google.visualization.arrayToDataTable([
+        ['Ngày', 'Tổng doanh thu'],
+        @foreach (var item in ViewBag.DoanhThuTheoNgay)
+        {
+            @: ['@item.Ngay.ToShortDateString()', @item.TongDoanhThu],
+        }
+    ]);
+    var chartNgay = new google.visualization.LineChart(document.getElementById('doanhThuTheoNgayChart'));
+    chartNgay.draw(dataNgay, { title: 'Doanh thu theo ngày' });
+
+    // Revenue by Month
+    var dataThang = google.visualization.arrayToDataTable([
+        ['Tháng/Năm', 'Tổng doanh thu'],
+        @foreach (var item in ViewBag.DoanhThuTheoThang)
+        {
+            @: ['@item.Thang', @item.TongDoanhThu],
+        }
+    ]);
+    var chartThang = new google.visualization.LineChart(document.getElementById('doanhThuTheoThangChart'));
+    chartThang.draw(dataThang, { title: 'Doanh thu theo tháng' });
+
+    // Revenue by Year
+    var dataNam = google.visualization.arrayToDataTable([
+        ['Năm', 'Tổng doanh thu'],
+        @foreach (var item in ViewBag.DoanhThuTheoNam)
+        {
+            @: ['@item.Nam', @item.TongDoanhThu],
+        }
+    ]);
+    var chartNam = new google.visualization.ColumnChart(document.getElementById('doanhThuTheoNamChart'));
+    chartNam.draw(dataNam, { title: 'Doanh thu theo năm' });
+}
+
+</script>
+
+<style>
+    /* Ẩn tất cả các biểu đồ theo mặc định */
+    .chart-container {
+        display: none;
+    }
+    .tong-doanh-thu-container {
+    font-family: 'Roboto', sans-serif; /* Font đẹp, dễ đọc */
+    color: #333; /* Màu chữ tối, dễ đọc */
+    font-size: 1.8rem; /* Kích thước chữ lớn hơn */
+    font-weight: 600; /* Đậm hơn để thu hút sự chú ý */
+    text-align: right; /* Căn phải */
+    padding: 15px 20px; /* Thêm padding để nội dung không bị sát biên */
+    background-color: #f8f9fa; /* Màu nền sáng để tạo sự tương phản */
+    border-radius: 8px; /* Bo góc để tạo sự mềm mại */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Thêm bóng nhẹ cho hiệu ứng nổi bật */
+}
+
+.tong-doanh-thu-container h3 {
+    color: #28a745; /* Màu xanh lá cho tổng doanh thu */
+    margin: 0; /* Loại bỏ margin mặc định */
+    font-size: 2rem; /* Tăng kích thước chữ tiêu đề */
+}
+
+.tong-doanh-thu-container .currency {
+    color: #007bff; /* Màu xanh lam cho số tiền */
+    font-size: 2rem; /* Tăng kích thước chữ cho số tiền */
+}
+.chart-container {
+    display: block; /* Đảm bảo biểu đồ được hiển thị */
+    width: 100%; /* Chiếm toàn bộ chiều rộng của thẻ chứa */
+    max-width: 100%; /* Không bị giới hạn độ rộng */
+    height: 400px; /* Đặt chiều cao cho biểu đồ */
+    padding: 20px; /* Thêm padding để tạo khoảng cách xung quanh */
+    margin-bottom: 30px; /* Tạo khoảng cách giữa các biểu đồ */
+    background-color: #fff; /* Nền sáng cho biểu đồ */
+    border-radius: 10px; /* Bo góc cho phần chứa biểu đồ */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Thêm bóng nhẹ cho phần chứa biểu đồ */
+}
+
+.card-header {
+    font-size: 1.5rem; /* Font size tiêu đề lớn hơn */
+    font-weight: 600; /* Đậm hơn */
+    color: #495057; /* Màu sắc tối cho tiêu đề */
+    background-color: #f8f9fa; /* Nền sáng cho tiêu đề */
+    padding: 15px 20px; /* Tăng khoảng cách trong tiêu đề */
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.card {
+    border: none; /* Xóa viền cho card */
+    border-radius: 10px; /* Bo góc cho card */
+    background-color: #fff; /* Nền sáng cho card */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Thêm bóng cho card */
+    overflow: hidden; /* Đảm bảo các phần tử không tràn ra ngoài */
+}
+
+/* Đảm bảo các phần tử biểu đồ có không gian rộng */
+.chart-container div {
+    padding: 10px; /* Thêm khoảng cách trong mỗi div */
+}
+
+
+</style>

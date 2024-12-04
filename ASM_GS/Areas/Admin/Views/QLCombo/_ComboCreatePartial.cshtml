@@ -181,8 +181,8 @@
         let isValid = true;
 
         let tenCombo = document.getElementById("TenCombo").value;
-        if (tenCombo.length < 3 || /^[a-zA-Z0-9\s]+$/.test(tenCombo)) {
-            document.getElementById("TenComboError").innerText = "Tên combo phải có ít nhất 3 ký tự và không chứa ký tự đặc biệt.";
+        if (tenCombo.length < 3) {
+            document.getElementById("TenComboError").innerText = "Tên combo phải có ít nhất 3 ký tự.";
             isValid = false;
         }
 

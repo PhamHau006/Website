@@ -127,6 +127,33 @@ namespace ASM_GS.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SanPhamss",
+                columns: table => new
+                {
+                    MaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TenSanPham = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Gia = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    MoTa = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MaDanhMuc = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SoLuong = table.Column<int>(type: "int", nullable: false),
+                    NgayThem = table.Column<DateOnly>(type: "date", nullable: true),
+                    DonVi = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Nsx = table.Column<DateOnly>(type: "date", nullable: true),
+                    Hsd = table.Column<DateOnly>(type: "date", nullable: true),
+                    TrangThai = table.Column<int>(type: "int", nullable: true),
+                    MaDanhMucNavigationMaDanhMuc = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SanPhamss", x => x.MaSanPham);
+                    table.ForeignKey(
+                        name: "FK_SanPhamss_DanhMucs_MaDanhMucNavigationMaDanhMuc",
+                        column: x => x.MaDanhMucNavigationMaDanhMuc,
+                        principalTable: "DanhMucs",
+                        principalColumn: "MaDanhMuc");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MaNhapGiamGia",
                 columns: table => new
                 {
@@ -249,7 +276,8 @@ namespace ASM_GS.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     MaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UrlAnh = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    UrlAnh = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SanPhamModelsMaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -260,6 +288,11 @@ namespace ASM_GS.Migrations
                         principalTable: "SanPhams",
                         principalColumn: "MaSanPham",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AnhSanPhams_SanPhamss_SanPhamModelsMaSanPham",
+                        column: x => x.SanPhamModelsMaSanPham,
+                        principalTable: "SanPhamss",
+                        principalColumn: "MaSanPham");
                 });
 
             migrationBuilder.CreateTable(
@@ -270,7 +303,8 @@ namespace ASM_GS.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     MaCombo = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     MaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    SoLuong = table.Column<int>(type: "int", nullable: false)
+                    SoLuong = table.Column<int>(type: "int", nullable: false),
+                    SanPhamModelsMaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -287,6 +321,11 @@ namespace ASM_GS.Migrations
                         principalTable: "SanPhams",
                         principalColumn: "MaSanPham",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ChiTietCombos_SanPhamss_SanPhamModelsMaSanPham",
+                        column: x => x.SanPhamModelsMaSanPham,
+                        principalTable: "SanPhamss",
+                        principalColumn: "MaSanPham");
                 });
 
             migrationBuilder.CreateTable(
@@ -299,7 +338,8 @@ namespace ASM_GS.Migrations
                     NoiDung = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SoSao = table.Column<int>(type: "int", nullable: false),
                     MaKhachHangNavigationMaKhachHang = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    MaSanPhamNavigationMaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    MaSanPhamNavigationMaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SanPhamModelsMaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -316,6 +356,11 @@ namespace ASM_GS.Migrations
                         principalTable: "SanPhams",
                         principalColumn: "MaSanPham",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DanhGia_SanPhamss_SanPhamModelsMaSanPham",
+                        column: x => x.SanPhamModelsMaSanPham,
+                        principalTable: "SanPhamss",
+                        principalColumn: "MaSanPham");
                 });
 
             migrationBuilder.CreateTable(
@@ -328,7 +373,8 @@ namespace ASM_GS.Migrations
                     MaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     MaCombo = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     SoLuong = table.Column<int>(type: "int", nullable: false),
-                    Gia = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Gia = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SanPhamModelsMaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -348,6 +394,11 @@ namespace ASM_GS.Migrations
                         name: "FK_ChiTietDonHangs_SanPhams_MaSanPham",
                         column: x => x.MaSanPham,
                         principalTable: "SanPhams",
+                        principalColumn: "MaSanPham");
+                    table.ForeignKey(
+                        name: "FK_ChiTietDonHangs_SanPhamss_SanPhamModelsMaSanPham",
+                        column: x => x.SanPhamModelsMaSanPham,
+                        principalTable: "SanPhamss",
                         principalColumn: "MaSanPham");
                 });
 
@@ -382,7 +433,8 @@ namespace ASM_GS.Migrations
                     MaGioHang = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     MaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     MaCombo = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    SoLuong = table.Column<int>(type: "int", nullable: false)
+                    SoLuong = table.Column<int>(type: "int", nullable: false),
+                    SanPhamModelsMaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -403,6 +455,11 @@ namespace ASM_GS.Migrations
                         column: x => x.MaSanPham,
                         principalTable: "SanPhams",
                         principalColumn: "MaSanPham");
+                    table.ForeignKey(
+                        name: "FK_ChiTietGioHangs_SanPhamss_SanPhamModelsMaSanPham",
+                        column: x => x.SanPhamModelsMaSanPham,
+                        principalTable: "SanPhamss",
+                        principalColumn: "MaSanPham");
                 });
 
             migrationBuilder.CreateTable(
@@ -415,7 +472,8 @@ namespace ASM_GS.Migrations
                     MaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     MaCombo = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     SoLuong = table.Column<int>(type: "int", nullable: false),
-                    Gia = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Gia = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SanPhamModelsMaSanPham = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -435,6 +493,11 @@ namespace ASM_GS.Migrations
                         name: "FK_ChiTietHoaDons_SanPhams_MaSanPham",
                         column: x => x.MaSanPham,
                         principalTable: "SanPhams",
+                        principalColumn: "MaSanPham");
+                    table.ForeignKey(
+                        name: "FK_ChiTietHoaDons_SanPhamss_SanPhamModelsMaSanPham",
+                        column: x => x.SanPhamModelsMaSanPham,
+                        principalTable: "SanPhamss",
                         principalColumn: "MaSanPham");
                 });
 
@@ -534,72 +597,77 @@ namespace ASM_GS.Migrations
 
             migrationBuilder.InsertData(
                 table: "AnhSanPhams",
-                columns: new[] { "Id", "MaSanPham", "UrlAnh" },
+                columns: new[] { "Id", "MaSanPham", "SanPhamModelsMaSanPham", "UrlAnh" },
                 values: new object[,]
                 {
-                    { 1, "SP001", "img/AnhSanPham/kemduongam1.jpg" },
-                    { 2, "SP001", "img/AnhSanPham/kemduongam2.jpg" },
-                    { 3, "SP001", "img/AnhSanPham/kemduongam3.jpg" },
-                    { 4, "SP001", "img/AnhSanPham/kemduongam4.jpg" },
-                    { 5, "SP002", "img/AnhSanPham/suaruamat1.jpg" },
-                    { 6, "SP002", "img/AnhSanPham/suaruamat2.jpg" },
-                    { 7, "SP002", "img/AnhSanPham/suaruamat3.jpg" },
-                    { 8, "SP002", "img/AnhSanPham/suaruamat4.jpg" },
-                    { 9, "SP003", "img/AnhSanPham/toner1.png" },
-                    { 10, "SP003", "img/AnhSanPham/toner2.png" },
-                    { 11, "SP003", "img/AnhSanPham/toner3.png" },
-                    { 12, "SP003", "img/AnhSanPham/toner4.png" },
-                    { 13, "SP004", "img/AnhSanPham/serumtrang1.jpg" },
-                    { 14, "SP004", "img/AnhSanPham/serumtrang2.jpg" },
-                    { 15, "SP004", "img/AnhSanPham/serumtrang3.jpg" },
-                    { 16, "SP004", "img/AnhSanPham/serumtrang4.jpg" },
-                    { 17, "SP005", "img/AnhSanPham/mark1.jpg" },
-                    { 18, "SP005", "img/AnhSanPham/mark2.jpg" },
-                    { 19, "SP005", "img/AnhSanPham/mark3.jpg" },
-                    { 20, "SP005", "img/AnhSanPham/mark4.jpg" },
-                    { 21, "SP006", "img/AnhSanPham/kcn1.jpg" },
-                    { 22, "SP006", "img/AnhSanPham/kcn2.jpg" },
-                    { 23, "SP006", "img/AnhSanPham/kcn3.jpg" },
-                    { 24, "SP006", "img/AnhSanPham/kcn4.jpg" },
-                    { 25, "SP007", "img/AnhSanPham/taytrang1.jpg" },
-                    { 26, "SP007", "img/AnhSanPham/taytrang2.jpg" },
-                    { 27, "SP007", "img/AnhSanPham/taytrang3.jpg" },
-                    { 28, "SP007", "img/AnhSanPham/taytrang4.jpg" },
-                    { 29, "SP008", "img/AnhSanPham/tinhchat1.jpg" },
-                    { 30, "SP008", "img/AnhSanPham/tinhchat2.jpg" },
-                    { 31, "SP008", "img/AnhSanPham/tinhchat3.jpg" },
-                    { 32, "SP008", "img/AnhSanPham/tinhchat4.jpg" },
-                    { 33, "SP009", "img/AnhSanPham/xitkhoang1.jpg" },
-                    { 34, "SP009", "img/AnhSanPham/xitkhoang2.jpg" },
-                    { 35, "SP009", "img/AnhSanPham/xitkhoang3.jpg" },
-                    { 36, "SP009", "img/AnhSanPham/xitkhoang4.jpg" },
-                    { 37, "SP010", "img/AnhSanPham/bandem1.jpg" },
-                    { 38, "SP010", "img/AnhSanPham/bandem2.jpg" },
-                    { 39, "SP010", "img/AnhSanPham/bandem3.jpg" },
-                    { 40, "SP010", "img/AnhSanPham/bandem4.jpg" }
+                    { 1, "SP001", null, "img/AnhSanPham/kemduongam1.jpg" },
+                    { 2, "SP001", null, "img/AnhSanPham/kemduongam2.jpg" },
+                    { 3, "SP001", null, "img/AnhSanPham/kemduongam3.jpg" },
+                    { 4, "SP001", null, "img/AnhSanPham/kemduongam4.jpg" },
+                    { 5, "SP002", null, "img/AnhSanPham/suaruamat1.jpg" },
+                    { 6, "SP002", null, "img/AnhSanPham/suaruamat2.jpg" },
+                    { 7, "SP002", null, "img/AnhSanPham/suaruamat3.jpg" },
+                    { 8, "SP002", null, "img/AnhSanPham/suaruamat4.jpg" },
+                    { 9, "SP003", null, "img/AnhSanPham/toner1.png" },
+                    { 10, "SP003", null, "img/AnhSanPham/toner2.png" },
+                    { 11, "SP003", null, "img/AnhSanPham/toner3.png" },
+                    { 12, "SP003", null, "img/AnhSanPham/toner4.png" },
+                    { 13, "SP004", null, "img/AnhSanPham/serumtrang1.jpg" },
+                    { 14, "SP004", null, "img/AnhSanPham/serumtrang2.jpg" },
+                    { 15, "SP004", null, "img/AnhSanPham/serumtrang3.jpg" },
+                    { 16, "SP004", null, "img/AnhSanPham/serumtrang4.jpg" },
+                    { 17, "SP005", null, "img/AnhSanPham/mark1.jpg" },
+                    { 18, "SP005", null, "img/AnhSanPham/mark2.jpg" },
+                    { 19, "SP005", null, "img/AnhSanPham/mark3.jpg" },
+                    { 20, "SP005", null, "img/AnhSanPham/mark4.jpg" },
+                    { 21, "SP006", null, "img/AnhSanPham/kcn1.jpg" },
+                    { 22, "SP006", null, "img/AnhSanPham/kcn2.jpg" },
+                    { 23, "SP006", null, "img/AnhSanPham/kcn3.jpg" },
+                    { 24, "SP006", null, "img/AnhSanPham/kcn4.jpg" },
+                    { 25, "SP007", null, "img/AnhSanPham/taytrang1.jpg" },
+                    { 26, "SP007", null, "img/AnhSanPham/taytrang2.jpg" },
+                    { 27, "SP007", null, "img/AnhSanPham/taytrang3.jpg" },
+                    { 28, "SP007", null, "img/AnhSanPham/taytrang4.jpg" },
+                    { 29, "SP008", null, "img/AnhSanPham/tinhchat1.jpg" },
+                    { 30, "SP008", null, "img/AnhSanPham/tinhchat2.jpg" },
+                    { 31, "SP008", null, "img/AnhSanPham/tinhchat3.jpg" },
+                    { 32, "SP008", null, "img/AnhSanPham/tinhchat4.jpg" },
+                    { 33, "SP009", null, "img/AnhSanPham/xitkhoang1.jpg" },
+                    { 34, "SP009", null, "img/AnhSanPham/xitkhoang2.jpg" },
+                    { 35, "SP009", null, "img/AnhSanPham/xitkhoang3.jpg" },
+                    { 36, "SP009", null, "img/AnhSanPham/xitkhoang4.jpg" },
+                    { 37, "SP010", null, "img/AnhSanPham/bandem1.jpg" },
+                    { 38, "SP010", null, "img/AnhSanPham/bandem2.jpg" },
+                    { 39, "SP010", null, "img/AnhSanPham/bandem3.jpg" },
+                    { 40, "SP010", null, "img/AnhSanPham/bandem4.jpg" }
                 });
 
             migrationBuilder.InsertData(
                 table: "ChiTietCombos",
-                columns: new[] { "Id", "MaCombo", "MaSanPham", "SoLuong" },
+                columns: new[] { "Id", "MaCombo", "MaSanPham", "SanPhamModelsMaSanPham", "SoLuong" },
                 values: new object[,]
                 {
-                    { 1, "CB001", "SP001", 1 },
-                    { 2, "CB001", "SP005", 1 },
-                    { 3, "CB001", "SP006", 1 },
-                    { 4, "CB002", "SP002", 1 },
-                    { 5, "CB002", "SP003", 1 },
-                    { 6, "CB002", "SP004", 1 },
-                    { 7, "CB002", "SP010", 1 },
-                    { 8, "CB003", "SP008", 1 },
-                    { 9, "CB003", "SP007", 1 },
-                    { 10, "CB003", "SP009", 1 }
+                    { 1, "CB001", "SP001", null, 1 },
+                    { 2, "CB001", "SP005", null, 1 },
+                    { 3, "CB001", "SP006", null, 1 },
+                    { 4, "CB002", "SP002", null, 1 },
+                    { 5, "CB002", "SP003", null, 1 },
+                    { 6, "CB002", "SP004", null, 1 },
+                    { 7, "CB002", "SP010", null, 1 },
+                    { 8, "CB003", "SP008", null, 1 },
+                    { 9, "CB003", "SP007", null, 1 },
+                    { 10, "CB003", "SP009", null, 1 }
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AnhSanPhams_MaSanPham",
                 table: "AnhSanPhams",
                 column: "MaSanPham");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AnhSanPhams_SanPhamModelsMaSanPham",
+                table: "AnhSanPhams",
+                column: "SanPhamModelsMaSanPham");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChiTietCombos_MaCombo",
@@ -610,6 +678,11 @@ namespace ASM_GS.Migrations
                 name: "IX_ChiTietCombos_MaSanPham",
                 table: "ChiTietCombos",
                 column: "MaSanPham");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChiTietCombos_SanPhamModelsMaSanPham",
+                table: "ChiTietCombos",
+                column: "SanPhamModelsMaSanPham");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChiTietDonHangs_MaCombo",
@@ -627,6 +700,11 @@ namespace ASM_GS.Migrations
                 column: "MaSanPham");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ChiTietDonHangs_SanPhamModelsMaSanPham",
+                table: "ChiTietDonHangs",
+                column: "SanPhamModelsMaSanPham");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ChiTietGioHangs_MaCombo",
                 table: "ChiTietGioHangs",
                 column: "MaCombo");
@@ -640,6 +718,11 @@ namespace ASM_GS.Migrations
                 name: "IX_ChiTietGioHangs_MaSanPham",
                 table: "ChiTietGioHangs",
                 column: "MaSanPham");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChiTietGioHangs_SanPhamModelsMaSanPham",
+                table: "ChiTietGioHangs",
+                column: "SanPhamModelsMaSanPham");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChiTietHoaDons_MaCombo",
@@ -657,6 +740,11 @@ namespace ASM_GS.Migrations
                 column: "MaSanPham");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ChiTietHoaDons_SanPhamModelsMaSanPham",
+                table: "ChiTietHoaDons",
+                column: "SanPhamModelsMaSanPham");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DanhGia_MaKhachHangNavigationMaKhachHang",
                 table: "DanhGia",
                 column: "MaKhachHangNavigationMaKhachHang");
@@ -665,6 +753,11 @@ namespace ASM_GS.Migrations
                 name: "IX_DanhGia_MaSanPhamNavigationMaSanPham",
                 table: "DanhGia",
                 column: "MaSanPhamNavigationMaSanPham");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DanhGia_SanPhamModelsMaSanPham",
+                table: "DanhGia",
+                column: "SanPhamModelsMaSanPham");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DonHangs_MaKhachHang",
@@ -705,6 +798,11 @@ namespace ASM_GS.Migrations
                 name: "IX_SanPhams_MaDanhMuc",
                 table: "SanPhams",
                 column: "MaDanhMuc");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SanPhamss_MaDanhMucNavigationMaDanhMuc",
+                table: "SanPhamss",
+                column: "MaDanhMucNavigationMaDanhMuc");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaiKhoans_MaKhachHang",
@@ -758,6 +856,9 @@ namespace ASM_GS.Migrations
 
             migrationBuilder.DropTable(
                 name: "SanPhams");
+
+            migrationBuilder.DropTable(
+                name: "SanPhamss");
 
             migrationBuilder.DropTable(
                 name: "RefundRequests");

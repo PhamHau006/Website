@@ -10,7 +10,7 @@
 
         <div class="mb-3">
             <label for="TenSanPham" class="form-label">Tên Sản Phẩm</label>
-            <input type="text" id="TenSanPham" name="TenSanPham" class="form-control" value="@Model.TenSanPham" required />
+            <input type="text" id="TenSanPham" name="TenSanPham" class="form-control" value="@Model.TenSanPham"  />
             <span class="text-danger" id="errorTenSanPham"></span>
         </div>
 
@@ -39,7 +39,7 @@
 
         <div class="mb-3">
             <label for="Gia" class="form-label">Giá</label>
-            <input type="number" id="Gia" name="Gia" class="form-control" value="@Model.Gia" required />
+            <input type="number" id="Gia" name="Gia" class="form-control" value="@Model.Gia"  />
             <span class="text-danger" id="errorGia"></span>
         </div>
 
@@ -70,7 +70,7 @@
         
         <div class="mb-3">
             <label for="SoLuong" class="form-label">Số Lượng</label>
-            <input type="number" id="SoLuong" name="SoLuong" class="form-control" value="@Model.SoLuong" required />
+            <input type="number" id="SoLuong" name="SoLuong" class="form-control" value="@Model.SoLuong"  />
             <span class="text-danger" id="errorSoLuong"></span>
         </div>
 
@@ -87,13 +87,13 @@
 
         <div class="mb-3">
             <label for="Nsx" class="form-label">NSX</label>
-            <input type="date" id="Nsx" name="Nsx" class="form-control" value="@Model.Nsx?.ToString("yyyy-MM-dd")" required />
+            <input type="date" id="Nsx" name="Nsx" class="form-control" value="@Model.Nsx?.ToString("yyyy-MM-dd")"  />
             <span class="text-danger" id="errorNsx"></span>
         </div>
 
         <div class="mb-3">
             <label for="Hsd" class="form-label">HSD</label>
-            <input type="date" id="Hsd" name="Hsd" class="form-control" value="@Model.Hsd?.ToString("yyyy-MM-dd")" required />
+            <input type="date" id="Hsd" name="Hsd" class="form-control" value="@Model.Hsd?.ToString("yyyy-MM-dd")"  />
             <span class="text-danger" id="errorHsd"></span>
         </div>
 

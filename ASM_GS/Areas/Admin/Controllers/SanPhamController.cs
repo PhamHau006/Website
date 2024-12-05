@@ -13,7 +13,7 @@ using X.PagedList;
 using X.PagedList.Extensions;
 using Microsoft.AspNetCore.Http.Extensions;
 using System.Text.RegularExpressions;
-
+using ASM_GS.Models.ModelsForSanPham;
 
 namespace ASM_GS.Areas.Admin.Controllers
 {
@@ -140,71 +140,90 @@ namespace ASM_GS.Areas.Admin.Controllers
         {
             var danhMucList = _context.DanhMucs.ToList();
             ViewBag.DanhMucList = new SelectList(danhMucList, "MaDanhMuc", "TenDanhMuc");
-            return PartialView("_CreateSanPhamPartial", new SanPham());
+            return PartialView("_CreateSanPhamPartial", new SanPhamModels());
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(SanPham sanPham)
+        public async Task<IActionResult> Create(SanPhamModels sanPhamModel)
         {
-            if (string.IsNullOrWhiteSpace(sanPham.TenSanPham))
+
+            if (string.IsNullOrWhiteSpace(sanPhamModel.TenSanPham))
             {
-                ModelState.AddModelError("TenSanPham", "Tên sản phẩm là bắt buộc.");
+                ModelState.AddModelError("TenSanPham", "");
             }
-            else if (!Regex.IsMatch(sanPham.TenSanPham, @"^[a-zA-Z0-9\s]+$"))
-            {
-                ModelState.AddModelError("TenSanPham", "Tên sản phẩm không được chứa ký tự đặc biệt.");
-            }
-            else if (await _context.SanPhams.AnyAsync(sp => sp.TenSanPham.ToLower() == sanPham.TenSanPham.ToLower()))
+
+            else if (await _context.SanPhams.AnyAsync(sp => sp.TenSanPham.ToLower() == sanPhamModel.TenSanPham.ToLower()))
             {
                 ModelState.AddModelError("TenSanPham", "Tên sản phẩm đã tồn tại.");
             }
 
             // Đặt ngày thêm sản phẩm là ngày hiện tại
-            sanPham.NgayThem = DateOnly.FromDateTime(DateTime.Now);
+            sanPhamModel.NgayThem = DateOnly.FromDateTime(DateTime.Now);
 
 
 
             // Kiểm tra giá sản phẩm
-            if (sanPham.Gia <= 0)
-            {
-                ModelState.AddModelError("Gia", "Giá phải lớn hơn 0.");
-            }
+            //if (sanPham.Gia <= 0)
+            //{
+            //    ModelState.AddModelError("Gia", "Giá phải lớn hơn 0.");
+            //}
 
             // Kiểm tra giá không vượt quá giới hạn tối đa (ví dụ: 1 triệu)
-            decimal maxPrice = 1000000000; // Giới hạn giá tối đa
-            if (sanPham.Gia > maxPrice)
-            {
-                ModelState.AddModelError("Gia", $"Giá không được vượt quá {maxPrice:N0}.");
-            }
+            //decimal maxPrice = 1000000000; // Giới hạn giá tối đa
+            //if (sanPham.Gia > maxPrice)
+            //{
+            //    ModelState.AddModelError("Gia", $"Giá không được vượt quá {maxPrice:N0}.");
+            //}
 
             // Kiểm tra mã danh mục
-            if (string.IsNullOrWhiteSpace(sanPham.MaDanhMuc))
+            if (string.IsNullOrWhiteSpace(sanPhamModel.MaDanhMuc))
             {
                 ModelState.AddModelError("MaDanhMuc", "Danh mục là bắt buộc.");
             }
 
             // Kiểm tra số lượng sản phẩm
-            if (sanPham.SoLuong < 0)
-            {
-                ModelState.AddModelError("SoLuong", "Số lượng không được nhỏ hơn 0.");
-            }
+            //if (sanPham.SoLuong < 0)
+            //{
+            //    ModelState.AddModelError("SoLuong", "Số lượng không được nhỏ hơn 0.");
+            //}
 
             // Kiểm tra ngày sản xuất và hạn sử dụng
-            if (!sanPham.Nsx.HasValue)
+            if (!sanPhamModel.Nsx.HasValue)
             {
                 ModelState.AddModelError("Nsx", "Ngày sản xuất (NSX) là bắt buộc.");
             }
 
-            if (!sanPham.Hsd.HasValue)
+            if (!sanPhamModel.Hsd.HasValue)
             {
                 ModelState.AddModelError("Hsd", "Hạn sử dụng (HSD) là bắt buộc.");
             }
 
-            if (sanPham.Nsx.HasValue && sanPham.Hsd.HasValue && sanPham.Hsd.Value < sanPham.Nsx.Value)
+            if (sanPhamModel.Nsx.HasValue && sanPhamModel.Hsd.HasValue && sanPhamModel.Hsd.Value < sanPhamModel.Nsx.Value)
             {
                 ModelState.AddModelError("Hsd", "Hạn sử dụng (HSD) không được sớm hơn ngày sản xuất (NSX).");
             }
 
+            if (sanPhamModel.UploadImages != null && sanPhamModel.UploadImages.Count > 0)
+            {
+                foreach (var image in sanPhamModel.UploadImages)
+                {
+                    string fileExtension = Path.GetExtension(image.FileName).ToLower();
+                    var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+
+                    if (!validExtensions.Contains(fileExtension))
+                    {
+                        ModelState.AddModelError("UploadImages", "Tệp ảnh phải có định dạng .jpg, .jpeg, .png, hoặc .gif.");
+                        break;
+                    }
+
+                    long maxFileSize = 10 * 1024 * 1024; // 10MB
+                    if (image.Length > maxFileSize)
+                    {
+                        ModelState.AddModelError("UploadImages", "Tệp ảnh không được vượt quá 10MB.");
+                        break;
+                    }
+                }
+            }
             // Tạo mã sản phẩm ngẫu nhiên
             string randomMaSanPham;
             do
@@ -216,36 +235,11 @@ namespace ASM_GS.Areas.Admin.Controllers
 
             // Clear ModelState error for MaSanPham
             ModelState.Remove("MaSanPham");
-            sanPham.MaSanPham = randomMaSanPham;
+            sanPhamModel.MaSanPham = randomMaSanPham;
 
 
-            if (sanPham.UploadImages != null && sanPham.UploadImages.Count > 0)
-            {
-                // Kiểm tra ảnh upload
-                foreach (var image in sanPham.UploadImages)
-                {
-                    string fileExtension = Path.GetExtension(image.FileName).ToLower();
-                    // Kiểm tra định dạng tệp ảnh
-                    var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-
-                    if (!validExtensions.Contains(fileExtension))
-                    {
-                        ModelState.AddModelError("UploadImages", "Tệp ảnh phải có định dạng .jpg, .jpeg, .png, hoặc .gif.");
-                        break;
-                    }
-
-                    // Kiểm tra kích thước ảnh không quá 10MB
-                    long maxFileSize = 10 * 1024 * 1024; // 10MB
-                    if (image.Length > maxFileSize)
-                    {
-                        ModelState.AddModelError("UploadImages", "Tệp ảnh không được vượt quá 10MB.");
-                        break;
-                    }
-                }
-            }
-
-            // Validate ModelState
-            if (!ModelState.IsValid)
+            ////Validate ModelState
+            if (!TryValidateModel(sanPhamModel))
             {
                 var errors = ModelState.ToDictionary(
                     kvp => kvp.Key,
@@ -254,16 +248,17 @@ namespace ASM_GS.Areas.Admin.Controllers
                 return Json(new { success = false, errors });
             }
 
+            sanPhamModel.TrangThai = sanPhamModel.SoLuong == 0 ? 0 : 1;
+
+            
             try
             {
-                sanPham.TrangThai = sanPham.SoLuong == 0 ? 0 : 1;
-
                 // Xử lý upload ảnh
-                if (sanPham.UploadImages != null && sanPham.UploadImages.Count > 0)
+                if (sanPhamModel.UploadImages != null && sanPhamModel.UploadImages.Count > 0)
                 {
                     string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "img/AnhSanPham");
 
-                    foreach (var image in sanPham.UploadImages)
+                    foreach (var image in sanPhamModel.UploadImages)
                     {
                         string uniqueFileName = Guid.NewGuid().ToString() + "_" + image.FileName;
                         string filePath = Path.Combine(uploadsFolder, uniqueFileName);
@@ -273,10 +268,25 @@ namespace ASM_GS.Areas.Admin.Controllers
                             await image.CopyToAsync(fileStream);
                         }
 
-                        sanPham.AnhSanPhams.Add(new AnhSanPham { UrlAnh = $"/img/AnhSanPham/{uniqueFileName}" });
+                        sanPhamModel.AnhSanPhams.Add(new AnhSanPham { UrlAnh = $"/img/AnhSanPham/{uniqueFileName}" });
                     }
                 }
-
+                var sanPham = new SanPham
+                {
+                    MaSanPham = sanPhamModel.MaSanPham,
+                    TenSanPham = sanPhamModel.TenSanPham,
+                    AnhSanPhams = sanPhamModel.AnhSanPhams,
+                    MoTa = sanPhamModel.MoTa,
+                    NgayThem = sanPhamModel.NgayThem,
+                    DonVi = sanPhamModel.DonVi,
+                    Gia = (decimal)sanPhamModel.Gia,
+                    SoLuong = (int)sanPhamModel.SoLuong,
+                    Nsx = sanPhamModel.Nsx,
+                    Hsd = sanPhamModel.Hsd,
+                    MaDanhMuc = sanPhamModel.MaDanhMuc,
+                    TrangThai = sanPhamModel.TrangThai,
+                    
+                };
                 // Lưu sản phẩm vào cơ sở dữ liệu
                 _context.Add(sanPham);
                 await _context.SaveChangesAsync();
@@ -326,39 +336,27 @@ namespace ASM_GS.Areas.Admin.Controllers
                 .Where(s => s.TenSanPham == sanPham.TenSanPham && s.MaSanPham != sanPham.MaSanPham) // Kiểm tra tên sản phẩm trùng, ngoại trừ sản phẩm hiện tại
                 .FirstOrDefaultAsync();
 
-            // Custom validation for required fields
-            if (string.IsNullOrWhiteSpace(sanPham.TenSanPham))
-                ModelState.AddModelError("TenSanPham", "Tên sản phẩm là bắt buộc.");
-
-            // Kiểm tra tên sản phẩm không chứa ký tự đặc biệt
-            if (sanPham.TenSanPham != null && Regex.IsMatch(sanPham.TenSanPham, @"^[a-zA-Z0-9\s]+$"))
-            {
-                ModelState.AddModelError("TenSanPham", "Tên sản phẩm không được chứa ký tự đặc biệt.");
-            }
-
-
-
             if (existingProductWithSameName != null)
             {
                 ModelState.AddModelError("TenSanPham", "Tên sản phẩm đã tồn tại.");
             }
-            // Kiểm tra giá không được nhỏ hơn 0 và không vượt quá giới hạn
-            if (sanPham.Gia <= 0)
-                ModelState.AddModelError("Gia", "Giá phải lớn hơn 0.");
+            //// Kiểm tra giá không được nhỏ hơn 0 và không vượt quá giới hạn
+            //if (sanPham.Gia <= 0)
+            //    ModelState.AddModelError("Gia", "Giá phải lớn hơn 0.");
 
-            // Kiểm tra giá không vượt quá giới hạn tối đa (ví dụ: 1 triệu)
-            decimal maxPrice = 1000000000; // Giới hạn giá tối đa
-            if (sanPham.Gia > maxPrice)
-                ModelState.AddModelError("Gia", $"Giá không được vượt quá {maxPrice:N0}.");
+            //// Kiểm tra giá không vượt quá giới hạn tối đa (ví dụ: 1 triệu)
+            //decimal maxPrice = 1000000000; // Giới hạn giá tối đa
+            //if (sanPham.Gia > maxPrice)
+            //    ModelState.AddModelError("Gia", $"Giá không được vượt quá {maxPrice:N0}.");
 
-            if (sanPham.Gia <= 0)
-                ModelState.AddModelError("Gia", "Giá phải lớn hơn 0.");
+            //if (sanPham.Gia <= 0)
+            //    ModelState.AddModelError("Gia", "Giá phải lớn hơn 0.");
 
             if (string.IsNullOrWhiteSpace(sanPham.MaDanhMuc))
                 ModelState.AddModelError("MaDanhMuc", "Danh mục là bắt buộc.");
 
-            if (sanPham.SoLuong < 0)
-                ModelState.AddModelError("SoLuong", "Số lượng không được nhỏ hơn 0.");
+            //if (sanPham.SoLuong < 0)
+            //    ModelState.AddModelError("SoLuong", "Số lượng không được nhỏ hơn 0.");
 
             if (!sanPham.Nsx.HasValue)
                 ModelState.AddModelError("Nsx", "Ngày sản xuất (NSX) là bắt buộc.");
@@ -396,13 +394,14 @@ namespace ASM_GS.Areas.Admin.Controllers
 
 
 
-            if (!ModelState.IsValid)
+            ////Validate ModelState
+            if (!TryValidateModel(sanPham))
             {
                 var errors = ModelState.ToDictionary(
                     kvp => kvp.Key,
                     kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToList()
                 );
-                return Json(new { success = false, errors }); // Return errors as JSON
+                return Json(new { success = false, errors });
             }
 
             try
@@ -556,6 +555,17 @@ namespace ASM_GS.Areas.Admin.Controllers
         private bool SanPhamExists(string id)
         {
             return _context.SanPhams.Any(e => e.MaSanPham == id);
+        }
+
+        [HttpPost]
+        public IActionResult CheckProductName(string productName)
+        {
+            // Đảm bảo có được tên sản phẩm
+            Console.WriteLine($"Kiểm tra tên sản phẩm: {productName}");
+
+            var exists = _context.SanPhams.Any(sp => sp.TenSanPham.ToLower() == productName.ToLower());
+
+            return Json(new { exists });
         }
 
 

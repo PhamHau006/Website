@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ASM_GS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241202143102_DLSS")]
+    [Migration("20241203161707_DLSS")]
     partial class DLSS
     {
         /// <inheritdoc />
@@ -37,6 +37,9 @@ namespace ASM_GS.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("SanPhamModelsMaSanPham")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("UrlAnh")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -44,6 +47,8 @@ namespace ASM_GS.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("MaSanPham");
+
+                    b.HasIndex("SanPhamModelsMaSanPham");
 
                     b.ToTable("AnhSanPhams");
 
@@ -306,6 +311,9 @@ namespace ASM_GS.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("SanPhamModelsMaSanPham")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("SoLuong")
                         .HasColumnType("int");
 
@@ -314,6 +322,8 @@ namespace ASM_GS.Migrations
                     b.HasIndex("MaCombo");
 
                     b.HasIndex("MaSanPham");
+
+                    b.HasIndex("SanPhamModelsMaSanPham");
 
                     b.ToTable("ChiTietCombos");
 
@@ -469,6 +479,9 @@ namespace ASM_GS.Migrations
                     b.Property<string>("NoiDung")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("SanPhamModelsMaSanPham")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("SoSao")
                         .HasColumnType("int");
 
@@ -477,6 +490,8 @@ namespace ASM_GS.Migrations
                     b.HasIndex("MaKhachHangNavigationMaKhachHang");
 
                     b.HasIndex("MaSanPhamNavigationMaSanPham");
+
+                    b.HasIndex("SanPhamModelsMaSanPham");
 
                     b.ToTable("DanhGia");
                 });
@@ -711,6 +726,54 @@ namespace ASM_GS.Migrations
                     b.HasIndex("MaGiamGia");
 
                     b.ToTable("MaNhapGiamGia");
+                });
+
+            modelBuilder.Entity("ASM_GS.Models.ModelsForSanPham.SanPhamModels", b =>
+                {
+                    b.Property<string>("MaSanPham")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("DonVi")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Gia")
+                        .IsRequired()
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateOnly?>("Hsd")
+                        .HasColumnType("date");
+
+                    b.Property<string>("MaDanhMuc")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MaDanhMucNavigationMaDanhMuc")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("MoTa")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("NgayThem")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("Nsx")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("SoLuong")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenSanPham")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TrangThai")
+                        .HasColumnType("int");
+
+                    b.HasKey("MaSanPham");
+
+                    b.HasIndex("MaDanhMucNavigationMaDanhMuc");
+
+                    b.ToTable("SanPhamss");
                 });
 
             modelBuilder.Entity("ASM_GS.Models.NhanVien", b =>
@@ -1062,6 +1125,9 @@ namespace ASM_GS.Migrations
                     b.Property<string>("MaSanPham")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("SanPhamModelsMaSanPham")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("SoLuong")
                         .HasColumnType("int");
 
@@ -1072,6 +1138,8 @@ namespace ASM_GS.Migrations
                     b.HasIndex("MaDonHang");
 
                     b.HasIndex("MaSanPham");
+
+                    b.HasIndex("SanPhamModelsMaSanPham");
 
                     b.ToTable("ChiTietDonHangs");
                 });
@@ -1094,6 +1162,9 @@ namespace ASM_GS.Migrations
                     b.Property<string>("MaSanPham")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("SanPhamModelsMaSanPham")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("SoLuong")
                         .HasColumnType("int");
 
@@ -1104,6 +1175,8 @@ namespace ASM_GS.Migrations
                     b.HasIndex("MaGioHang");
 
                     b.HasIndex("MaSanPham");
+
+                    b.HasIndex("SanPhamModelsMaSanPham");
 
                     b.ToTable("ChiTietGioHangs");
                 });
@@ -1129,6 +1202,9 @@ namespace ASM_GS.Migrations
                     b.Property<string>("MaSanPham")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("SanPhamModelsMaSanPham")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("SoLuong")
                         .HasColumnType("int");
 
@@ -1139,6 +1215,8 @@ namespace ASM_GS.Migrations
                     b.HasIndex("MaHoaDon");
 
                     b.HasIndex("MaSanPham");
+
+                    b.HasIndex("SanPhamModelsMaSanPham");
 
                     b.ToTable("ChiTietHoaDons");
                 });
@@ -1169,6 +1247,10 @@ namespace ASM_GS.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ASM_GS.Models.ModelsForSanPham.SanPhamModels", null)
+                        .WithMany("AnhSanPhams")
+                        .HasForeignKey("SanPhamModelsMaSanPham");
+
                     b.Navigation("MaSanPhamNavigation");
                 });
 
@@ -1185,6 +1267,10 @@ namespace ASM_GS.Migrations
                         .HasForeignKey("MaSanPham")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("ASM_GS.Models.ModelsForSanPham.SanPhamModels", null)
+                        .WithMany("ChiTietCombos")
+                        .HasForeignKey("SanPhamModelsMaSanPham");
 
                     b.Navigation("MaComboNavigation");
 
@@ -1204,6 +1290,10 @@ namespace ASM_GS.Migrations
                         .HasForeignKey("MaSanPhamNavigationMaSanPham")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("ASM_GS.Models.ModelsForSanPham.SanPhamModels", null)
+                        .WithMany("DanhGia")
+                        .HasForeignKey("SanPhamModelsMaSanPham");
 
                     b.Navigation("MaKhachHangNavigation");
 
@@ -1246,6 +1336,15 @@ namespace ASM_GS.Migrations
                         .IsRequired();
 
                     b.Navigation("GiamGia");
+                });
+
+            modelBuilder.Entity("ASM_GS.Models.ModelsForSanPham.SanPhamModels", b =>
+                {
+                    b.HasOne("ASM_GS.Models.DanhMuc", "MaDanhMucNavigation")
+                        .WithMany()
+                        .HasForeignKey("MaDanhMucNavigationMaDanhMuc");
+
+                    b.Navigation("MaDanhMucNavigation");
                 });
 
             modelBuilder.Entity("ASM_GS.Models.RefundRequest", b =>
@@ -1310,6 +1409,10 @@ namespace ASM_GS.Migrations
                         .WithMany("ChiTietDonHangs")
                         .HasForeignKey("MaSanPham");
 
+                    b.HasOne("ASM_GS.Models.ModelsForSanPham.SanPhamModels", null)
+                        .WithMany("ChiTietDonHangs")
+                        .HasForeignKey("SanPhamModelsMaSanPham");
+
                     b.Navigation("Combo");
 
                     b.Navigation("DonHang");
@@ -1333,6 +1436,10 @@ namespace ASM_GS.Migrations
                         .WithMany("ChiTietGioHangs")
                         .HasForeignKey("MaSanPham");
 
+                    b.HasOne("ASM_GS.Models.ModelsForSanPham.SanPhamModels", null)
+                        .WithMany("ChiTietGioHangs")
+                        .HasForeignKey("SanPhamModelsMaSanPham");
+
                     b.Navigation("Combo");
 
                     b.Navigation("GioHang");
@@ -1355,6 +1462,10 @@ namespace ASM_GS.Migrations
                     b.HasOne("ASM_GS.Models.SanPham", "SanPham")
                         .WithMany("ChiTietHoaDons")
                         .HasForeignKey("MaSanPham");
+
+                    b.HasOne("ASM_GS.Models.ModelsForSanPham.SanPhamModels", null)
+                        .WithMany("ChiTietHoaDons")
+                        .HasForeignKey("SanPhamModelsMaSanPham");
 
                     b.Navigation("Combo");
 
@@ -1418,6 +1529,21 @@ namespace ASM_GS.Migrations
                     b.Navigation("HoaDons");
 
                     b.Navigation("TaiKhoans");
+                });
+
+            modelBuilder.Entity("ASM_GS.Models.ModelsForSanPham.SanPhamModels", b =>
+                {
+                    b.Navigation("AnhSanPhams");
+
+                    b.Navigation("ChiTietCombos");
+
+                    b.Navigation("ChiTietDonHangs");
+
+                    b.Navigation("ChiTietGioHangs");
+
+                    b.Navigation("ChiTietHoaDons");
+
+                    b.Navigation("DanhGia");
                 });
 
             modelBuilder.Entity("ASM_GS.Models.NhanVien", b =>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ASM_GS.Models;
+using ASM_GS.Models.ModelsForSanPham;
 
 namespace ASM_GS.Controllers
 {
@@ -22,13 +23,17 @@ namespace ASM_GS.Controllers
         public virtual DbSet<KhachHang> KhachHangs { get; set; }
         public virtual DbSet<NhanVien> NhanViens { get; set; }
         public virtual DbSet<SanPham> SanPhams { get; set; }
+        
+        public virtual DbSet<SanPhamModels> SanPhamss { get; set; }
         public virtual DbSet<TaiKhoan> TaiKhoans { get; set; }
         public virtual DbSet<MaNhapGiamGia> MaNhapGiamGias { get; set; } 
         public DbSet<RefundRequest> RefundRequests { get; set; }
-        public DbSet<RefundRequestImage> RefundRequestImage { get; set; }   
+        public DbSet<RefundRequestImage> RefundRequestImage { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            
 
             // Cấu hình quan hệ giữa SanPham và AnhSanPham
             modelBuilder.Entity<AnhSanPham>()

@@ -95,7 +95,7 @@
     </div>
 
     <!-- Customer Table -->
-    <div class="card" >
+    <div class="card">
         <h5 class="card-header">@ViewData["Title"]</h5>
         <div class="card-body">
             <div class="table-responsive">
@@ -134,7 +134,7 @@
                                     {
                                         <span>Không có ảnh</span>
                                     }
-                                </td>                          
+                                </td>
                                 <td>@nhanVien.Cccd</td>
                                 <td>@(nhanVien.NgaySinh?.ToShortDateString() ?? "N/A")</td>
                                 <td>@(nhanVien.GioiTinh.HasValue ? (nhanVien.GioiTinh.Value ? "Nam" : "Nữ") : "N/A")</td>
@@ -148,15 +148,14 @@
                                         <span class="badge bg-success">Hoạt động</span>
                                     }
                                 </td>
-@*                                 <td>@(nhanVien.TrangThai == 0 ? "Ngừng hoạt động" : "Hoạt động")</td>
- *@                                <td>
+                                <td>
                                     <div class="btn-group">
-                                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" id="ActionWith'@nhanVien.MaNhanVien'">
                                             <i class="bx bx-dots-vertical-rounded"></i>
                                         </button>
                                         <ul class="dropdown-menu">
                                             <li>
-                                                <a class="dropdown-item" id="editCustomerBtn" data-bs-toggle="modal" onclick="LoadData('@nhanVien.MaNhanVien')">
+                                                <a class="dropdown-item" id="editCustomerBtn'@nhanVien.MaNhanVien'" data-bs-toggle="modal" onclick="LoadData('@nhanVien.MaNhanVien')">
                                                     <i class="bi bi-pencil-square"></i> Sửa
                                                 </a>
                                             </li>
@@ -263,7 +262,7 @@
             <div class="modal-content" style="padding: 30px 30px 30px 30px">
                 <input type="text" id="MaNhanVien1" hidden>
                 <div class="mb-3">
-                    <label class="form-label">Tên Khách Hàng</label>
+                    <label class="form-label">Tên Nhân Viên</label>
                     <input id="TenNhanVien1" class="form-control" />
                     <span id="errorTenNhanVien1" class="text-danger"></span>
                 </div>
@@ -483,9 +482,8 @@
 <script>
     $(document).ready(function () {
         $("#btnThem").click(function (e) {
-            e.preventDefault(); // Ngừng hành động mặc định của nút
+            e.preventDefault();
 
-            // Lấy dữ liệu từ các trường input
             var staffData = {
                 TenNhanVien: $("#TenNhanVien").val(),
                 SoDienThoai: $("#SoDienThoai").val(),
@@ -493,56 +491,59 @@
                 VaiTro: $("#VaiTro").val(),
                 Cccd: $("#Cccd").val(),
                 NgaySinh: $("#NgaySinh").val(),
-                GioiTinh: $("#GioiTinh").val(),
-                Anh: $("#Anh")[0].files[0] // Lấy file ảnh
+                GioiTinh: $("#GioiTinh").val()
             };
 
             // Tạo đối tượng FormData để gửi dữ liệu bao gồm cả file
             var formData = new FormData();
 
-            // Thêm dữ liệu vào FormData
+            // Thêm dữ liệu vào formData
             for (var key in staffData) {
                 formData.append(key, staffData[key]);
             }
 
-            // Gửi AJAX POST request đến server
+            // Thêm file ảnh vào formData
+            formData.append("Anh", $("#Anh")[0].files[0]);
+
+            // Gửi AJAX POST request đến controller
             $.ajax({
-                url: '/Admin/NhanVien/CreateStaff', // URL đến controller
+                url: '/Admin/NhanVien/CreateStaff',
                 type: 'POST',
                 data: formData,
                 contentType: false,
                 processData: false,
                 success: function (response) {
                     if (response.success) {
-                        // Hiển thị thông báo thành công
+                        // Use SweetAlert for success
                         Swal.fire({
                             icon: 'success',
                             title: 'Thành công!',
                             text: 'Nhân viên đã được thêm thành công!',
                         }).then(() => {
-                            // Đóng modal sau khi thêm thành công
-                            $("#myModal").modal('hide'); // Đảm bảo modal được đóng
-                            location.reload(); // Tải lại trang nếu cần thiết
+                            // Close the modal
+                            $("#myModal").modal('hide');
+                            location.reload();
                         });
                     } else {
-                        // Hiển thị các lỗi nếu có
-                        $(".text-danger").text(""); // Xóa các lỗi cũ
+                        $(".text-danger").text("");
+
+                        // Display errors for each field
                         for (var key in response.errors) {
                             if (response.errors.hasOwnProperty(key)) {
-                                $("#error" + key).text(response.errors[key]); // Hiển thị lỗi tương ứng với từng trường
+                                $("#error" + key).text(response.errors[key]);
                             }
                         }
 
-                        // Thông báo lỗi nếu có
-                        // Swal.fire({
-                        //     icon: 'error',
-                        //     title: 'Có lỗi xảy ra!',
-                        //     text: 'Vui lòng kiểm tra lại các thông tin và thử lại.',
-                        // });
+                        // Use SweetAlert for error
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Có lỗi xảy ra!',
+                            text: 'Vui lòng kiểm tra lại các thông tin và thử lại.',
+                        });
                     }
                 },
                 error: function (xhr, status, error) {
-                    // Xử lý lỗi trong trường hợp có lỗi AJAX
+                    // Use SweetAlert for error
                     Swal.fire({
                         icon: 'error',
                         title: 'Có lỗi xảy ra!',
@@ -552,8 +553,6 @@
             });
         });
     });
-
-
 
 
 </script>
@@ -597,17 +596,18 @@
             contentType: false,
             success: function (response) {
                 if (response.success) {
-                    // SweetAlert for success
+                    $('#myModal1').modal('hide');
+                    $('.modal-backdrop').remove();
                     Swal.fire({
                         icon: 'success',
                         title: 'Thành công!',
                         text: response.message,
+                        timer: 3000
                     }).then(() => {
-                        $('#myModal1').modal('hide');
+
                         location.reload();
                     });
-                }
-                else {
+                } else {
                     // Show validation errors using SweetAlert
                     for (var key in response.errors) {
                         if (response.errors.hasOwnProperty(key)) {
@@ -623,7 +623,6 @@
                     });
                 }
             },
-
             error: function () {
                 // SweetAlert for AJAX error
                 Swal.fire({
@@ -636,3 +635,4 @@
     });
 
 </script>
+

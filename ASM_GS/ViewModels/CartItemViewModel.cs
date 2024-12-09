@@ -11,6 +11,7 @@
         public string ImageUrl { get; set; }
         public decimal Subtotal => Price * Quantity;
         public int MaxQuantity { get; set; }
+        public int TotalItems { get; set; }
     }
     public static class PaymentType
     {

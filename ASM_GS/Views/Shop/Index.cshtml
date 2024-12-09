@@ -245,7 +245,7 @@
                         Quantity: quantity
                     }),
                     success: function (response) {
-                        $('#productDetailModal').modal('hide');
+                        $('#productDetailModal').modal('hide');z
                         Swal.fire({
                             icon: response.success ? 'success' : 'error',
                             title: response.success ? 'Thành công' : 'Lỗi',
@@ -254,8 +254,14 @@
                         });
                     },
                     error: function (xhr) {
-                        Swal.fire('Lỗi', `Không thể thêm sản phẩm vào giỏ hàng. Lỗi: ${xhr.status}`, 'error');
+                        Swal.fire('Lỗi', `Bạn cần đăng nhập`, 'error')
+                            .then(() => {
+                                setTimeout(() => {
+                                    window.location.href = '/LoginAndSignUp/Index';
+                                }, 1000); // 1 giây
+                            });
                     }
+
                 });
             });
 

@@ -4,5 +4,6 @@
     {
         public List<CartItemViewModel> Items { get; set; } = new List<CartItemViewModel>();
         public decimal Total => Items.Sum(i => i.Subtotal);
+        public int TotalItems { get; set; }
     }
 }
